@@ -135,6 +135,12 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="codEXEater.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="dialog\DialogNode.cpp" />
+    <ClCompile Include="dialog\DialogSystem.cpp" />
+    <ClCompile Include="dialog\DialogTree.cpp" />
+    <ClCompile Include="dialog\EncodingUtils.cpp" />
+    <ClCompile Include="dialog\QuestController.cpp" />
+    <ClCompile Include="dialog\ScriptEngine.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -153,6 +159,12 @@
     <ClInclude Include="BossRootAttack.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="dialog\DialogNode.h" />
+    <ClInclude Include="dialog\DialogSystem.h" />
+    <ClInclude Include="dialog\DialogTree.h" />
+    <ClInclude Include="dialog\json.hpp" />
+    <ClInclude Include="dialog\QuestController.h" />
+    <ClInclude Include="dialog\ScriptEngine.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
@@ -166,6 +178,11 @@
   <ItemGroup>
     <Text Include="config.txt" />
     <Text Include="debug.txt" />
+    <Text Include="dialog_trees\game_start_dialog.txt" />
+    <Text Include="dialog_trees\ref_text.txt" />
+    <Text Include="dialog_trees\second_level_choice_dialog.txt" />
+    <Text Include="dialog_trees\talk_with_feature_dialog.txt" />
+    <Text Include="dialog_trees\third_level_choice_dialog.txt" />
     <Text Include="graphics\bullet.txt" />
     <Text Include="graphics\parry_bullet.txt" />
     <Text Include="graphics\player.txt" />
