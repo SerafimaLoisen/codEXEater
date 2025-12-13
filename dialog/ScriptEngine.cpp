@@ -81,11 +81,29 @@ void ScriptEngine::initialize()
         }
         });
 
+    // script to start boss battle
+    registerScript("start_boss_battle", [](const map<string, string>& args) {
+        for (const auto& arg : args) {
+
+            // no args should be provided
+
+        }
+        });
+
     // script to start level
     registerScript("start_level", [](const map<string, string>& args) {
         for (const auto& arg : args) {
 
             // arg.first  -  name of the level to be loaded     arg.second -  is not used
+
+        }
+        });
+
+    // script to end game
+    registerScript("end_game", [](const map<string, string>& args) {
+        for (const auto& arg : args) {
+
+            // no args should be provided
 
         }
         });

@@ -193,10 +193,16 @@
     <Text Include="dialog_trees\second_level_choice_dialog.txt">
       <Filter>dialogTrees</Filter>
     </Text>
+    <Text Include="dialog_trees\third_level_choice_dialog.txt">
+      <Filter>dialogTrees</Filter>
+    </Text>
+    <Text Include="dialog_trees\final_dive_dialog.txt">
+      <Filter>dialogTrees</Filter>
+    </Text>
     <Text Include="dialog_trees\talk_with_feature_dialog.txt">
       <Filter>dialogTrees</Filter>
     </Text>
-    <Text Include="dialog_trees\third_level_choice_dialog.txt">
+    <Text Include="dialog_trees\game_finish_dialog.txt">
       <Filter>dialogTrees</Filter>
     </Text>
   </ItemGroup>

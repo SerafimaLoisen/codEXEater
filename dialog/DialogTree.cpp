@@ -649,8 +649,6 @@ bool DialogTree::selectOption(int optionIndex) {
 
 void DialogTree::displayCurrentNode() const {
     system("CLS");
-    //ptr_questController->drawCurrState();
-    QuestController::drawCurrState();
 
     const DialogNode* current = getCurrentNodePtr();
     if (!current) {

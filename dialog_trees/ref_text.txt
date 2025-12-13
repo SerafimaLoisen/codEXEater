@@ -25,7 +25,7 @@
 			]
 		},
 		{"Не забывай тому что ты здесь узнал!",
-			[{ "bool_is" ,[ {"knowsMagicFromGrendel","true"} ]} }],
+			[{ "bool_is" ,[ {"knowsMagicFromGrendel","true"} ]} ]},
 		],
       "options": [
         {

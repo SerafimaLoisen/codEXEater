@@ -27,7 +27,7 @@
       "options": [
         {
           "text": "[Продолжить]",
-          "next_node": "end"
+          "next_node": "end",
           "scripts": [
 			{ "switch_dialogue_to" , [ { "talk_with_feature","start" } ] }
 		  ]
@@ -46,9 +46,9 @@
       "options": [
         {
           "text": "[Продолжить]",
-          "next_node": "end"
+          "next_node": "end",
           "scripts": [
-			{ "start_level" , [ { "NAME_OF_LEVEL","" } ] }
+			{ "start_boss_battle" , [] }
 		  ]
         },
         {

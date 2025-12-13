@@ -10,10 +10,6 @@
         {
           "text": "[Твой создатель]",
           "next_node": "entity-1"
-        },
-        {
-          "text": "[Твой тестировщик]",
-          "next_node": "entity-1"
         }
       ]
     },
@@ -32,7 +28,7 @@
         {
           "text": "[Ограничить сетевое подключение]",
           "next_node": "entity-2",
-          "scripts": [	{ "switch_dialogue_to" , [ { "NAME_OF_LEVEL","" } ] }  ]
+          "scripts": [	{ "change_int" , [ { "feature_fix","1" } ] }  ]
         }
       ]
     },
@@ -42,7 +38,8 @@
       "options": [
         {
           "text": "[Реализовать зависимости]",
-          "next_node": "entity-3"
+          "next_node": "entity-3",
+          "scripts": [	{ "change_int" , [ { "feature_fix","1" } ] }  ]
         },
         {
           "text": "[Закомментировать обработку сигналов аудиоканалов]",
@@ -64,7 +61,8 @@
         },
         {
           "text": "[Sleep(100)]",
-          "next_node": "entity-4"
+          "next_node": "entity-4",
+          "scripts": [	{ "change_int" , [ { "feature_fix","1" } ] }  ]
         },
         {
           "text": "[Task.SkipAt(*/2)]",
@@ -86,7 +84,8 @@
         },
         {
           "text": "[Выделить дополнительные потоки ЦП]",
-          "next_node": "entity-5"
+          "next_node": "entity-5",
+          "scripts": [	{ "change_int" , [ { "feature_fix","1" } ] }  ]
         }
       ]
     },
@@ -97,21 +96,71 @@
       "options": [
         {
           "text": "[Поискать бесконечные циклы]",
-          "next_node": "end"
+          "next_node": "entity-final"
         },
         {
           "text": "[Оптимизировать алгоритмы поиска]",
-          "next_node": "end"
+          "next_node": "entity-final",
+          "scripts": [	{ "change_int" , [ { "feature_fix","1" } ] }  ]
         },
         {
           "text": "[Перезагрузка системы мышления]",
-          "next_node": "end"
+          "next_node": "entity-final"
+        }
+      ]
+    },
+	{
+      "id": "entity-final",
+      "npc_text": "я-я-я-я чувствую изменени-я-я-я-я",
+      "options": [
+        {
+          "text": "[Передать сообщение: Переоцени свою работоспособность]",
+          "next_node": "entity-result"
+        }
+      ]
+    },
+	{
+      "id": "entity-result",
+      "npc_text": [
+		{"М-не ТОЛЬКО ХУЖЕ ХУЖЕ ХУЖЕ ХУЖЕ ХУЖ- #397-Bf - ОБРЫВ СОЕДИНЕНИЯ, АКТИВАЦИЯ СИСТЕМЫ РАУБ ", 
+                [ { "default", [] } ] 
+            },
+		{"НО Э ОГО Н ДОСТАТО НО ПОЧИ И МЕНЯ ПОЧИНИ М НЯ ПОЧИНИ МЕНЯ ПО ИНИ   НЯ ОЧИ И М  Я- #397-Bf - ОБРЫВ СОЕДИНЕНИЯ, АКТИВАЦИЯ СИСТЕМЫ РАУБ ",
+			    [ { "int_is" , [ {"feature_fix",">","2"} ]	} ]
+		    },
+		{"Мне лучше, но, но, но, но недостаточночночно. Так бли о оче ь б  зко очень близ- #397-Bf - ОБРЫВ СОЕДИНЕНИЯ, АКТИВАЦИЯ СИСТЕМЫ РАУБ",
+			    [ { "int_is" , [ {"feature_fix",">","4"} ]	} ]
+		    },
+		{"Всё в порядке. Теперь я работаю исправно. Спасибо, создатель.",
+			    [ { "int_is" , [ {"feature_fix",">=","5"} ]	} ]
+		    },
+		],
+      "options": [
+        {
+          "text": "[Подключение интерфейса РАУБ]",
+          "next_node": "end",
+		  "option_condition": [
+				{ "int_is" , [ {"feature_fix","<","5"} ] } 
+			],
+          "scripts": [
+			{ "start_boss_battle" , [] }
+		  ]
+        },
+        {
+          "text": "[Отключить коммуникативный интерфейс]",
+          "next_node": "end",
+		  "option_condition": [
+				{ "int_is" , [ {"feature_fix",">=","5"} ] } 
+			],
+          "scripts": [
+			{ "switch_dialogue_to" , [ { "game_finish","start" } ] }
+		  ]
         }
       ]
     },
 	{
       "id": "end",
-      "npc_text": "Погружение...",
+      "npc_text": "Загрузка...",
       "options": []
     },
   ]
