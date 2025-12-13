@@ -1,0 +1,50 @@
+# Настройки экрана
+SCREEN_WIDTH=80
+SCREEN_HEIGHT=20
+
+# Настройки игрока
+PLAYER_START_X=10
+PLAYER_START_Y=10
+PLAYER_HEALTH=5
+PLAYER_WIDTH=5
+PLAYER_HEIGHT=3
+
+# Настройки пуль
+BULLET_SPEED=1
+PARRY_BULLET_SPEED=2
+PLAYER_BULLET_SPEED=5
+PLAYER_FIRE_RATE=5
+PLAYER_BULLET_COLOR=10
+
+# Время действий
+PARRY_DURATION=10
+PARRY_RANGE=5
+DODGE_DURATION=10
+DODGE_DISTANCE=10
+
+# Цвета
+PLAYER_COLOR=14
+BULLET_COLOR=12
+PARRY_COLOR=10
+
+# ========== БОСС ==========
+BOSS_START_X=90
+BOSS_START_Y=10
+BOSS_WIDTH=20
+BOSS_HEIGHT=15
+BOSS_HEALTH=300
+
+# Фазы босса (в процентах HP)
+BOSS_PHASE2_HP=66    # Переход на 2 фазу при 66% HP
+BOSS_PHASE3_HP=33    # Переход на 3 фазу при 33% HP
+
+# Атаки босса
+BOSS_BULLET_SPEED=3
+BOSS_BULLET_COLOR=12       # Красные пули
+BOSS_BULLET_COOLDOWN=30    # Кадры между выстрелами
+
+BOSS_ROOT_WARNING_DURATION=20   # Длительность предупреждения "!"
+BOSS_ROOT_GROW_DURATION=15      # Длительность роста корня
+BOSS_ROOT_DAMAGE=2              # Урон от корня
+BOSS_ROOT_COOLDOWN=60           # Кадры между корнями
+BOSS_ROOT_COLOR=13              # Пурпурный цвет корней
