@@ -12,8 +12,8 @@ private:
     std::unique_ptr<Player> player;
     std::vector<std::unique_ptr<Projectile>> projectiles;
     std::vector<std::shared_ptr<Platform>> platforms;
-    std::unique_ptr<Boss> boss;
-    std::vector<std::unique_ptr<BossRoot>> bossRoots;
+    //std::unique_ptr<Boss> boss;
+    //std::vector<std::unique_ptr<BossRoot>> bossRoots;
     int bulletSpawnTimer;
     bool gameRunning;
     int score;
@@ -50,15 +50,15 @@ public:
     void checkCollisions();
     void handleParry();
 
-    void spawnBoss();
+    /*void spawnBoss();
     void updateBoss();
     void renderBoss();
-    void checkBossCollisions();
+    void checkBossCollisions();*/
 
     void addEnemyBullet(std::unique_ptr<Bullet> bullet);
-    void addBossRoot(std::unique_ptr<BossRoot> root);
+    //void addBossRoot(std::unique_ptr<BossRoot> root);
 
-    Boss* getBoss() { return boss.get(); }
+    //Boss* getBoss() { return boss.get(); }
 
     // Работа с уровнями
     void loadLevel(const std::string& levelName);

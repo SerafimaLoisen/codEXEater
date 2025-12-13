@@ -121,28 +121,28 @@ void GameEngine::removePlatformsFromUIFrame() {
     }
 }
 
-void GameEngine::spawnBoss() {
-    if (!bossMode) return;
-
-    auto& config = ConfigManager::getInstance();
-    boss = std::make_unique<Boss>(
-        config.getScreenWidth() - config.getBossWidth() - 5,
-        config.getScreenHeight() / 2 - config.getBossHeight() / 2,
-        config.getBossWidth(),
-        config.getBossHeight(),
-        config.getBossHealth(),
-        config.getBossPhase2HP(),
-        config.getBossPhase3HP(),
-        config.getBossBulletSpeed(),
-        config.getBossBulletColor(),
-        config.getBossBulletCooldown(),
-        config.getBossRootWarningDuration(),
-        config.getBossRootGrowDuration(),
-        config.getBossRootDamage(),
-        config.getBossRootCooldown(),
-        config.getBossRootColor()
-    );
-}
+//void GameEngine::spawnBoss() {
+//    if (!bossMode) return;
+//
+//    auto& config = ConfigManager::getInstance();
+//    boss = std::make_unique<Boss>(
+//        config.getScreenWidth() - config.getBossWidth() - 5,
+//        config.getScreenHeight() / 2 - config.getBossHeight() / 2,
+//        config.getBossWidth(),
+//        config.getBossHeight(),
+//        config.getBossHealth(),
+//        config.getBossPhase2HP(),
+//        config.getBossPhase3HP(),
+//        config.getBossBulletSpeed(),
+//        config.getBossBulletColor(),
+//        config.getBossBulletCooldown(),
+//        config.getBossRootWarningDuration(),
+//        config.getBossRootGrowDuration(),
+//        config.getBossRootDamage(),
+//        config.getBossRootCooldown(),
+//        config.getBossRootColor()
+//    );
+//}
 
 
 void GameEngine::update() {
@@ -184,9 +184,9 @@ void GameEngine::update() {
 
     if (bossMode) {
         // Босс режим - чаще и сложнее
-        updateBoss();
+        /*updateBoss();
         checkBossCollisions();
-        randomSpawnRate = 10 + (std::rand() % 15);
+        randomSpawnRate = 10 + (std::rand() % 15);*/
     }
     else {
         // Туториал - реже и проще
@@ -212,17 +212,17 @@ void GameEngine::update() {
     }
 }
 
-void GameEngine::updateBoss() {
-    boss->update(*this);
-
-    // Обновляем корни
-    for (int i = bossRoots.size() - 1; i >= 0; --i) {
-        bossRoots[i]->update();
-        if (bossRoots[i]->getHealth() <= 0) {  // Или другой критерий удаления
-            bossRoots.erase(bossRoots.begin() + i);
-        }
-    }
-}
+//void GameEngine::updateBoss() {
+//    boss->update(*this);
+//
+//    // Обновляем корни
+//    for (int i = bossRoots.size() - 1; i >= 0; --i) {
+//        bossRoots[i]->update();
+//        if (bossRoots[i]->getHealth() <= 0) {  // Или другой критерий удаления
+//            bossRoots.erase(bossRoots.begin() + i);
+//        }
+//    }
+//}
 
 void GameEngine::spawnBullet() {
     bool isParryBullet = (std::rand() % 2 == 0);
@@ -323,31 +323,31 @@ void GameEngine::checkCollisions() {
     }
 }
 
-void GameEngine::checkBossCollisions() {
-    if (!boss || !player) return;
-
-    // Проверяем попадание пуль игрока в босса
-    for (int i = projectiles.size() - 1; i >= 0; --i) {
-        if (!projectiles[i]->isActive()) continue;
-
-        bool isPlayerBullet = (projectiles[i]->getColor() ==
-            ConfigManager::getInstance().getPlayerBulletColor());
-
-        if (isPlayerBullet && boss->checkCollision(*projectiles[i])) {
-            boss->takeDamage(1);  // Каждая пуля наносит 1 урон
-            projectiles[i]->setActive(false);
-        }
-    }
-
-    // Проверяем столкновение игрока с корнями босса
-    for (auto& root : bossRoots) {
-        if (player->checkCollision(*root)) {
-            player->takeDamage(root->getDamage());
-            // Можно удалить корень после нанесения урона
-            root->takeDamage(root->getHealth());  // Уничтожаем корень
-        }
-    }
-}
+//void GameEngine::checkBossCollisions() {
+//    if (!boss || !player) return;
+//
+//    // Проверяем попадание пуль игрока в босса
+//    for (int i = projectiles.size() - 1; i >= 0; --i) {
+//        if (!projectiles[i]->isActive()) continue;
+//
+//        bool isPlayerBullet = (projectiles[i]->getColor() ==
+//            ConfigManager::getInstance().getPlayerBulletColor());
+//
+//        if (isPlayerBullet && boss->checkCollision(*projectiles[i])) {
+//            boss->takeDamage(1);  // Каждая пуля наносит 1 урон
+//            projectiles[i]->setActive(false);
+//        }
+//    }
+//
+//    // Проверяем столкновение игрока с корнями босса
+//    for (auto& root : bossRoots) {
+//        if (player->checkCollision(*root)) {
+//            player->takeDamage(root->getDamage());
+//            // Можно удалить корень после нанесения урона
+//            root->takeDamage(root->getHealth());  // Уничтожаем корень
+//        }
+//    }
+//}
 
 void GameEngine::handleParry() {
     if (player->getIsParrying()) {
@@ -399,7 +399,7 @@ void GameEngine::render() {
         }
     }
 
-    renderBoss();
+    //renderBoss();
 
     // Отрисовываем подсказки и управление
     UIManager::renderHints();
@@ -407,16 +407,16 @@ void GameEngine::render() {
 
 }
 
-void GameEngine::renderBoss() {
-    if (bossMode && boss) {
-        boss->render();
-
-        // Рендерим корни
-        for (auto& root : bossRoots) {
-            root->render();
-        }
-    }
-}
+//void GameEngine::renderBoss() {
+//    if (bossMode && boss) {
+//        boss->render();
+//
+//        // Рендерим корни
+//        for (auto& root : bossRoots) {
+//            root->render();
+//        }
+//    }
+//}
 
 void GameEngine::addEnemyBullet(std::unique_ptr<Bullet> bullet) {
     if (bullet) {
@@ -424,11 +424,11 @@ void GameEngine::addEnemyBullet(std::unique_ptr<Bullet> bullet) {
     }
 }
 
-void GameEngine::addBossRoot(std::unique_ptr<BossRoot> root) {
-    if (root) {
-        bossRoots.push_back(std::move(root));
-    }
-}
+//void GameEngine::addBossRoot(std::unique_ptr<BossRoot> root) {
+//    if (root) {
+//        bossRoots.push_back(std::move(root));
+//    }
+//}
 
 Player& GameEngine::getPlayer() {
     return *player;
