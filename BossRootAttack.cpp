@@ -5,7 +5,7 @@
 //#include <cstdlib>
 //#include <ctime>
 //
-//// Конструктор
+//// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 //BossRootAttack::BossRootAttack(Boss* boss, int cooldown, int warningDur,
 //    int growDur, int damage, int color)
 //    : BossAttack(boss, cooldown),
@@ -16,22 +16,22 @@
 //    std::srand(static_cast<unsigned>(std::time(nullptr)));
 //}
 //
-//// Update с параметром GameEngine
+//// Update СЃ РїР°СЂР°РјРµС‚СЂРѕРј GameEngine
 //void BossRootAttack::update(GameEngine& engine) {
-//    BossAttack::update(); // Вызываем базовый update
+//    BossAttack::update(); // Р’С‹Р·С‹РІР°РµРј Р±Р°Р·РѕРІС‹Р№ update
 //
-//    // Обновляем предупреждения
+//    // РћР±РЅРѕРІР»СЏРµРј РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ
 //    for (int i = pendingRoots.size() - 1; i >= 0; --i) {
 //        pendingRoots[i].timer--;
 //
 //        if (pendingRoots[i].timer <= 0) {
 //            if (!pendingRoots[i].isGrowing) {
-//                // Начинаем рост
+//                // РќР°С‡РёРЅР°РµРј СЂРѕСЃС‚
 //                pendingRoots[i].isGrowing = true;
 //                pendingRoots[i].timer = growDuration;
 //            }
 //            else {
-//                // Создаем корень
+//                // РЎРѕР·РґР°РµРј РєРѕСЂРµРЅСЊ
 //                spawnRoot(pendingRoots[i], engine);
 //                pendingRoots.erase(pendingRoots.begin() + i);
 //            }
@@ -44,14 +44,14 @@
 //    spawnRandomRoot(engine);
 //}
 //
-//// Создание случайного корня
+//// РЎРѕР·РґР°РЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РєРѕСЂРЅСЏ
 //void BossRootAttack::spawnRandomRoot(GameEngine& engine) {
 //    if (!boss) return;
 //
 //    int screenHeight = engine.getScreenHeight();
 //    int bossX = boss->getX();
 //
-//    // Случайные координаты для корня
+//    // РЎР»СѓС‡Р°Р№РЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ РєРѕСЂРЅСЏ
 //    int rootX = bossX - (std::rand() % 40 + 10);
 //    int rootY = 0;
 //    bool fromTop = (std::rand() % 2 == 0);
@@ -63,7 +63,7 @@
 //        rootY = screenHeight - 10 - (std::rand() % 5);
 //    }
 //
-//    // Создаем предупреждение
+//    // РЎРѕР·РґР°РµРј РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ
 //    PendingRoot pending;
 //    pending.x = rootX;
 //    pending.y = rootY;
@@ -74,17 +74,17 @@
 //    pendingRoots.push_back(pending);
 //}
 //
-//// Создание корня
+//// РЎРѕР·РґР°РЅРёРµ РєРѕСЂРЅСЏ
 //void BossRootAttack::spawnRoot(const PendingRoot& pending, GameEngine& engine) {
-//    // Создаем корень с помощью make_unique
+//    // РЎРѕР·РґР°РµРј РєРѕСЂРµРЅСЊ СЃ РїРѕРјРѕС‰СЊСЋ make_unique
 //    auto root = std::make_unique<BossRoot>(
 //        pending.x, pending.y,
-//        !pending.fromTop,  // Если сверху вниз, то растет вниз
-//        8,                 // Максимальная высота
+//        !pending.fromTop,  // Р•СЃР»Рё СЃРІРµСЂС…Сѓ РІРЅРёР·, С‚Рѕ СЂР°СЃС‚РµС‚ РІРЅРёР·
+//        8,                 // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р°
 //        rootDamage,
 //        rootColor
 //    );
 //
-//    // Добавляем в GameEngine
+//    // Р”РѕР±Р°РІР»СЏРµРј РІ GameEngine
 //    engine.addBossRoot(std::move(root));
 //}

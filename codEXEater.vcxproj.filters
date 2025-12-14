@@ -66,6 +66,15 @@
     <ClCompile Include="BossRoot.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="SidePlatform.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h">
@@ -116,11 +125,17 @@
     <ClInclude Include="Boss.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SidePlatform.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="config.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="debug.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
@@ -136,7 +151,28 @@
     <Text Include="graphics\player_dodge.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="graphics\UIFrame.txt">
+    <Text Include="graphics\levels\level1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level2.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level3.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level4.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level5.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level6.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\levels\level7.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="config.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>

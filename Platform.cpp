@@ -10,3 +10,8 @@ void Platform::render() {
     std::string platformLine = std::string(width, '=');
     GraphicsManager::renderAt(x, y, { platformLine });
 }
+
+void Platform::renderAt(int screenX, int screenY) const {  // Добавьте const
+    std::string platformLine = std::string(width, '=');
+    GraphicsManager::renderAt(screenX, screenY, { platformLine }, color);
+}

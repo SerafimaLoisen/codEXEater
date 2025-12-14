@@ -6,7 +6,7 @@
 //}
 //
 //void BossAttack::update() {
-//    // Áàçîâûé update - óìåíüøàåì êóëäàóí
+//    // Ð‘Ð°Ð·Ð¾Ð²Ñ‹Ð¹ update - ÑƒÐ¼ÐµÐ½ÑŒÑˆÐ°ÐµÐ¼ ÐºÑƒÐ»Ð´Ð°ÑƒÐ½
 //    if (currentCooldown > 0) {
 //        currentCooldown--;
 //    }

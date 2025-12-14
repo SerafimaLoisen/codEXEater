@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,16 +134,19 @@
     <ClCompile Include="BossRoot.cpp" />
     <ClCompile Include="BossRootAttack.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="codEXEater.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ParryBullet.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="SidePlatform.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,25 +156,34 @@
     <ClInclude Include="BossRoot.h" />
     <ClInclude Include="BossRootAttack.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsManager.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="ParryBullet.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="SidePlatform.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
     <Text Include="debug.txt" />
     <Text Include="graphics\bullet.txt" />
+    <Text Include="graphics\levels\level1.txt" />
+    <Text Include="graphics\levels\level2.txt" />
+    <Text Include="graphics\levels\level3.txt" />
+    <Text Include="graphics\levels\level4.txt" />
+    <Text Include="graphics\levels\level5.txt" />
+    <Text Include="graphics\levels\level6.txt" />
+    <Text Include="graphics\levels\level7.txt" />
     <Text Include="graphics\parry_bullet.txt" />
     <Text Include="graphics\player.txt" />
     <Text Include="graphics\player_dodge.txt" />
-    <Text Include="graphics\UIFrame.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

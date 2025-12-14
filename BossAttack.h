@@ -16,7 +16,7 @@
 //    virtual void update() {
 //        if (currentCooldown > 0) currentCooldown--;
 //    }
-//    virtual void update(GameEngine& engine) { update(); }  // Перегруженная версия
+//    virtual void update(GameEngine& engine) { update(); }  // РџРµСЂРµРіСЂСѓР¶РµРЅРЅР°СЏ РІРµСЂСЃРёСЏ
 //
 //    virtual void execute(GameEngine& engine) = 0;
 //    virtual bool canExecute() const { return currentCooldown <= 0; }

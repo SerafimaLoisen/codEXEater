@@ -14,7 +14,7 @@
 //    std::unique_ptr<BossAttack> bulletAttack;
 //    std::unique_ptr<BossAttack> rootAttack;
 //
-//    // Настройки
+//    // РќР°СЃС‚СЂРѕР№РєРё
 //    int bulletSpeed;
 //    int bulletColor;
 //    int bulletCooldown;
@@ -30,19 +30,19 @@
 //        int bulletSpeed, int bulletColor, int bulletCooldown,
 //        int rootWarningDur, int rootGrowDur, int rootDamage, int rootCooldown, int rootColor);
 //
-//    // УБИРАЕМ override здесь, т.к. Entity::update() может не существовать
+//    // РЈР‘РР РђР•Рњ override Р·РґРµСЃСЊ, С‚.Рє. Entity::update() РјРѕР¶РµС‚ РЅРµ СЃСѓС‰РµСЃС‚РІРѕРІР°С‚СЊ
 //    void update(GameEngine& engine);
 //
-//    // Entity уже имеет render(), делаем override
+//    // Entity СѓР¶Рµ РёРјРµРµС‚ render(), РґРµР»Р°РµРј override
 //    void render() override;
 //
-//    // Entity уже имеет takeDamage(), делаем override
+//    // Entity СѓР¶Рµ РёРјРµРµС‚ takeDamage(), РґРµР»Р°РµРј override
 //    void takeDamage(int damage) override;
 //
 //    Phase getCurrentPhase() const { return currentPhase; }
 //    void checkPhaseTransition();
 //
-//    // Геттеры
+//    // Р“РµС‚С‚РµСЂС‹
 //    int getX() const { return x; }
 //    int getY() const { return y; }
 //    int getWidth() const { return width; }

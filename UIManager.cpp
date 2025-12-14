@@ -2,7 +2,7 @@
 #include "ConfigManager.h"
 #include <iostream>
 
-// Инициализация статических членов
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС‚Р°С‚РёС‡РµСЃРєРёС… С‡Р»РµРЅРѕРІ
 int UIManager::screenHeight = 0;
 int UIManager::screenWidth = 0;
 bool UIManager::initialized = false;

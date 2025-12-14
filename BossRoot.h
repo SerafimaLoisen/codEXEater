@@ -5,7 +5,7 @@
 //private:
 //    int growTimer;
 //    int maxHeight;
-//    bool growingUp;  // true = растет вверх, false = растет вниз
+//    bool growingUp;  // true = СЂР°СЃС‚РµС‚ РІРІРµСЂС…, false = СЂР°СЃС‚РµС‚ РІРЅРёР·
 //
 //public:
 //    BossRoot(int x, int y, bool growUp, int maxHeight, int damage, int color);

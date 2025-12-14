@@ -6,12 +6,16 @@
 #include <memory>
 #include "Boss.h"
 #include "BossRoot.h"
+#include "Camera.h"
+#include "SidePlatform.h"
 
 class GameEngine {
 private:
+    std::unique_ptr<Camera> camera;
     std::unique_ptr<Player> player;
     std::vector<std::unique_ptr<Projectile>> projectiles;
     std::vector<std::shared_ptr<Platform>> platforms;
+    std::vector<std::shared_ptr<SidePlatform>> sidePlatforms;
     //std::unique_ptr<Boss> boss;
     //std::vector<std::unique_ptr<BossRoot>> bossRoots;
     int bulletSpawnTimer;
@@ -20,32 +24,42 @@ private:
 
     void handlePlayerAttack();
 
-    // Кэшированные конфигурационные параметры
+    // РљСЌС€РёСЂРѕРІР°РЅРЅС‹Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
     int screenWidth;
     int screenHeight;
     int parryBulletSpeed;
     int parryRange;
 
-    // Уровень игры
+    // РЈСЂРѕРІРµРЅСЊ РёРіСЂС‹
     std::string currentLevel;
     bool bossMode;
+
+    void updateCamera();  // РќРѕРІС‹Р№ РјРµС‚РѕРґ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РєР°РјРµСЂС‹
+    void renderWithCamera();  // РќРѕРІС‹Р№ РјРµС‚РѕРґ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР° СЃ РєР°РјРµСЂРѕР№
+
+    // РР·РјРµРЅРёС‚Рµ СЃРёРіРЅР°С‚СѓСЂС‹ РјРµС‚РѕРґРѕРІ СЂРµРЅРґРµСЂРёРЅРіР°
+    void renderGameObject(const GameObject& obj) const;
+    void renderProjectile(const Projectile& projectile) const;
+    void renderUIFrameWithCamera();
+
+    void handlePlayerSidePlatformCollisions();
 
 public:
     GameEngine();
 
-    // Инициализация с выбором уровня
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃ РІС‹Р±РѕСЂРѕРј СѓСЂРѕРІРЅСЏ
     void initialize(const std::string& levelName = "tutorial");
 
-    // Основные игровые методы
+    // РћСЃРЅРѕРІРЅС‹Рµ РёРіСЂРѕРІС‹Рµ РјРµС‚РѕРґС‹
     void update();
     void render();
 
-    // Обработка коллизий
+    // РћР±СЂР°Р±РѕС‚РєР° РєРѕР»Р»РёР·РёР№
     void handlePlayerCollisions();
     void handlePlayerWorldCollisions();
     void handlePlayerPlatformCollisions();
 
-    // Работа с пулями
+    // Р Р°Р±РѕС‚Р° СЃ РїСѓР»СЏРјРё
     void spawnBullet();
     void checkCollisions();
     void handleParry();
@@ -60,16 +74,16 @@ public:
 
     //Boss* getBoss() { return boss.get(); }
 
-    // Работа с уровнями
+    // Р Р°Р±РѕС‚Р° СЃ СѓСЂРѕРІРЅСЏРјРё
     void loadLevel(const std::string& levelName);
     void loadGraphicsForLevel();
     void createPlatformsFromUIFrame();
     void removePlatformsFromUIFrame();
 
-    // Утилиты
+    // РЈС‚РёР»РёС‚С‹
     bool isInParryRange(const GameObject& bullet) const;
 
-    // Геттеры
+    // Р“РµС‚С‚РµСЂС‹
     Player& getPlayer();
     const Player& getPlayer() const;
     bool isRunning() const;
@@ -77,7 +91,7 @@ public:
     std::string getCurrentLevel() const { return currentLevel; }
     bool isBossMode() const { return bossMode; }
 
-    // Сеттеры
+    // РЎРµС‚С‚РµСЂС‹
     void setGameRunning(bool running);
     void setBossMode(bool mode) { bossMode = mode; }
 
@@ -85,4 +99,11 @@ public:
     int getScreenWidth() const { return screenWidth; }
     Player* getPlayerPtr() { return player.get(); }
 
+    void normalizeUIFrame();
+    int getVisualLength(const std::string& str) const;
+    std::string getVisibleSubstring(const std::string& str, int startPos, int maxWidth) const;
+    void switchLevel(const std::string& levelName);
+    int getVisualPosition(const std::string& str, int bytePos) const;
+    bool findPlayerSpawn(int& spawnX, int& spawnY);
+    void removeSpawnPointFromUIFrame(int spawnX, int spawnY);
 };

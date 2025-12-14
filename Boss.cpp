@@ -10,7 +10,7 @@
 //    int phase2HP, int phase3HP,
 //    int bulletSpeed, int bulletColor, int bulletCooldown,
 //    int rootWarningDur, int rootGrowDur, int rootDamage, int rootCooldown, int rootColor)
-//    : Entity(x, y, width, height, health, 13),  // Пурпурный цвет
+//    : Entity(x, y, width, height, health, 13),  // РџСѓСЂРїСѓСЂРЅС‹Р№ С†РІРµС‚
 //    currentPhase(Phase::PHASE1),
 //    phase2Threshold(phase2HP),
 //    phase3Threshold(phase3HP),
@@ -23,7 +23,7 @@
 //    rootCooldown(rootCooldown),
 //    rootColor(rootColor) {
 //
-//    // Создаем атаки
+//    // РЎРѕР·РґР°РµРј Р°С‚Р°РєРё
 //    bulletAttack = std::make_unique<BossBulletAttack>(
 //        this, bulletCooldown, bulletSpeed, bulletColor
 //    );
@@ -37,11 +37,11 @@
 //void Boss::update(GameEngine& engine) {
 //    checkPhaseTransition();
 //
-//    // Обновляем атаки
+//    // РћР±РЅРѕРІР»СЏРµРј Р°С‚Р°РєРё
 //    bulletAttack->update(engine);
 //    rootAttack->update(engine);
 //
-//    // Выполняем атаки в зависимости от фазы
+//    // Р’С‹РїРѕР»РЅСЏРµРј Р°С‚Р°РєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„Р°Р·С‹
 //    switch (currentPhase) {
 //    case Phase::PHASE1:
 //        if (bulletAttack->canExecute()) {
@@ -74,7 +74,7 @@
 //    static const auto& bossSprite = GraphicsManager::getGraphic("boss");
 //    GraphicsManager::renderAt(x, y, bossSprite, color);
 //
-//    // Отображение здоровья босса (опционально)
+//    // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ Р·РґРѕСЂРѕРІСЊСЏ Р±РѕСЃСЃР° (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)
 //    std::string healthBar;
 //    int barWidth = 20;
 //    int filled = (health * barWidth) / maxHealth;
@@ -95,7 +95,7 @@
 //    health -= damage;
 //    if (health < 0) health = 0;
 //
-//    // Мигание при получении урона
+//    // РњРёРіР°РЅРёРµ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СѓСЂРѕРЅР°
 //    static int damageFlashTimer = 0;
 //    damageFlashTimer = 5;
 //}
@@ -105,10 +105,10 @@
 //
 //    if (currentPhase == Phase::PHASE1 && healthPercent <= phase2Threshold) {
 //        currentPhase = Phase::PHASE2;
-//        std::cout << "\aБосс перешел во 2 фазу!" << std::endl;
+//        std::cout << "\aР‘РѕСЃСЃ РїРµСЂРµС€РµР» РІРѕ 2 С„Р°Р·Сѓ!" << std::endl;
 //    }
 //    else if (currentPhase == Phase::PHASE2 && healthPercent <= phase3Threshold) {
 //        currentPhase = Phase::PHASE3;
-//        std::cout << "\aБосс перешел в 3 фазу! Берегитесь!" << std::endl;
+//        std::cout << "\aР‘РѕСЃСЃ РїРµСЂРµС€РµР» РІ 3 С„Р°Р·Сѓ! Р‘РµСЂРµРіРёС‚РµСЃСЊ!" << std::endl;
 //    }
 //}

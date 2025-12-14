@@ -6,10 +6,10 @@
 //class BossRoot;
 //class GameEngine;
 //
-//// Структура для ожидающих корней
+//// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РѕР¶РёРґР°СЋС‰РёС… РєРѕСЂРЅРµР№
 //struct PendingRoot {
 //    int x, y;
-//    bool fromTop;  // true = сверху вниз, false = снизу вверх
+//    bool fromTop;  // true = СЃРІРµСЂС…Сѓ РІРЅРёР·, false = СЃРЅРёР·Сѓ РІРІРµСЂС…
 //    int timer;
 //    bool isGrowing;
 //};
@@ -26,9 +26,9 @@
 //public:
 //    BossRootAttack(Boss* boss, int cooldown, int warningDur, int growDur, int damage, int color);
 //
-//    void update(GameEngine& engine) override;  // Добавляем параметр!
+//    void update(GameEngine& engine) override;  // Р”РѕР±Р°РІР»СЏРµРј РїР°СЂР°РјРµС‚СЂ!
 //    void execute(GameEngine& engine) override;
 //
 //    void spawnRandomRoot(GameEngine& engine);
-//    void spawnRoot(const PendingRoot& pending, GameEngine& engine);  // Добавляем GameEngine
+//    void spawnRoot(const PendingRoot& pending, GameEngine& engine);  // Р”РѕР±Р°РІР»СЏРµРј GameEngine
 //};

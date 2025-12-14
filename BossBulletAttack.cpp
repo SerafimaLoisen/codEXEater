@@ -6,7 +6,7 @@
 //
 //BossBulletAttack::BossBulletAttack(Boss* boss, int cooldown, int speed, int color)
 //    : BossAttack(boss, cooldown), bulletSpeed(speed), bulletColor(color) {
-//    currentCooldown = 0;  // Начинаем сразу
+//    currentCooldown = 0;  // РќР°С‡РёРЅР°РµРј СЃСЂР°Р·Сѓ
 //}
 //
 //void BossBulletAttack::update() {
@@ -14,20 +14,20 @@
 //}
 //
 //void BossBulletAttack::execute(GameEngine& engine) {
-//    // Стреляем в сторону игрока
+//    // РЎС‚СЂРµР»СЏРµРј РІ СЃС‚РѕСЂРѕРЅСѓ РёРіСЂРѕРєР°
 //    int bossX = boss->getX();
 //    int bossY = boss->getY();
 //    int bossHeight = boss->getHeight();
 //
-//    // Случайная высота для выстрела
+//    // РЎР»СѓС‡Р°Р№РЅР°СЏ РІС‹СЃРѕС‚Р° РґР»СЏ РІС‹СЃС‚СЂРµР»Р°
 //    int bulletY = bossY + (std::rand() % bossHeight);
 //
-//    // Создаем пулю (летит влево, к игроку)
+//    // РЎРѕР·РґР°РµРј РїСѓР»СЋ (Р»РµС‚РёС‚ РІР»РµРІРѕ, Рє РёРіСЂРѕРєСѓ)
 //    auto bullet = std::make_unique<Bullet>(bossX - 1, bulletY, -1);
 //    bullet->setSpeed(bulletSpeed);
 //    bullet->setColor(bulletColor);
 //
-//    // Добавляем в движок
-//    // Нужно добавить метод в GameEngine для добавления вражеских пуль
-//    // или использовать существующий projectiles
+//    // Р”РѕР±Р°РІР»СЏРµРј РІ РґРІРёР¶РѕРє
+//    // РќСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РјРµС‚РѕРґ РІ GameEngine РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РІСЂР°Р¶РµСЃРєРёС… РїСѓР»СЊ
+//    // РёР»Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ projectiles
 //}

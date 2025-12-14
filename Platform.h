@@ -9,4 +9,6 @@ public:
 
     int getEndX() const { return x + width; }
     int getEndY() const { return y + height; }
+
+    void renderAt(int screenX, int screenY) const override;
 };
