@@ -1,13 +1,13 @@
-#include "BossAttack.h"
-#include "Boss.h"
-
-BossAttack::BossAttack(Boss* boss, int cooldown)
-    : boss(boss), cooldown(cooldown), currentCooldown(0) {
-}
-
-void BossAttack::update() {
-    // Áàçîâûé update - óìåíüøàåì êóëäàóí
-    if (currentCooldown > 0) {
-        currentCooldown--;
-    }
-}
+//#include "BossAttack.h"
+//#include "Boss.h"
+//
+//BossAttack::BossAttack(Boss* boss, int cooldown)
+//    : boss(boss), cooldown(cooldown), currentCooldown(0) {
+//}
+//
+//void BossAttack::update() {
+//    // Ð‘Ð°Ð·Ð¾Ð²Ñ‹Ð¹ update - ÑƒÐ¼ÐµÐ½ÑŒÑˆÐ°ÐµÐ¼ ÐºÑƒÐ»Ð´Ð°ÑƒÐ½
+//    if (currentCooldown > 0) {
+//        currentCooldown--;
+//    }
+//}

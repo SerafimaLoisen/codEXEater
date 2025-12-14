@@ -11,3 +11,7 @@ ParryBullet::ParryBullet(int x, int y, int direction)
 void ParryBullet::render() {
     GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("parry_bullet"), 13);
 }
+
+void ParryBullet::renderAt(int screenX, int screenY) const {
+    GraphicsManager::renderAt(screenX, screenY, GraphicsManager::getGraphic("parry_bullet"), 13);
+}

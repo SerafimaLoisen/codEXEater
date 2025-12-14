@@ -25,7 +25,7 @@ void ConfigManager::loadConfigInternal() {
 
     std::string line;
     while (std::getline(file, line)) {
-        // Пропускаем пустые строки и комментарии
+        // РџСЂРѕРїСѓСЃРєР°РµРј РїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё Рё РєРѕРјРјРµРЅС‚Р°СЂРёРё
         if (line.empty() || line[0] == '#') continue;
 
         size_t pos = line.find('=');
@@ -33,7 +33,7 @@ void ConfigManager::loadConfigInternal() {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 1);
 
-            // Убираем пробелы вокруг ключа и значения
+            // РЈР±РёСЂР°РµРј РїСЂРѕР±РµР»С‹ РІРѕРєСЂСѓРі РєР»СЋС‡Р° Рё Р·РЅР°С‡РµРЅРёСЏ
             key.erase(0, key.find_first_not_of(" \t"));
             key.erase(key.find_last_not_of(" \t") + 1);
             value.erase(0, value.find_first_not_of(" \t"));
@@ -42,12 +42,10 @@ void ConfigManager::loadConfigInternal() {
             config[key] = value;
         }
     }
-
-    std::cout << "Config loaded successfully with " << config.size() << " parameters" << std::endl;
 }
 
 int ConfigManager::getInt(const std::string& key) {
-    // Используем кэш для избежания повторного парсинга
+    // РСЃРїРѕР»СЊР·СѓРµРј РєСЌС€ РґР»СЏ РёР·Р±РµР¶Р°РЅРёСЏ РїРѕРІС‚РѕСЂРЅРѕРіРѕ РїР°СЂСЃРёРЅРіР°
     if (intCache.find(key) != intCache.end()) {
         return intCache[key];
     }
@@ -59,7 +57,7 @@ int ConfigManager::getInt(const std::string& key) {
 
     try {
         int value = std::stoi(config[key]);
-        intCache[key] = value; // Сохраняем в кэш
+        intCache[key] = value; // РЎРѕС…СЂР°РЅСЏРµРј РІ РєСЌС€
         return value;
     }
     catch (const std::exception& e) {
@@ -97,7 +95,7 @@ std::string ConfigManager::getString(const std::string& key) {
     return config[key];
 }
 
-// Кэшированные геттеры для часто используемых параметров
+// РљСЌС€РёСЂРѕРІР°РЅРЅС‹Рµ РіРµС‚С‚РµСЂС‹ РґР»СЏ С‡Р°СЃС‚Рѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ
 int ConfigManager::getScreenWidth() {
     static int cached = getInt("SCREEN_WIDTH");
     return cached;
@@ -180,7 +178,7 @@ std::string ConfigManager::getLevelDescription(int index) {
     return getString("LEVEL_" + std::to_string(index) + "_DESC");
 }
 
-// ========== АТАКА ИГРОКА (уже были упомянуты) ==========
+// ========== РђРўРђРљРђ РР“Р РћРљРђ (СѓР¶Рµ Р±С‹Р»Рё СѓРїРѕРјСЏРЅСѓС‚С‹) ==========
 
 int ConfigManager::getPlayerBulletSpeed() {
     static int cached = getInt("PLAYER_BULLET_SPEED");
@@ -197,7 +195,7 @@ int ConfigManager::getPlayerBulletColor() {
     return cached;
 }
 
-// ========== БОСС (все параметры которые упоминались) ==========
+// ========== Р‘РћРЎРЎ (РІСЃРµ РїР°СЂР°РјРµС‚СЂС‹ РєРѕС‚РѕСЂС‹Рµ СѓРїРѕРјРёРЅР°Р»РёСЃСЊ) ==========
 
 int ConfigManager::getBossStartX() {
     static int cached = getInt("BOSS_START_X");
@@ -281,4 +279,50 @@ void ConfigManager::reload() {
         instance->floatCache.clear();
         instance->loadConfigInternal();
     }
+}
+
+int ConfigManager::getViewportWidth() {
+    static int cached = getInt("VIEWPORT_WIDTH");
+    if (cached == 0) {
+        cached = getInt("SCREEN_WIDTH"); // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РёСЃРїРѕР»СЊР·СѓРµРј СЂР°Р·РјРµСЂ СЌРєСЂР°РЅР°
+    }
+    return cached;
+}
+
+int ConfigManager::getViewportHeight() {
+    static int cached = getInt("VIEWPORT_HEIGHT");
+    if (cached == 0) {
+        cached = getInt("SCREEN_HEIGHT"); // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РёСЃРїРѕР»СЊР·СѓРµРј СЂР°Р·РјРµСЂ СЌРєСЂР°РЅР°
+    }
+    return cached;
+}
+
+int ConfigManager::getCameraFollowSpeed() {
+    static int cached = getInt("CAMERA_FOLLOW_SPEED");
+    if (cached == 0) cached = 5; // Р—РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    return cached;
+}
+
+int ConfigManager::getWorldWidth(const std::string& levelName) {
+    if (levelName == "level1") return getInt("WORLD_WIDTH_LEVEL1");
+    if (levelName == "level2") return getInt("WORLD_WIDTH_LEVEL2");
+    if (levelName == "level3") return getInt("WORLD_WIDTH_LEVEL3");
+    if (levelName == "level4") return getInt("WORLD_WIDTH_LEVEL4");
+    if (levelName == "level5") return getInt("WORLD_WIDTH_LEVEL5");
+    if (levelName == "level6") return getInt("WORLD_WIDTH_LEVEL6");
+    if (levelName == "level7") return getInt("WORLD_WIDTH_LEVEL7");
+
+    return getInt("WORLD_WIDTH_TUTORIAL"); // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+}
+
+int ConfigManager::getWorldHeight(const std::string& levelName) {
+    if (levelName == "level1") return getInt("WORLD_HEIGHT_LEVEL1");
+    if (levelName == "level2") return getInt("WORLD_HEIGHT_LEVEL2");
+    if (levelName == "level3") return getInt("WORLD_HEIGHT_LEVEL3");
+    if (levelName == "level4") return getInt("WORLD_HEIGHT_LEVEL4");
+    if (levelName == "level5") return getInt("WORLD_HEIGHT_LEVEL5");
+    if (levelName == "level6") return getInt("WORLD_HEIGHT_LEVEL6");
+    if (levelName == "level7") return getInt("WORLD_HEIGHT_LEVEL7");
+
+    return getInt("WORLD_HEIGHT_TUTORIAL"); // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 }

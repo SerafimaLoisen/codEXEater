@@ -4,6 +4,7 @@
 #include <memory> 
 
 class Platform;
+class SidePlatform;
 
 class Player : public Entity {
 private:
@@ -15,18 +16,21 @@ private:
     int screenWidth, screenHeight;
     int parryDuration, dodgeDuration, dodgeDistance;
 
-    // Àòàêà
+    // ÐÑ‚Ð°ÐºÐ°
     int fireTimer;
-    int lastDirection;  // 1 = âïðàâî, -1 = âëåâî
+    int lastDirection;  // 1 = Ð²Ð¿Ñ€Ð°Ð²Ð¾, -1 = Ð²Ð»ÐµÐ²Ð¾
     bool isAttacking;
 
-    // Íàñòðîéêè àòàêè èç êîíôèãà
+    // ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð°Ñ‚Ð°ÐºÐ¸ Ð¸Ð· ÐºÐ¾Ð½Ñ„Ð¸Ð³Ð°
     int playerBulletSpeed;
     int playerFireRate;
     int playerBulletColor;
 
+    int worldWidth;
+    int worldHeight;
+
 public:
-    Player(int x, int y);
+    Player(int x, int y, int worldWidth, int worldHeight);
 
     void update() override;
     void render() override;
@@ -55,4 +59,10 @@ public:
     bool isAlive() const { return health > 0; }
     bool getIsAttacking() const { return isAttacking; }
     int getLastDirection() const { return lastDirection; }
+    void renderAt(int screenX, int screenY) const override;
+
+    bool isCollidingWithSidePlatform(const SidePlatform& platform, bool& fromLeft);
+
+    void setVelocityX(float velX) { velocityX = velX; }
+    float getVelocityX() const { return velocityX; }
 };

@@ -4,12 +4,13 @@
 class Projectile : public GameObject {
 protected:
     int speed;
-    int direction; // 1 = вправо, -1 = влево
+    int direction; // 1 = РІРїСЂР°РІРѕ, -1 = РІР»РµРІРѕ
 
 public:
     Projectile(int x, int y, int width, int height, int speed, int direction, int color);
 
     void update() override;
+    virtual void renderAt(int screenX, int screenY) const;
 
     void setSpeed(int newSpeed) { speed = newSpeed; }
     void setDirection(int newDirection) { direction = newDirection; }

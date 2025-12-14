@@ -1,52 +1,52 @@
-#include "BossRoot.h"
-#include "ConfigManager.h"
-#include "GraphicsManager.h"
-#include <iostream>
-
-BossRoot::BossRoot(int x, int y, bool growUp, int maxHeight, int damage, int color)
-    : Entity(x, y, 1, 1, damage, color),
-    growTimer(maxHeight),
-    maxHeight(maxHeight),
-    growingUp(growUp) {
-    height = 1;
-}
-
-void BossRoot::update() {
-    if (growTimer > 0 && height < maxHeight) {
-        growTimer--;
-        height++;
-
-        if (growingUp) {
-            y--; // Ðàñòåì ââåðõ
-        }
-    }
-}
-
-void BossRoot::render() {
-    if (!isAlive()) return;
-
-    // Ñîçäàåì ãðàôèêó êîðíÿ êàê âåêòîð ñòðîê
-    std::vector<std::string> rootGraphic;
-
-    for (int i = 0; i < height; i++) {
-        // Ðàçíûå ñèìâîëû äëÿ ðàçíûõ ÷àñòåé êîðíÿ
-        char symbol = '|';
-        if (i == 0) symbol = '#';  // Îñíîâàíèå
-        else if (i == height - 1) symbol = '^';  // Âåðõóøêà
-
-        // Ñîçäàåì ñòðîêó ñ îäíèì ñèìâîëîì
-        rootGraphic.push_back(std::string(1, symbol));
-    }
-
-    // Îïðåäåëÿåì ïîçèöèþ äëÿ îòðèñîâêè
-    int renderX = x;
-    int renderY = growingUp ? y : y - height + 1;
-
-    // Èñïîëüçóåì ñóùåñòâóþùèé renderAt
-    GraphicsManager::renderAt(renderX, renderY, rootGraphic, color);
-}
-
-
-bool BossRoot::isFullyGrown() const {
-    return height >= maxHeight || growTimer <= 0;
-}
+//#include "BossRoot.h"
+//#include "ConfigManager.h"
+//#include "GraphicsManager.h"
+//#include <iostream>
+//
+//BossRoot::BossRoot(int x, int y, bool growUp, int maxHeight, int damage, int color)
+//    : Entity(x, y, 1, 1, damage, color),
+//    growTimer(maxHeight),
+//    maxHeight(maxHeight),
+//    growingUp(growUp) {
+//    height = 1;
+//}
+//
+//void BossRoot::update() {
+//    if (growTimer > 0 && height < maxHeight) {
+//        growTimer--;
+//        height++;
+//
+//        if (growingUp) {
+//            y--; // Ð Ð°ÑÑ‚ÐµÐ¼ Ð²Ð²ÐµÑ€Ñ…
+//        }
+//    }
+//}
+//
+//void BossRoot::render() {
+//    if (!isAlive()) return;
+//
+//    // Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ Ð³Ñ€Ð°Ñ„Ð¸ÐºÑƒ ÐºÐ¾Ñ€Ð½Ñ ÐºÐ°Ðº Ð²ÐµÐºÑ‚Ð¾Ñ€ ÑÑ‚Ñ€Ð¾Ðº
+//    std::vector<std::string> rootGraphic;
+//
+//    for (int i = 0; i < height; i++) {
+//        // Ð Ð°Ð·Ð½Ñ‹Ðµ ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹ Ð´Ð»Ñ Ñ€Ð°Ð·Ð½Ñ‹Ñ… Ñ‡Ð°ÑÑ‚ÐµÐ¹ ÐºÐ¾Ñ€Ð½Ñ
+//        char symbol = '|';
+//        if (i == 0) symbol = '#';  // ÐžÑÐ½Ð¾Ð²Ð°Ð½Ð¸Ðµ
+//        else if (i == height - 1) symbol = '^';  // Ð’ÐµÑ€Ñ…ÑƒÑˆÐºÐ°
+//
+//        // Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ñ Ð¾Ð´Ð½Ð¸Ð¼ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð¼
+//        rootGraphic.push_back(std::string(1, symbol));
+//    }
+//
+//    // ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð´Ð»Ñ Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ¸
+//    int renderX = x;
+//    int renderY = growingUp ? y : y - height + 1;
+//
+//    // Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹ renderAt
+//    GraphicsManager::renderAt(renderX, renderY, rootGraphic, color);
+//}
+//
+//
+//bool BossRoot::isFullyGrown() const {
+//    return height >= maxHeight || growTimer <= 0;
+//}

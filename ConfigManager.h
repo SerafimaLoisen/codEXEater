@@ -20,7 +20,7 @@ public:
     std::string getString(const std::string& key);
     static void reload();
 
-    // Кэшированные геттеры
+    // РљСЌС€РёСЂРѕРІР°РЅРЅС‹Рµ РіРµС‚С‚РµСЂС‹
     int getScreenWidth();
     int getScreenHeight();
     int getPlayerStartX();
@@ -53,7 +53,13 @@ public:
     int getBossRootCooldown();
     int getBossRootColor();
 
-    // Новые методы для уровней
+    int getViewportWidth();
+    int getViewportHeight();
+    int getCameraFollowSpeed();
+
+    int getWorldWidth(const std::string& levelName = "tutorial");
+    int getWorldHeight(const std::string& levelName = "tutorial");
+
     int getLevelCount();
     std::string getLevelName(int index);
     std::string getLevelFile(int index);
