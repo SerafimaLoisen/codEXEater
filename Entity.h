@@ -17,7 +17,6 @@ public:
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
 
-    // Базовый метод update (может быть пустым)
     virtual void update() {}
 
     virtual void renderAt(int screenX, int screenY) const override = 0;

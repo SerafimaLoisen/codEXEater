@@ -12,6 +12,6 @@ void Bullet::render() {
     GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("bullet"));
 }
 
-void Bullet::renderAt(int screenX, int screenY) const {  // Добавьте const
+void Bullet::renderAt(int screenX, int screenY) const {
     GraphicsManager::renderAt(screenX, screenY, GraphicsManager::getGraphic("bullet"));
 }

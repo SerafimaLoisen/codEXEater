@@ -15,11 +15,9 @@ public:
     void setPosition(int newX, int newY);
     void centerOn(int targetX, int targetY);
 
-    // Конвертирует мировые координаты в координаты экрана
     int worldToScreenX(int worldX) const;
     int worldToScreenY(int worldY) const;
 
-    // Проверяет, находится ли объект в видимой области
     bool isInViewport(int worldX, int worldY, int width, int height) const;
 
     // Геттеры
@@ -28,6 +26,5 @@ public:
     int getViewportWidth() const { return viewportWidth; }
     int getViewportHeight() const { return viewportHeight; }
 
-    // Для отладки
     void updateViewportSize(int newWidth, int newHeight);
 };

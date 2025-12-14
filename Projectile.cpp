@@ -11,7 +11,6 @@ void Projectile::update() {
     x += speed * direction;
 }
 
-void Projectile::renderAt(int screenX, int screenY) const {  // Добавьте const
-    // Базовая реализация
+void Projectile::renderAt(int screenX, int screenY) const {
     GraphicsManager::renderAt(screenX, screenY, { "*" }, color);
 }

@@ -39,17 +39,14 @@ void GameEngine::loadLevel(const std::string& levelName) {
 
     Logger::Log("Config loaded: screen=" + std::to_string(screenWidth) + "x" + std::to_string(screenHeight));
 
-    // Загружаем графику для уровня
     loadGraphicsForLevel();
     normalizeUIFrame();
 
-    // Рассчитываем размер мира автоматически ТОЛЬКО из файла уровня
     int worldWidth = config.getWorldWidth(levelName);
     int worldHeight = config.getWorldHeight(levelName);
 
     Logger::Log("World size calculated: " + std::to_string(worldWidth) + "x" + std::to_string(worldHeight));
 
-    // Создаем камеру
     camera = std::make_unique<Camera>(
         config.getViewportWidth(),
         config.getViewportHeight(),
@@ -61,21 +58,17 @@ void GameEngine::loadLevel(const std::string& levelName) {
         std::to_string(config.getViewportWidth()) + "x" +
         std::to_string(config.getViewportHeight()));
 
-    // Очищаем старые объекты
     projectiles.clear();
     platforms.clear();
     sidePlatforms.clear();
 
-    // Создаем платформы для уровня
     createPlatformsFromUIFrame();
 
-    // НОВОЕ: Ищем позицию спавна игрока (буква 'P') в UIFrame
     int spawnX = -1;
     int spawnY = -1;
     bool foundSpawnPoint = findPlayerSpawn(spawnX, spawnY);
 
     if (!foundSpawnPoint) {
-        // Если не нашли 'P', используем позицию из конфига
         spawnX = config.getPlayerStartX();
         spawnY = config.getPlayerStartY();
         Logger::Log("Player spawn 'P' not found, using config: (" +
@@ -85,20 +78,16 @@ void GameEngine::loadLevel(const std::string& levelName) {
         Logger::Log("Player spawn found at 'P': (" +
             std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
 
-        // Удаляем букву 'P' из UIFrame, чтобы она не отображалась
         removeSpawnPointFromUIFrame(spawnX, spawnY);
     }
 
-    // Пытаемся найти лучшее место (на платформе) если точка спавна не указана через 'P'
     const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
     if (!foundSpawnPoint && !uiFrame.empty()) {
-        // Ищем платформу под предполагаемой позицией
         bool foundSafeSpot = false;
         for (int y = worldHeight - 5; y > 0 && !foundSafeSpot; y--) {
             if (y < uiFrame.size()) {
                 for (int x = spawnX - 10; x < spawnX + 10 && x < uiFrame[y].length(); x++) {
                     if (x >= 0 && uiFrame[y][x] == '=') {
-                        // Нашли платформу, ставим игрока над ней
                         spawnX = x;
                         spawnY = y - 5;
                         foundSafeSpot = true;
@@ -109,13 +98,11 @@ void GameEngine::loadLevel(const std::string& levelName) {
         }
     }
 
-    // Создаем игрока
     player = std::make_unique<Player>(spawnX, spawnY, worldWidth, worldHeight);
 
     Logger::Log("Player created at world coords: (" +
         std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
 
-    // Центрируем камеру на игроке
     camera->centerOn(player->getX(), player->getY());
 
     Logger::Log("Camera centered on player: camera(" +
@@ -128,13 +115,11 @@ void GameEngine::loadLevel(const std::string& levelName) {
 }
 
 void GameEngine::loadGraphicsForLevel() {
-    // Базовая графика (общая для всех уровней)
     GraphicsManager::loadGraphics("graphics/player.txt", "player");
     GraphicsManager::loadGraphics("graphics/player_dodge.txt", "player_dodge");
     GraphicsManager::loadGraphics("graphics/bullet.txt", "bullet");
     GraphicsManager::loadGraphics("graphics/parry_bullet.txt", "parry_bullet");
 
-    // Определяем путь к графике уровня
     std::string levelFolder;
     if (currentLevel == "boss") {
         GraphicsManager::loadGraphics("graphics/boss/UIFrame.txt", "UIFrame");
@@ -143,26 +128,22 @@ void GameEngine::loadGraphicsForLevel() {
         GraphicsManager::loadGraphics("graphics/levels/" + currentLevel + ".txt", "UIFrame");
     }
 
-    // Если есть босс - загружаем его графику
     if (currentLevel == "boss") {
         GraphicsManager::loadGraphics("graphics/boss/boss.txt", "boss");
     }
 }
 
-// GameEngine.cpp - обновляем метод createPlatformsFromUIFrame
 void GameEngine::createPlatformsFromUIFrame() {
     const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
 
     for (int y = 0; y < uiFrame.size(); y++) {
         const std::string& line = uiFrame[y];
 
-        // Для горизонтальных платформ (=)
         int platformStart = -1;
 
         for (int x = 0; x < line.length(); x++) {
             char currentChar = line[x];
 
-            // ИГНОРИРУЕМ букву 'P' - это точка спавна игрока
             if (currentChar == 'P' || currentChar == 'p') {
                 if (platformStart != -1) {
                     int platformWidth = x - platformStart;
@@ -180,8 +161,6 @@ void GameEngine::createPlatformsFromUIFrame() {
                 }
             }
             else if (currentChar == '#') {
-                // Создаем вертикальную платформу
-                // Находим высоту вертикальной платформы
                 int platformHeight = 1;
                 for (int checkY = y + 1; checkY < uiFrame.size(); checkY++) {
                     if (checkY < uiFrame.size() &&
@@ -197,9 +176,7 @@ void GameEngine::createPlatformsFromUIFrame() {
                 if (platformHeight > 0) {
                     sidePlatforms.push_back(std::make_shared<SidePlatform>(x, y, platformHeight));
 
-                    // Пропускаем уже обработанные символы '#' по вертикали
                     platformStart = -1;
-                    // Пропускаем этот столбец
                     continue;
                 }
             }
@@ -265,15 +242,12 @@ void GameEngine::update() {
 
     handlePlayerCollisions();
 
-    // 2. ПОТОМ обновляем позицию игрока (учитывая уже скорректированные скорости)
     player->update();
 
-    // 3. Обновляем камеру
     updateCamera();
 
     handlePlayerAttack();
 
-    // Удаляем неактивные пули
     for (int i = projectiles.size() - 1; i >= 0; --i) {
         if (!projectiles[i]->isActive()) {
             projectiles.erase(projectiles.begin() + i);
@@ -377,26 +351,21 @@ void GameEngine::spawnBullet() {
 void GameEngine::handlePlayerCollisions() {
     if (!player) return;
 
-    //player->setOnGround(false);
     handlePlayerWorldCollisions();
     handlePlayerPlatformCollisions();
-    handlePlayerSidePlatformCollisions(); // Новый метод
+    handlePlayerSidePlatformCollisions();
 }
 
-// GameEngine.cpp - обновленный метод
 void GameEngine::handlePlayerSidePlatformCollisions() {
     if (!player) return;
 
-    // Только если игрок движется (горизонтальная скорость)
     if (fabs(player->getVelocityX()) < 0.1f) return;
 
-    // Берем ТЕКУЩУЮ позицию игрока
     int currentX = player->getX();
     int currentY = player->getY();
     int playerWidth = player->getWidth();
     float velocityX = player->getVelocityX();
 
-    // Рассчитываем ПРЕДПОЛАГАЕМУЮ позицию на основе скорости
     int predictedX = currentX + static_cast<int>(velocityX);
 
     bool collisionDetected = false;
@@ -404,27 +373,20 @@ void GameEngine::handlePlayerSidePlatformCollisions() {
     for (const auto& sidePlatform : sidePlatforms) {
         bool fromLeft = false;
 
-        // ВРЕМЕННО перемещаем игрока в предполагаемую позицию для проверки
         player->setX(predictedX);
 
         if (player->isCollidingWithSidePlatform(*sidePlatform, fromLeft)) {
             collisionDetected = true;
 
-            // ВОЗВРАЩАЕМ на исходную позицию
             player->setX(currentX);
 
             if (fromLeft) {
-                // Столкновение СЛЕВА (игрок движется вправо, встречает левую сторону платформы)
-                // Ставим игрока СЛЕВА от платформы
                 player->setX(sidePlatform->getX() - playerWidth);
             }
             else {
-                // Столкновение СПРАВА (игрок движется влево, встречает правую сторону платформы)
-                // Ставим игрока СПРАВА от платформы
                 player->setX(sidePlatform->getX() + sidePlatform->getWidth());
             }
 
-            // Останавливаем горизонтальное движение
             player->setVelocityX(0.0f);
 
             Logger::Log("Player collided with sidePlatform at (" +
@@ -438,12 +400,8 @@ void GameEngine::handlePlayerSidePlatformCollisions() {
             break;
         }
 
-        // Возвращаем исходную позицию перед следующей проверкой
         player->setX(currentX);
     }
-
-    // Если коллизии не было, оставляем исходную позицию
-    // Фактическое движение будет обработано в player->update()
 }
 
 void GameEngine::handlePlayerWorldCollisions() {
@@ -453,13 +411,12 @@ void GameEngine::handlePlayerWorldCollisions() {
     int worldHeight = config.getWorldHeight(currentLevel);
 
     if (player->checkGroundCollision()) {
-        // Используем мировую высоту
         player->setY(worldHeight - player->getHeight());
         player->setVelocityY(0);
-        player->setOnGround(true);  // Устанавливаем onGround ТОЛЬКО если действительно на земле
+        player->setOnGround(true);
     }
     else {
-        player->setOnGround(false); // Если не на земле
+        player->setOnGround(false);
     }
 }
 
@@ -474,7 +431,7 @@ void GameEngine::handlePlayerPlatformCollisions() {
         if (player->isCollidingWithPlatform(*platform, fromTop)) {
             if (fromTop) {
                 player->setY(platform->getY() - player->getHeight());
-                player->setOnGround(true);  // На платформе
+                player->setOnGround(true);
                 foundPlatform = true;
             }
             else {
@@ -485,17 +442,14 @@ void GameEngine::handlePlayerPlatformCollisions() {
         }
     }
 
-    // Если не нашли платформу под ногами и не на земле мира
     if (!foundPlatform && !player->checkGroundCollision()) {
         player->setOnGround(false);
     }
 }
 
 void GameEngine::handlePlayerAttack() {
-    // Пытаемся выстрелить
     auto newBullet = player->tryFire();
     if (newBullet) {
-        // Добавляем в общий массив projectiles
         projectiles.push_back(std::move(newBullet));
     }
 }
@@ -504,7 +458,6 @@ void GameEngine::checkCollisions() {
     for (auto& bullet : projectiles) {
         if (!bullet->isActive()) continue;
 
-        // Пропускаем пули игрока при проверке столкновения с самим игроком
         bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
         if (isPlayerBullet) continue;  
 
@@ -580,11 +533,7 @@ bool GameEngine::isInParryRange(const GameObject& bullet) const {
 void GameEngine::render() {
     if (!player || !camera) return;
 
-    // Отрисовываем видимую часть UI Frame с учетом камеры
     renderUIFrameWithCamera();
-
-    // Отрисовываем только игрока и пули поверх UI Frame
-    // НЕ отрисовываем платформы отдельно - они уже в UI Frame
 
     // Отрисовываем игрока
     if (camera->isInViewport(player->getX(), player->getY(),
@@ -621,10 +570,8 @@ void GameEngine::renderUIFrameWithCamera() {
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    // Используем двойную буферизацию
     std::vector<std::string> screenBuffer(viewportHeight, std::string(viewportWidth, ' '));
 
-    // Рендерим только видимую часть UI Frame
     for (int screenY = 0; screenY < viewportHeight; screenY++) {
         int worldY = cameraY + screenY;
 
@@ -635,7 +582,6 @@ void GameEngine::renderUIFrameWithCamera() {
         const std::string& worldLine = uiFrame[worldY];
         std::string& screenLine = screenBuffer[screenY];
 
-        // Копируем видимую часть строки
         int startX = cameraX;
         int endX = min(cameraX + viewportWidth, static_cast<int>(worldLine.length()));
 
@@ -645,7 +591,6 @@ void GameEngine::renderUIFrameWithCamera() {
         }
     }
 
-    // Выводим весь буфер на экран за один раз
     system("cls");
 
     COORD coord = { 0, 0 };
@@ -661,7 +606,6 @@ std::string GameEngine::getVisibleSubstring(const std::string& str, int startVis
         return std::string(maxVisualWidth, ' ');
     }
 
-    // Просто обрезаем строку для ASCII
     int startPos = min(static_cast<int>(str.length()), startVisualPos);
     int endPos = min(static_cast<int>(str.length()), startPos + maxVisualWidth);
 
@@ -671,7 +615,6 @@ std::string GameEngine::getVisibleSubstring(const std::string& str, int startVis
 
     std::string result = str.substr(startPos, endPos - startPos);
 
-    // Дополняем пробелами если нужно
     if (result.length() < maxVisualWidth) {
         result += std::string(maxVisualWidth - result.length(), ' ');
     }
@@ -730,7 +673,6 @@ void GameEngine::updateCamera() {
     int targetX = player->getX() - camera->getViewportWidth() / 2;
     int targetY = player->getY() - camera->getViewportHeight() / 2;
 
-    // Проверяем границы
     auto& config = ConfigManager::getInstance();
     int worldWidth = config.getWorldWidth(currentLevel);
     int worldHeight = config.getWorldHeight(currentLevel);
@@ -746,14 +688,12 @@ void GameEngine::updateCamera() {
 
 void GameEngine::renderGameObject(const GameObject& obj) const {
     if (!camera->isInViewport(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight())) {
-        return; // Не рендерим объекты вне видимой области
+        return;
     }
 
     int screenX = camera->worldToScreenX(obj.getX());
     int screenY = camera->worldToScreenY(obj.getY());
 
-    // Здесь нужно будет адаптировать рендеринг под вашу систему
-    // Например, для платформ:
     GraphicsManager::renderAt(screenX, screenY, { std::string(obj.getWidth(), '=') });
 }
 
@@ -767,12 +707,10 @@ void GameEngine::renderProjectile(const Projectile& projectile) const {
     int screenX = camera->worldToScreenX(projectile.getX());
     int screenY = camera->worldToScreenY(projectile.getY());
 
-    // Используйте существующий рендеринг пуль с учетом камеры
     projectile.renderAt(screenX, screenY);
 }
 
 int GameEngine::getVisualLength(const std::string& str) const {
-    // Для простоты считаем, что все символы в UI Frame - ASCII или имеют визуальную длину 1
     return static_cast<int>(str.length());
 }
 
@@ -781,7 +719,6 @@ void GameEngine::normalizeUIFrame() {
 
     if (uiFrame.empty()) return;
 
-    // Находим максимальную длину строки
     int maxLength = 0;
     for (const auto& line : uiFrame) {
         if (line.length() > maxLength) {
@@ -789,7 +726,6 @@ void GameEngine::normalizeUIFrame() {
         }
     }
 
-    // Нормализуем все строки
     for (auto& line : uiFrame) {
         if (line.length() < maxLength) {
             line += std::string(maxLength - line.length(), ' ');
@@ -800,20 +736,16 @@ void GameEngine::normalizeUIFrame() {
 void GameEngine::switchLevel(const std::string& levelName) {
     Logger::Log("=== Switching from level '" + currentLevel + "' to '" + levelName + "' ===");
 
-    // Сохраняем состояние игрока (здоровье, бонусы)
     int savedHealth = player ? player->getHealth() : ConfigManager::getInstance().getPlayerHealth();
     int savedScore = score;
 
-    // Загружаем новый уровень
     loadLevel(levelName);
 
     if (player) {
         player->heal(player->getMaxHealth());
     }
 
-    // Сохраняем или сбрасываем счет
-    // score = savedScore; // Сохраняем счет между уровнями
-    score = 0; // Или сбрасываем счет при переходе
+    score = 0;
 
     Logger::Log("Level switched successfully to: " + levelName);
 }
@@ -865,7 +797,7 @@ void GameEngine::removeSpawnPointFromUIFrame(int spawnX, int spawnY) {
 
     if (spawnY >= 0 && spawnY < uiFrame.size() &&
         spawnX >= 0 && spawnX < uiFrame[spawnY].length()) {
-        uiFrame[spawnY][spawnX] = ' '; // Заменяем 'P' на пробел
+        uiFrame[spawnY][spawnX] = ' ';
         Logger::Log("Removed spawn point 'P' at (" +
             std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
     }

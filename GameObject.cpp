@@ -13,12 +13,9 @@ bool GameObject::checkCollision(const GameObject& other) const {
 }
 
 void GameObject::render() {
-    // Реализация по умолчанию - можно оставить пустой или сделать базовую отрисовку
-    // В дочерних классах этот метод будет переопределен
 }
 
-void GameObject::renderAt(int screenX, int screenY) const {  // Добавьте const
-    // Реализация по умолчанию
+void GameObject::renderAt(int screenX, int screenY) const {
     for (int i = 0; i < height; i++) {
         GraphicsManager::renderAt(screenX, screenY + i, { std::string(width, '*') }, color);
     }

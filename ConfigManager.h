@@ -60,7 +60,6 @@ public:
     int getWorldWidth(const std::string& levelName = "tutorial");
     int getWorldHeight(const std::string& levelName = "tutorial");
 
-    // Новые методы для уровней
     int getLevelCount();
     std::string getLevelName(int index);
     std::string getLevelFile(int index);

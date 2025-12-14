@@ -7,17 +7,14 @@
 #include <unordered_map>
 #include <string>
 
-// Функция для установки размера консоли
 void setConsoleSize(int width, int height) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    // Устанавливаем размер буфера экрана
     COORD bufferSize;
     bufferSize.X = width;
-    bufferSize.Y = height + 10; // Немного больше для UI
+    bufferSize.Y = height + 10;
     SetConsoleScreenBufferSize(hConsole, bufferSize);
 
-    // Устанавливаем размер окна консоли
     SMALL_RECT windowSize;
     windowSize.Left = 0;
     windowSize.Top = 0;
@@ -25,14 +22,12 @@ void setConsoleSize(int width, int height) {
     windowSize.Bottom = height - 1;
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 
-    // Скрываем полосы прокрутки
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(hConsole, &csbi);
     csbi.dwSize.X = width;
     csbi.dwSize.Y = height + 10;
     SetConsoleScreenBufferSize(hConsole, csbi.dwSize);
 
-    // Устанавливаем размер окна
     SetConsoleWindowInfo(hConsole, TRUE, &windowSize);
 }
 
@@ -42,17 +37,16 @@ void hideScrollBars() {
     ShowScrollBar(consoleWindow, SB_BOTH, FALSE);
 }
 
-// Функция для установки шрифта консоли (опционально)
+// Функция для установки шрифта консоли
 void setConsoleFont(int fontSize) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX fontInfo;
     fontInfo.cbSize = sizeof(fontInfo);
     GetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo);
 
-    // Используем Consolas или другой моноширинный шрифт
     wcscpy_s(fontInfo.FaceName, L"Consolas");
-    fontInfo.dwFontSize.X = 0; // Ширина (авто)
-    fontInfo.dwFontSize.Y = fontSize; // Высота шрифта
+    fontInfo.dwFontSize.X = 0;
+    fontInfo.dwFontSize.Y = fontSize;
 
     SetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo);
 }
@@ -89,13 +83,11 @@ void handleInput(GameEngine& game) {
     static bool key1 = false, key2 = false, key3 = false, key4 = false,
         key5 = false, key6 = false, key7 = false;
 
-    // Проверяем состояние всех клавиш движения КАЖДЫЙ КАДР
     bool currentA = (GetAsyncKeyState('A') & 0x8000);
     bool currentD = (GetAsyncKeyState('D') & 0x8000);
     bool currentW = (GetAsyncKeyState('W') & 0x8000);
     bool currentShift = (GetAsyncKeyState(VK_SHIFT) & 0x8000);
 
-    // Обработка движения - проверяем текущее состояние, а не изменение
     if (currentA && !currentD) {
         game.getPlayer().moveLeft();
     }
@@ -106,12 +98,10 @@ void handleInput(GameEngine& game) {
         game.getPlayer().stopMoving();
     }
 
-    // Прыжок - при удержании W (автопрыжок)
     if (currentW) {
         game.getPlayer().jump();
     }
 
-    // Атака
     static bool prevShift = false;
     if (currentShift && !prevShift) {
         game.getPlayer().startAttack();
@@ -121,7 +111,6 @@ void handleInput(GameEngine& game) {
     }
     prevShift = currentShift;
 
-    // Переключение уровней
     bool current1 = (GetAsyncKeyState('1') & 0x8000);
     bool current2 = (GetAsyncKeyState('2') & 0x8000);
     bool current3 = (GetAsyncKeyState('3') & 0x8000);
@@ -141,14 +130,12 @@ void handleInput(GameEngine& game) {
     key1 = current1; key2 = current2; key3 = current3; key4 = current4;
     key5 = current5; key6 = current6; key7 = current7;
 
-    // Другие клавиши
     if (_kbhit()) {
         int key = _getch();
         switch (key) {
         case ' ': game.getPlayer().startParry(); break;
         case 's': case 'S': game.getPlayer().startDodge(); break;
         case 'q': case 'Q': game.setGameRunning(false); break;
-            // Цифры для быстрого переключения
         case '1': game.switchLevel("level1"); break;
         case '2': game.switchLevel("level2"); break;
         case '3': game.switchLevel("level3"); break;
@@ -161,7 +148,6 @@ void handleInput(GameEngine& game) {
 }
 
 void showGameOverMenu(GameEngine& game) {
-    // Восстанавливаем нормальный размер консоли для меню
     setConsoleSize(80, 25);
 
     std::cout << "\n\nGame Over! Your score: " << game.getScore() << "\n";
@@ -173,7 +159,7 @@ void showGameOverMenu(GameEngine& game) {
         if (_kbhit()) {
             int key = _getch();
             switch (key) {
-            case 'r': case 'R': return; // Перезапуск текущего уровня
+            case 'r': case 'R': return;
             case 'm': case 'M':
                 game.setGameRunning(false);
                 return;
@@ -189,30 +175,26 @@ void showGameOverMenu(GameEngine& game) {
 int main() {
     SetConsoleOutputCP(65001);
 
-    // Получаем настройки из конфига
     ConfigManager::initialize();
     auto& config = ConfigManager::getInstance();
     int viewportWidth = config.getViewportWidth();
     int viewportHeight = config.getViewportHeight();
 
-    // Устанавливаем размер консоли равным viewport
-    setConsoleSize(viewportWidth, viewportHeight + 5); // +5 для UI сверху
+    setConsoleSize(viewportWidth, viewportHeight + 5);
     hideScrollBars();
-    setConsoleFont(16); // Можно настроить размер шрифта
+    setConsoleFont(16);
 
-    // Скрыть курсор
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursor = { 1, 0 };
     SetConsoleCursorInfo(console, &cursor);
 
     while (true) {
-        // Для главного меню восстанавливаем нормальный размер
         setConsoleSize(80, 25);
         showMainMenu();
 
         int choice = _getch() - '0';
 
-        if (choice == 8) return 0; // Выход
+        if (choice == 8) return 0;
 
         std::string levelName = getLevelNameByChoice(choice);
         if (levelName.empty()) {
@@ -221,26 +203,20 @@ int main() {
             continue;
         }
 
-        // Устанавливаем игровой размер консоли
         setConsoleSize(viewportWidth, viewportHeight + 5);
         hideScrollBars();
 
-        // Создаем и инициализируем игру с выбранным уровнем
         GameEngine game;
         game.initialize(levelName);
 
-        // Игровой цикл
         while (game.isRunning()) {
-            // Обработка ввода
             handleInput(game);
 
-            // Обновление и отрисовка
             game.update();
             game.render();
             Sleep(50);
         }
 
-        // После завершения игры
         showGameOverMenu(game);
     }
 

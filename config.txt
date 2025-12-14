@@ -55,7 +55,7 @@ BOSS_ROOT_COLOR=13              # Пурпурный цвет корней
 
 # Размеры уровней
 
-WORLD_WIDTH_LEVEL1=483
+WORLD_WIDTH_LEVEL1=554
 WORLD_HEIGHT_LEVEL1=35
 
 WORLD_WIDTH_LEVEL2=90

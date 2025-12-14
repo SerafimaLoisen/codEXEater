@@ -34,8 +34,8 @@ private:
     std::string currentLevel;
     bool bossMode;
 
-    void updateCamera();  // Новый метод для обновления камеры
-    void renderWithCamera();  // Новый метод для рендеринга с камерой
+    void updateCamera();
+    void renderWithCamera();
 
     // Измените сигнатуры методов рендеринга
     void renderGameObject(const GameObject& obj) const;
