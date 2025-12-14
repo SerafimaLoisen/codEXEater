@@ -33,8 +33,6 @@ void ScriptEngine::initialize()
                 int tmp_value = stoi(arg.second);
 
                 ptr_ints->at(arg.first) += tmp_value;
-
-                checkSpecialInts(arg.first);
             }
         }
         });
@@ -78,6 +76,8 @@ void ScriptEngine::initialize()
 
             // no args should be provided
 
+            QuestController::setNextLevel("level1");
+            QuestController::setNextDialog("second_level_choice");
         }
         });
 
@@ -87,15 +87,30 @@ void ScriptEngine::initialize()
 
             // no args should be provided
 
+            QuestController::setNextLevel("level7");
+            QuestController::setNextDialog("game_finish");
         }
         });
 
-    // script to start level
-    registerScript("start_level", [](const map<string, string>& args) {
+    // script to set next level
+    registerScript("set_next_level", [](const map<string, string>& args) {
         for (const auto& arg : args) {
 
             // arg.first  -  name of the level to be loaded     arg.second -  is not used
 
+
+            QuestController::setNextLevel(arg.first);
+        }
+        });
+
+    // script to set next dialog
+    registerScript("set_next_dialog", [](const map<string, string>& args) {
+        for (const auto& arg : args) {
+
+            // arg.first  -  name of the dialog to be loaded     arg.second -  is not used
+
+
+            QuestController::setNextDialog(arg.first);
         }
         });
 

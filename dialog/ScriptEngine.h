@@ -23,5 +23,4 @@ public:
     static void executeScript(const string& scriptName, map<string, string>& params);
 
     // Доп функции помощники
-    static void checkSpecialInts(const string& name);
 };

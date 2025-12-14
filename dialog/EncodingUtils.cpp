@@ -13,11 +13,18 @@ using namespace std;
 
 class EncodingUtils {
 public:
-    static void setupConsoleEncoding() {
+    static void setupConsoleEncodingDialog() {
 
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
         setlocale(LC_ALL, "Russian");
+    }
+
+    static void setupConsoleEncodingGame() {
+
+        SetConsoleOutputCP(65001);
+        SetConsoleCP(65001);
+        setlocale(LC_ALL, "C");
     }
 
     static wstring getWString(string str) {

@@ -7,6 +7,9 @@
 #include <unordered_map>
 #include <string>
 
+#include "dialog/DialogSystem.h"
+#include "dialog/EncodingUtils.cpp"
+
 void setConsoleSize(int width, int height) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -172,8 +175,47 @@ void showGameOverMenu(GameEngine& game) {
     }
 }
 
+void SetupDialogSystem() {
+
+    EncodingUtils::setupConsoleEncodingDialog();
+
+    QuestController::initialize();
+    DialogSystem::initialize();
+    ScriptEngine::initialize();
+    //QuestController::loadSaveFile();
+
+    //DialogSystem dialogSystem;
+
+    // Загрузка диалогов
+    wcout << L"Загрузка диалогов..." << "\n";
+
+    map<string, wstring> options;
+
+    options.emplace(DialogSystem::loadDialog("dialog_trees/final_dive_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/game_finish_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/game_start_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/second_level_choice_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/talk_with_feature_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/third_level_choice_dialog.txt"));
+
+    QuestController::AddAvailableOption("game_start");
+    QuestController::ReevaluateAvailableOptions(options);
+}
+
+void clearInputBuffer() {
+    cin.clear();
+    cin.ignore(100, '\n');
+}
+
 int main() {
-    SetConsoleOutputCP(65001);
+
+    FILE* file;
+
+    freopen_s(&file, "debug_general.txt", "w", stderr);
+
+    //SetConsoleOutputCP(65001);
+
+    EncodingUtils::setupConsoleEncodingGame();
 
     ConfigManager::initialize();
     auto& config = ConfigManager::getInstance();
@@ -188,20 +230,48 @@ int main() {
     CONSOLE_CURSOR_INFO cursor = { 1, 0 };
     SetConsoleCursorInfo(console, &cursor);
 
+    SetupDialogSystem();
+
+    QuestController::setNextDialog("game_start");
+
+    //EncodingUtils::setupConsoleEncodingGame();
+
     while (true) {
-        setConsoleSize(80, 25);
-        showMainMenu();
 
-        int choice = _getch() - '0';
 
-        if (choice == 8) return 0;
+        EncodingUtils::setupConsoleEncodingDialog();
 
-        std::string levelName = getLevelNameByChoice(choice);
-        if (levelName.empty()) {
-            std::cout << "\nInvalid choice!\n";
-            Sleep(1000);
-            continue;
+        string dialogTreeId = QuestController::getNextDialog();
+
+        DialogSystem::showDialog(dialogTreeId, "start");
+        // Обработка диалога
+        while (DialogSystem::isDialogActive()) {
+            int dialogChoice;
+            cin >> dialogChoice;
+            clearInputBuffer();
+
+            DialogSystem::processInput(dialogChoice);
         }
+
+
+        //SetConsoleOutputCP(65001);
+        EncodingUtils::setupConsoleEncodingGame();
+
+        setConsoleSize(80, 25);
+        //showMainMenu();
+
+        //int choice = _getch() - '0';
+
+        //if (choice == 8) return 0;
+
+        //std::string levelName = getLevelNameByChoice(choice);
+        //if (levelName.empty()) {
+        //    std::cout << "\nInvalid choice!\n";
+        //    Sleep(1000);
+        //    continue;
+        //}
+
+        string levelName = QuestController::getNextLevel();
 
         setConsoleSize(viewportWidth, viewportHeight + 5);
         hideScrollBars();

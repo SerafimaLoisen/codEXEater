@@ -8,6 +8,7 @@
 // --------------------- ОПРЕДЕЛЕНИЕ СТАТИЧЕСКИХ ПОЛЕЙ
 // 
 // ЕСЛИ ЭТОГО НЕ БУДЕТ, ТО БУДЕТ РУГАТЬСЯ ОШИБКОЙ LNK2001
+string QuestController::nextLevelID = "";
 string QuestController::saveFileName = "save.json";
 string QuestController::currNodeId = "";
 string QuestController::currTreeId = "";
@@ -376,4 +377,24 @@ map<string, bool>* QuestController::getFlags()
 map<string, int>* QuestController::getInts()
 {
 	return &ints;
+}
+
+void QuestController::setNextLevel(string id)
+{
+	nextLevelID = id;
+}
+
+string QuestController::getNextLevel()
+{
+	return nextLevelID;
+}
+
+void QuestController::setNextDialog(string id)
+{
+	nextDialogID = id;
+}
+
+string QuestController::getNextDialog()
+{
+	return nextDialogID;
 }

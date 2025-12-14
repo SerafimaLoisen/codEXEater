@@ -18,7 +18,8 @@ private:
 
 public:
 	// Поля
-	static bool createdCharacter;
+	static string nextLevelID;
+	static string nextDialogID;
 
 	static bool flagAllowShowing;
 	static bool flagShowSaved;
@@ -35,8 +36,6 @@ public:
 	static void createDefaultSaveFile();
 	static void resetSavedValues();
 
-	static void calculateOrigin();
-
 	static bool checkConditions(vector<Condition>);
 	static void logErrorConditions(vector<Condition>);
 
@@ -49,5 +48,10 @@ public:
 	static map<string, int>* getInts();
 
 
+	static void setNextLevel(string id);
+	static string getNextLevel();
+
+	static void setNextDialog(string id);
+	static string getNextDialog();
 };
 
