@@ -7,6 +7,17 @@
 #include <unordered_map>
 #include <string>
 
+#include "dialog/DialogSystem.h"
+#include <limits>
+#include "dialog/EncodingUtils.cpp"
+//#include <experimental/filesystem>
+#include <stdio.h>
+
+enum GAME_STATE {
+    DIALOG,
+    PLAYING
+};
+
 int main() {
     SetConsoleOutputCP(65001);
 
@@ -15,7 +26,40 @@ int main() {
     CONSOLE_CURSOR_INFO cursor = { 1, 0 };
     SetConsoleCursorInfo(console, &cursor);
 
+    FILE* file;
+
+    freopen_s(&file, "debug_dialog.txt", "w", stderr);
+
+    //system("chcp 65001");
+
+    EncodingUtils::setupConsoleEncoding();
+
+    QuestController::initialize();
+    DialogSystem::initialize();
+    ScriptEngine::initialize();
+    //QuestController::loadSaveFile();
+
+    //DialogSystem dialogSystem;
+
+    // Загрузка диалогов
+    wcout << L"Загрузка диалогов..." << "\n";
+
+    map<string, wstring> options;
+
+    options.emplace(DialogSystem::loadDialog("dialog_trees/final_dive_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/game_finish_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/game_start_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/second_level_choice_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/talk_with_feature_dialog.txt"));
+    options.emplace(DialogSystem::loadDialog("dialog_trees/third_level_choice_dialog.txt"));
+
+    QuestController::AddAvailableOption("game_start");
+    QuestController::ReevaluateAvailableOptions(options);
+
     while (true) {
+
+        // !!!!    DialogSystem::showDialog(load_tree, load_node);
+
         //system("cls");
         //std::cout << "=== BULLET PARRY GAME ===\n\n";
         //std::cout << "1. Tutorial Level\n";
@@ -51,6 +95,7 @@ int main() {
 
         // ОБЩИЙ ИГРОВОЙ ЦИКЛ ДЛЯ ЛЮБОГО УРОВНЯ
         while (game.isRunning()) {
+
             static bool keyA = false, keyD = false;
 
             bool currentA = (GetAsyncKeyState('A') & 0x8000);
