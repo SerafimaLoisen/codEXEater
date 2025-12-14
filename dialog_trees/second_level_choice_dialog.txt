@@ -9,7 +9,6 @@
       \n Доступно несколько путей углубления :
       \n [1] - обнаружено множество багов
       \n [2] - обнаружена аномальная архитектура
-      \n [3] - обнаружено изменение форматирования строк
       \n
       \n Какой путь использовать для погружения?",
       "options": [
@@ -20,10 +19,6 @@
         {
           "text": "[2]",
           "next_node": "dive-2"
-        },
-        {
-          "text": "[3]",
-          "next_node": "dive-3"
         }
       ]
     },
@@ -35,7 +30,7 @@
           "text": "[Продолжить]",
           "next_node": "end"
           "scripts": [
-			{ "set_next_level" , [ { "NAME_OF_LEVEL","" } ] },
+			{ "set_next_level" , [ { "level2","" } ] },
 			{ "set_next_dialog" , [ { "third_level_choice","" } ] }
 		  ]
         },
@@ -53,25 +48,7 @@
           "text": "[Продолжить]",
           "next_node": "end"
           "scripts": [
-			{ "set_next_level" , [ { "NAME_OF_LEVEL","" } ] },
-			{ "set_next_dialog" , [ { "third_level_choice","" } ] }
-		  ]
-        },
-        {
-          "text": "[Возврат]",
-          "next_node": "start"
-        }
-      ]
-    },
-	{
-      "id": "dive-3",
-      "npc_text": "Выбран путь с несанкционированным изменением строк. Подтвердите продолжение погружения:",
-      "options": [
-        {
-          "text": "[Продолжить]",
-          "next_node": "end"
-          "scripts": [
-			{ "set_next_level" , [ { "NAME_OF_LEVEL","" } ] },
+			{ "set_next_level" , [ { "level3","" } ] },
 			{ "set_next_dialog" , [ { "third_level_choice","" } ] }
 		  ]
         },
