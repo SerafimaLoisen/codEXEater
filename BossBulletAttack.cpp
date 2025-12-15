@@ -6,11 +6,11 @@
 
 BossBulletAttack::BossBulletAttack(Boss* boss, int cooldown, int speed, int color)
     : BossAttack(boss, cooldown), bulletSpeed(speed), bulletColor(color) {
-    currentCooldown = 0;  // Начинаем сразу
+    //currentCooldown = 0;  // Начинаем сразу
 }
 
 void BossBulletAttack::update() {
-    decreaseCooldown();
+    //decreaseCooldown();
 }
 
 void BossBulletAttack::execute(GameEngine& engine) {

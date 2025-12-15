@@ -9,5 +9,5 @@ Bullet::Bullet(int x, int y, int direction)
 }
 
 void Bullet::render() {
-    GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("bullet"));
+    GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("bullet"), color);
 }

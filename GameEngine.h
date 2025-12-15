@@ -4,13 +4,17 @@
 #include "Platform.h"
 #include <vector>
 #include <memory>
+#include <map>
 #include "Boss.h"
 #include "BossRoot.h"
+#include "IClonable.h"
+
+class ComponentsBasedEntity;
 
 class GameEngine {
 private:
     std::unique_ptr<Player> player;
-    std::vector<std::unique_ptr<Projectile>> projectiles;
+    std::vector<std::shared_ptr<Projectile>> projectiles;
     std::vector<std::shared_ptr<Platform>> platforms;
     std::unique_ptr<Boss> boss;
     std::vector<std::unique_ptr<BossRoot>> bossRoots;
@@ -30,11 +34,37 @@ private:
     std::string currentLevel;
     bool bossMode;
 
+    static GameEngine* instance;
+
+#pragma region ENEMIES
+
+private:
+
+    typedef std::map<std::string, std::shared_ptr<ComponentsBasedEntity>> HostileEntitiesPrefabs;
+    typedef std::shared_ptr<ComponentsBasedEntity> CBE;
+    
+    HostileEntitiesPrefabs GlobalHostileEntitiesPrefabs;
+    HostileEntitiesPrefabs LevelBasedHostileEntitiesPrefabs;
+    std::vector<std::shared_ptr<ComponentsBasedEntity>> hostileEntitiesToProcess;
+    std::vector<char> reservedSymbols = { '=', ' ', '^', '>', '<', 'v', 'p', 's' };
+    std::vector<char> spikes = { '^', 'v', '>', '<' };
+    std::vector<std::shared_ptr<GameObject>> playerProjectiles;
+
+    void CreateHostileEntitiesFromLevelMap(std::shared_ptr<HostileEntitiesPrefabs> levelBasedHostileEntitiesPrefabs, std::string levelMapName = "UIFrame");
+    void DefineGlobalHostileEntitiesPrefabs();
+    std::shared_ptr<GameEngine::HostileEntitiesPrefabs>  DefineLevelBasedHostileEntitiesPrefabs(int levelIndex = 0);
+    std::string GetEntityIDFromUIFrame(int x, int y, std::vector<std::string>& uiFrame);
+    CBE GetPrefabFromID(std::string ID, HostileEntitiesPrefabs& curLevelHostileEntitiesPrefabs);
+#pragma endregion
+
 public:
     GameEngine();
 
     // Инициализация с выбором уровня
     void initialize(const std::string& levelName = "tutorial");
+
+    // Доступ к активному экземпляру GameEngine
+    static GameEngine* getInstance();
 
     // Основные игровые методы
     void update();

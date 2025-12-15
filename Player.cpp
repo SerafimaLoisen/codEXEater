@@ -126,7 +126,7 @@ void Player::stopAttack() {
     isAttacking = false;
 }
 
-std::unique_ptr<Projectile> Player::tryFire() {
+std::shared_ptr<Projectile> Player::tryFire() {
     if (isAttacking && fireTimer <= 0) {
         // Рассчитываем позицию выстрела
         int bulletX, bulletY;
@@ -141,7 +141,7 @@ std::unique_ptr<Projectile> Player::tryFire() {
         bulletY = y + height / 2;  // Центр по вертикали
 
         // Создаем пулю (используем существующий класс Bullet)
-        auto bullet = std::make_unique<Bullet>(  // Но создаем Bullet
+        auto bullet = std::make_shared<Bullet>(  // Но создаем Bullet
             bulletX, bulletY,
             lastDirection
         );
