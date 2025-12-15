@@ -1,99 +1,191 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Boss.cpp" />
-    <ClCompile Include="BossAttack.cpp" />
-    <ClCompile Include="BossBulletAttack.cpp" />
-    <ClCompile Include="BossRoot.cpp" />
-    <ClCompile Include="BossRootAttack.cpp" />
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="codEXEater.cpp" />
-    <ClCompile Include="ConfigManager.cpp" />
-    <ClCompile Include="dialog\DialogNode.cpp" />
-    <ClCompile Include="dialog\DialogSystem.cpp" />
-    <ClCompile Include="dialog\DialogTree.cpp" />
-    <ClCompile Include="dialog\EncodingUtils.cpp" />
-    <ClCompile Include="dialog\QuestController.cpp" />
-    <ClCompile Include="dialog\ScriptEngine.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GraphicsManager.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="ParryBullet.cpp" />
-    <ClCompile Include="Platform.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Projectile.cpp" />
-    <ClCompile Include="SidePlatform.cpp" />
-    <ClCompile Include="UIManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Boss.h" />
-    <ClInclude Include="BossAttack.h" />
-    <ClInclude Include="BossBulletAttack.h" />
-    <ClInclude Include="BossRoot.h" />
-    <ClInclude Include="BossRootAttack.h" />
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="ConfigManager.h" />
-    <ClInclude Include="dialog\DialogNode.h" />
-    <ClInclude Include="dialog\DialogSystem.h" />
-    <ClInclude Include="dialog\DialogTree.h" />
-    <ClInclude Include="dialog\json.hpp" />
-    <ClInclude Include="dialog\QuestController.h" />
-    <ClInclude Include="dialog\ScriptEngine.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="GameEngine.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GraphicsManager.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="ParryBullet.h" />
-    <ClInclude Include="Platform.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="SidePlatform.h" />
-    <ClInclude Include="UIManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="config.txt" />
-    <Text Include="debug.txt" />
-    <Text Include="graphics\bullet.txt" />
-    <Text Include="graphics\levels\level1.txt" />
-    <Text Include="graphics\levels\level2.txt" />
-    <Text Include="graphics\levels\level3.txt" />
-    <Text Include="graphics\levels\level4.txt" />
-    <Text Include="graphics\levels\level5.txt" />
-    <Text Include="graphics\levels\level6.txt" />
-    <Text Include="graphics\levels\level7.txt" />
-    <Text Include="graphics\parry_bullet.txt" />
-    <Text Include="graphics\player.txt" />
-    <Text Include="graphics\player_dodge.txt" />
-    <Text Include="dialog_trees\final_dive_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\game_finish_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\game_start_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\second_level_choice_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\third_level_choice_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\talk_with_feature_dialog.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-    <Text Include="dialog_trees\ref_text.txt">
-      <Filter>dialogTrees</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="dialogTrees">
-      <UniqueIdentifier>{a4d909f1-9e5e-4d02-8aa3-80ae76bfe3b8}</UniqueIdentifier>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="codEXEater.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ParryBullet.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BossBulletAttack.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttack.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRootAttack.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRoot.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentsBasedEntity.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowLineTrajectoryComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentConfig.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="IClonable.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DealDamageOnOverlapComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="TakeDamageOnOverlapComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EmitProjectilesComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bullet.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ParryBullet.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttack.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BossBulletAttack.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRootAttack.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRoot.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentsBasedEntity.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowLineTrajectoryComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentConfig.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="IClonable.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DealDamageOnOverlapComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="TakeDamageOnOverlapComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitProjectilesComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="debug.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\bullet.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\parry_bullet.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\player.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\player_dodge.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="graphics\UIFrame.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

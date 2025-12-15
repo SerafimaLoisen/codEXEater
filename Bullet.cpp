@@ -13,5 +13,5 @@ void Bullet::render() {
 }
 
 void Bullet::renderAt(int screenX, int screenY) const {
-    GraphicsManager::renderAt(screenX, screenY, GraphicsManager::getGraphic("bullet"));
+    GraphicsManager::renderAt(screenX, screenY, GraphicsManager::getGraphic("bullet"), color);
 }

@@ -148,7 +148,7 @@ void Player::stopAttack() {
     isAttacking = false;
 }
 
-std::unique_ptr<Projectile> Player::tryFire() {
+std::shared_ptr<Projectile> Player::tryFire() {
     if (isAttacking && fireTimer <= 0) {
         int bulletX, bulletY;
 
@@ -161,7 +161,8 @@ std::unique_ptr<Projectile> Player::tryFire() {
 
         bulletY = y + height / 2;
 
-        auto bullet = std::make_unique<Bullet>(
+        // Создаем пулю (используем существующий класс Bullet)
+        auto bullet = std::make_shared<Bullet>(  // Но создаем Bullet
             bulletX, bulletY,
             lastDirection
         );

@@ -52,7 +52,7 @@ public:
 
     void startAttack();
     void stopAttack();
-    std::unique_ptr<Projectile> tryFire();
+    std::shared_ptr<Projectile> tryFire();
 
     bool getIsParrying() const { return isParrying; }
     bool getIsDodging() const { return isDodging; }

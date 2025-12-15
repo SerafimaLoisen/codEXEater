@@ -284,7 +284,7 @@ int main() {
 
             game.update();
             game.render();
-            Sleep(50);
+            Sleep(16); //50
         }
 
         showGameOverMenu(game);
