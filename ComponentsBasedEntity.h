@@ -64,5 +64,8 @@ public:
 	#pragma region GETTERS
 	bool GetIsGravityEnabled();
 	#pragma endregion
+
+
+	void renderAt(int screenX, int screenY) const override;
 };
 

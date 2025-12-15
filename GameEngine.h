@@ -50,6 +50,8 @@ private:
     void renderUIFrameWithCamera();
 
     void handlePlayerSidePlatformCollisions();
+
+    int ourClamp(int value, int min, int max);
 	
     static GameEngine* instance;
 
@@ -136,7 +138,7 @@ public:
 
     void normalizeUIFrame();
     int getVisualLength(const std::string& str) const;
-    std::string getVisibleSubstring(const std::string& str, int startPos, int maxWidth) const;
+    std::string getVisibleSubstring(const std::string& str, int startVisualPos, int maxVisualWidth) const;
     void switchLevel(const std::string& levelName);
     int getVisualPosition(const std::string& str, int bytePos) const;
     bool findPlayerSpawn(int& spawnX, int& spawnY);

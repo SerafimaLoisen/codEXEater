@@ -19,7 +19,6 @@
 #include "DealDamageOnOverlapComponent.h"
 #include "TakeDamageOnOverlapComponent.h"
 #include "EmitProjectilesComponent.h"
-#include <algorithm>
 #pragma endregion
 
 
@@ -79,14 +78,16 @@ void GameEngine::loadLevel(const std::string& levelName) {
     projectiles.clear();
     platforms.clear();
     sidePlatforms.clear();
+    hostileEntitiesToProcess.clear();
 
     createPlatformsFromUIFrame();
 
-#pragma region CREATE_ENEMIES
-    DefineGlobalHostileEntitiesPrefabs();
-    // Создаём врагов для уровня
-    CreateHostileEntitiesFromLevelMap(DefineLevelBasedHostileEntitiesPrefabs(0));
-#pragma endregion
+    
+    #pragma region CREATE_ENEMIES
+        DefineGlobalHostileEntitiesPrefabs();
+        // Создаём врагов для уровня
+        CreateHostileEntitiesFromLevelMap(DefineLevelBasedHostileEntitiesPrefabs(0));
+    #pragma endregion
 
 
     int spawnX = -1;
@@ -152,7 +153,7 @@ void GameEngine::loadGraphicsForLevel() {
 
     // Графика для конкретного уровня
     if (currentLevel == "boss") {
-        GraphicsManager::loadGraphics("graphics/boss/UIFrame.txt", "UIFrame");
+        GraphicsManager::loadGraphics("graphics/boss/boss_frame.txt", "UIFrame");
     }
     else {
         GraphicsManager::loadGraphics("graphics/levels/" + currentLevel + ".txt", "UIFrame");
@@ -847,7 +848,7 @@ void GameEngine::render() {
 
     renderUIFrameWithCamera();
 
-    // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РёРіСЂРѕРєР°
+    // Отрисовываем игрока
     if (camera->isInViewport(player->getX(), player->getY(),
         player->getWidth(), player->getHeight())) {
         int screenX = camera->worldToScreenX(player->getX());
@@ -855,7 +856,7 @@ void GameEngine::render() {
         player->renderAt(screenX, screenY);
     }
 
-    // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РїСѓР»Рё
+    // Отрисовываем пули
     for (auto& bullet : projectiles) {
         if (bullet->isActive() &&
             camera->isInViewport(bullet->getX(), bullet->getY(), 1, 1)) {
@@ -865,7 +866,35 @@ void GameEngine::render() {
         }
     }
 
-    // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј UI РїРѕРІРµСЂС… РІСЃРµРіРѕ
+    // Отрисовываем платформы
+    //for (auto& platform : platforms) {
+    //    if (platform->isActive() &&
+    //        camera->isInViewport(platform->getX(), platform->getY(), 1, 1)) {
+    //        int screenX = camera->worldToScreenX(platform->getX());
+    //        int screenY = camera->worldToScreenY(platform->getY());
+    //        platform->renderAt(screenX, screenY);
+    //    }
+    //}
+    
+    #pragma region RENDER_ENEMIES
+    for (auto& enemy : hostileEntitiesToProcess) {
+        if (enemy->isActive() &&
+            camera->isInViewport(enemy->getX(), enemy->getY(), enemy->getWidth(), enemy->getHeight())) {
+            int screenX = camera->worldToScreenX(enemy->getX());
+            int screenY = camera->worldToScreenY(enemy->getY());
+            enemy->renderAt(screenX, screenY);
+        }
+    }
+    #pragma endregion
+    
+    //renderBoss();
+    //
+    // Отрисовываем подсказки и управление
+    //UIManager::renderHints();
+    //UIManager::renderControls();
+
+
+    // Отрисовываем UI поверх всего
     UIManager::renderGameUI(*player, score);
 }
 
@@ -905,61 +934,24 @@ void GameEngine::renderUIFrameWithCamera() {
 
     system("cls");
 
-
-
-	// POTENTIAL PROBLEMS START HERE
     COORD coord = { 0, 0 };
     for (int y = 0; y < viewportHeight; y++) {
         coord.Y = y;
         SetConsoleCursorPosition(hConsole, coord);
         std::cout << screenBuffer[y];
-	// AND END HERE
-		
-    // Отрисовываем UI Frame
-    GraphicsManager::renderAt(0, 0, GraphicsManager::getGraphic("UIFrame"));
-
-    // Отрисовываем игровой UI
-    UIManager::renderGameUI(*player, score);
-
-    // Отрисовываем платформы
-    for (auto& platform : platforms) {
-        platform->render();
-    }
-
-    // Отрисовываем игрока
-    player->render();
-
-    // Отрисовываем пули
-    for (auto& bullet : projectiles) {
-        if (bullet->isActive()) {
-            bullet->render();
-        }
-    }
-
-#pragma region RENDER_ENEMIES
-    for (auto& enemy : hostileEntitiesToProcess) {
-        enemy->render();
-    }
-#pragma endregion
-
-    renderBoss();
-
-    // Отрисовываем подсказки и управление
-    UIManager::renderHints();
-    UIManager::renderControls();
-
-}
-
-void GameEngine::renderBoss() {
-    if (bossMode && boss) {
-        boss->render();
-
-        // Рендерим корни
-        for (auto& root : bossRoots) {
-            root->render();
-        }
     }
 }
+
+//void GameEngine::renderBoss() {
+//    if (bossMode && boss) {
+//        boss->render();
+//
+//        // Рендерим корни
+//        for (auto& root : bossRoots) {
+//            root->render();
+//        }
+//    }
+//}
 
 std::string GameEngine::getVisibleSubstring(const std::string& str, int startVisualPos, int maxVisualWidth) const {
     if (startVisualPos < 0 || str.empty()) {
@@ -1040,10 +1032,20 @@ void GameEngine::updateCamera() {
     int maxX = max(0, worldWidth - camera->getViewportWidth());
     int maxY = max(0, worldHeight - camera->getViewportHeight());
 
-    targetX = std::clamp(targetX, 0, maxX);
-    targetY = std::clamp(targetY, 0, maxY);
+    targetX = ourClamp(targetX, 0, maxX);
+    targetY = ourClamp(targetY, 0, maxY);
 
     camera->setPosition(targetX, targetY);
+}
+
+int GameEngine::ourClamp(int value, int min, int max) {
+    if (value < min) {
+        return min;
+    }
+    if (value > max) {
+        return max;
+    }
+    return value;
 }
 
 void GameEngine::renderGameObject(const GameObject& obj) const {

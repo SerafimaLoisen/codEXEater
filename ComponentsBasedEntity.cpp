@@ -119,4 +119,10 @@ void ComponentsBasedEntity::AddComponent(EntityComponent& component) {
 bool ComponentsBasedEntity::GetIsGravityEnabled() {
 	return isGravityEnabled;
 }
+void ComponentsBasedEntity::renderAt(int screenX, int screenY) const
+{
+	if (!isAlive()) return;
+	const auto& sprite = useAltSprite ? altSprite : GraphicsManager::getGraphic(spriteName);
+	GraphicsManager::renderAt(screenX, screenY, sprite, color);
+}
 #pragma endregion

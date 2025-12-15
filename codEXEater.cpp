@@ -124,7 +124,7 @@ void handleInput(GameEngine& game) {
 
     if (current1 && !key1) game.switchLevel("level1");
     if (current2 && !key2) game.switchLevel("level2");
-    if (current3 && !key3) game.switchLevel("level3");
+    if (current3 && !key3) game.switchLevel("test");
     if (current4 && !key4) game.switchLevel("level4");
     if (current5 && !key5) game.switchLevel("level5");
     if (current6 && !key6) game.switchLevel("level6");
@@ -139,13 +139,13 @@ void handleInput(GameEngine& game) {
         case ' ': game.getPlayer().startParry(); break;
         case 's': case 'S': game.getPlayer().startDodge(); break;
         case 'q': case 'Q': game.setGameRunning(false); break;
-        case '1': game.switchLevel("level1"); break;
-        case '2': game.switchLevel("level2"); break;
-        case '3': game.switchLevel("level3"); break;
-        case '4': game.switchLevel("level4"); break;
-        case '5': game.switchLevel("level5"); break;
-        case '6': game.switchLevel("level6"); break;
-        case '7': game.switchLevel("level7"); break;
+        //case '1': game.switchLevel("level1"); break;
+        //case '2': game.switchLevel("level2"); break;
+        //case '3': game.switchLevel("level3"); break;
+        //case '4': game.switchLevel("level4"); break;
+        //case '5': game.switchLevel("level5"); break;
+        //case '6': game.switchLevel("level6"); break;
+        //case '7': game.switchLevel("level7"); break;
         }
     }
 }
@@ -236,6 +236,7 @@ int main() {
 
     //EncodingUtils::setupConsoleEncodingGame();
 
+    GameEngine game;
     while (true) {
 
 
@@ -276,7 +277,6 @@ int main() {
         setConsoleSize(viewportWidth, viewportHeight + 5);
         hideScrollBars();
 
-        GameEngine game;
         game.initialize(levelName);
 
         while (game.isRunning()) {

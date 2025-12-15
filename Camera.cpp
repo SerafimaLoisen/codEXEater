@@ -12,11 +12,21 @@ void Camera::setPosition(int newX, int newY) {
     int maxX = std::max(0, worldWidth - viewportWidth);
     int maxY = std::max(0, worldHeight - viewportHeight);
 
-    x = std::clamp(newX, 0, maxX);
-    y = std::clamp(newY, 0, maxY);
+    x = ourClamp(newX, 0, maxX);
+    y = ourClamp(newY, 0, maxY);
 
     Logger::Log("Camera position set: (" + std::to_string(x) + ", " +
         std::to_string(y) + ") maxX=" + std::to_string(maxX));
+}
+
+int Camera::ourClamp(int value, int min, int max) {
+    if (value < min) {
+        return min;
+    }
+    if (value > max) {
+        return max;
+    }
+    return value;
 }
 
 void Camera::centerOn(int targetX, int targetY) {

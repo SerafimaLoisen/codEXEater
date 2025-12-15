@@ -9,6 +9,7 @@
 // 
 // ЕСЛИ ЭТОГО НЕ БУДЕТ, ТО БУДЕТ РУГАТЬСЯ ОШИБКОЙ LNK2001
 string QuestController::nextLevelID = "";
+string QuestController::nextDialogID = "";
 string QuestController::saveFileName = "save.json";
 string QuestController::currNodeId = "";
 string QuestController::currTreeId = "";

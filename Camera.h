@@ -20,6 +20,9 @@ public:
 
     bool isInViewport(int worldX, int worldY, int width, int height) const;
 
+
+    int ourClamp(int value, int min, int max);
+
     // Геттеры
     int getX() const { return x; }
     int getY() const { return y; }
