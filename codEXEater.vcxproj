@@ -146,6 +146,7 @@
     <ClCompile Include="EmitProjectilesComponent.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityComponent.cpp" />
+    <ClCompile Include="IClonableComponent.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="SidePlatform.cpp" />
     <ClCompile Include="TakeDamageOnOverlapComponent.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="EmitProjectilesComponent.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityComponent.h" />
+    <ClInclude Include="IClonableComponent.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="SidePlatform.h" />
     <ClInclude Include="TakeDamageOnOverlapComponent.h" />

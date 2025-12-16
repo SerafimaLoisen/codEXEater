@@ -3,8 +3,9 @@
 #include "Projectile.h"
 #include "Bullet.h"
 #include "ParryBullet.h"
+#include "ComponentsBasedEntity.h"
 
-EmitProjectilesComponent::EmitProjectilesComponent(Entity* _target, 
+EmitProjectilesComponent::EmitProjectilesComponent(ComponentsBasedEntity* _target,
     EmitProjectilesComponentConfig _config, 
     std::vector<std::shared_ptr<Projectile>>& _projectilesArray,
     GameObject* _projectilesTarget) :
@@ -14,9 +15,11 @@ EmitProjectilesComponent::EmitProjectilesComponent(Entity* _target,
 {
     direction = _config.direction;
     projectileSpeed = _config.projectileSpeed;
+    projectileMaxTravelDistance = _config.projectileMaxTravelDistance;
     numberOfEmissionsInOneSequence = _config.numberOfEmissionsInOneSequence;
     timeBetweenEmissionsInOneSequence = _config.timeBetweenEmissionsInOneSequence;
     timeBetweenSequences = _config.timeBetweenSequences;
+    sequencesTimer = _config.startDelay;
     emitTowardsTarget = _config.emitTowardsTarget;
     limitDirectionToOneAxis = _config.limitDirectionToOneAxis;
     projectileTypeFactor = _config.projectileTypeFactor;
@@ -80,12 +83,13 @@ void EmitProjectilesComponent::Emit(std::vector<float>& velocity) {
     
     projectile->setUseFloatCoord(true);
     projectile->setVelocity(velocity);
+    projectile->setMaxTravelDistance(projectileMaxTravelDistance);
     projectile->setColor(target->getColor());
 
     projectilesArray.push_back(projectile);
 }
 
-EmitProjectilesComponent* EmitProjectilesComponent::clone(Entity& _target)
+EmitProjectilesComponent* EmitProjectilesComponent::clone(ComponentsBasedEntity& _target)
 {
     EmitProjectilesComponent* clone = new EmitProjectilesComponent(&_target, config, projectilesArray, projectilesTarget);
     return clone;
@@ -94,15 +98,19 @@ EmitProjectilesComponent* EmitProjectilesComponent::clone(Entity& _target)
 EmitProjectilesComponentConfig::EmitProjectilesComponentConfig (
     std::vector<int> _direction, 
     float _projectileSpeed,
+    float _projectileMaxTravelDistance,
     int _numberOfEmissionsInOneSequence,
     int _timeBetweenEmissionsInOneSequence, 
     int _timeBetweenSequences,
+    int _startDelay,
     bool _emitTowardsTarget, bool _limitDirectionToOneAxis, float _projectileTypeFactor) :
     direction(_direction),
     projectileSpeed(_projectileSpeed),
+    projectileMaxTravelDistance(_projectileMaxTravelDistance),
     numberOfEmissionsInOneSequence(_numberOfEmissionsInOneSequence),
     timeBetweenEmissionsInOneSequence(_timeBetweenEmissionsInOneSequence),
     timeBetweenSequences(_timeBetweenSequences),
+    startDelay(_startDelay),
     emitTowardsTarget(_emitTowardsTarget),
     limitDirectionToOneAxis(_limitDirectionToOneAxis),
     projectileTypeFactor(_projectileTypeFactor)

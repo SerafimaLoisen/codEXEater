@@ -15,8 +15,8 @@ private:
 	int damageDuration = 1;
 	int damageTimer = 0;
 public:
-	TakeDamageOnOverlapComponent(Entity* _target, std::vector<std::shared_ptr<GameObject>>& _candidatesForOverlap, int _damageAmount=1, int _damageColor = 10);
+	TakeDamageOnOverlapComponent(ComponentsBasedEntity* _target, std::vector<std::shared_ptr<GameObject>>& _candidatesForOverlap, int _damageAmount=1, int _damageColor = 10);
 	void Process() override;
-	TakeDamageOnOverlapComponent* clone(Entity& _target) override;
+	TakeDamageOnOverlapComponent* clone(ComponentsBasedEntity& _target) override;
 };
 

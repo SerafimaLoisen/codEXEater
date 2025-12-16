@@ -1,5 +1,6 @@
 #include "DealDamageOnOverlapComponent.h"
 #include "Player.h"
+#include "ComponentsBasedEntity.h"
 
 DealDamageOnOverlapComponentConfig::DealDamageOnOverlapComponentConfig(
 	int _contactDamageAmount, int _contactDamageCooldownDuration, 
@@ -10,7 +11,7 @@ DealDamageOnOverlapComponentConfig::DealDamageOnOverlapComponentConfig(
 }
 
 DealDamageOnOverlapComponent::DealDamageOnOverlapComponent(
-	Entity* _target, 
+	ComponentsBasedEntity* _target,
 	Player& _player, 
 	DealDamageOnOverlapComponentConfig _config) : 
 	EntityComponent(_target), player(_player), config(_config) {
@@ -34,7 +35,7 @@ void DealDamageOnOverlapComponent::Process() {
 	}
 }
 
-DealDamageOnOverlapComponent* DealDamageOnOverlapComponent::clone(Entity& _target) {
+DealDamageOnOverlapComponent* DealDamageOnOverlapComponent::clone(ComponentsBasedEntity& _target) {
 	DealDamageOnOverlapComponent* clone = new DealDamageOnOverlapComponent(&_target, player, config);
 	return clone;
 }

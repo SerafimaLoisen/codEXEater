@@ -1,5 +1,5 @@
 #include "EntityComponent.h"
 
-EntityComponent::EntityComponent(Entity* _target) : target(_target) {
+EntityComponent::EntityComponent(ComponentsBasedEntity* _target) : target(_target) {
 
 }

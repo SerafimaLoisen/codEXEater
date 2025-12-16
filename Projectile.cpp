@@ -7,19 +7,26 @@ Projectile::Projectile(int x, int y, int width, int height, int speed, int direc
     this->active = true;
     coord[0] = x;
     coord[1] = y;
+    initCoord = coord;
 }
 
 void Projectile::update() {
+    
     if (!useFloatCoord) {
         x += speed * direction;
     }
     else {
-        
+
         coord[0] += velocity[0];
         coord[1] += velocity[1];
 
         x = coord[0];
         y = coord[1];
+    }
+
+    if (abs(x - initCoord[0]) > maxTravelDistance || abs(y - initCoord[1]) > maxTravelDistance)
+    {
+        setActive(false);
     }
 }
 

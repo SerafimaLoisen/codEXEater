@@ -1,14 +1,15 @@
 #pragma once
-#include "Entity.h"
-#include "IClonable.h"
+#include "IClonableComponent.h"
+
+class ComponentsBasedEntity;
 
 class EntityComponent : public IClonableComponent
 {
 public:
-	EntityComponent(Entity* _target);
+	EntityComponent(ComponentsBasedEntity* _target);
 	virtual void Process() = 0;
-	virtual EntityComponent* clone(Entity& _target) = 0;
+	virtual EntityComponent* clone(ComponentsBasedEntity& _target) = 0;
 protected:
-	Entity* target;
+	ComponentsBasedEntity* target;
 };
 

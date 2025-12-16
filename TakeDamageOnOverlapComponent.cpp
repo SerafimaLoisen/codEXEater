@@ -1,7 +1,8 @@
 #include "TakeDamageOnOverlapComponent.h"
+#include "ComponentsBasedEntity.h"
 
 TakeDamageOnOverlapComponent::TakeDamageOnOverlapComponent(
-	Entity* _target,
+	ComponentsBasedEntity* _target,
 	std::vector<std::shared_ptr<GameObject>>& _candidatesForOverlap,
 	int _damageAmount, int _damageColor) : 
 	EntityComponent(_target),
@@ -27,7 +28,7 @@ void TakeDamageOnOverlapComponent::Process() {
 	else damageTimer--;
 }
 
-TakeDamageOnOverlapComponent* TakeDamageOnOverlapComponent::clone(Entity& _target)
+TakeDamageOnOverlapComponent* TakeDamageOnOverlapComponent::clone(ComponentsBasedEntity& _target)
 {
 	TakeDamageOnOverlapComponent* clone = new TakeDamageOnOverlapComponent(&_target, candidatesForOverlap, damageAmount);
 	return clone;

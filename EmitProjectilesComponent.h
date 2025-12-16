@@ -11,18 +11,22 @@ struct EmitProjectilesComponentConfig : ComponentConfig {
 	EmitProjectilesComponentConfig(
 		std::vector<int> _direction = { -1, 0 },
 		float _projectileSpeed = 1,
+		float _projectileMaxTravelDistance = 40,
 		int _numberOfEmissionsInOneSequence = 4,
 		int _timeBetweenEmissionsInOneSequence = 2,
 		int _timeBetweenSequences = 4,
+		int _startDelay = 0,
 		bool _emitTowardsTarget = false,
 		bool _limitDirectionToOneAxis = true,
 		float _projectileTypeFactor = 0);
 
 	std::vector<int> direction = { -1, 0 };
-	float projectileSpeed;
+	float projectileSpeed = 1;
+	float projectileMaxTravelDistance = 40;
 	int numberOfEmissionsInOneSequence = 4;
 	int timeBetweenEmissionsInOneSequence = 2;
 	int timeBetweenSequences = 4;
+	int startDelay = 0;
 	bool emitTowardsTarget = false;
 	bool limitDirectionToOneAxis = true;
 	float projectileTypeFactor = 0;
@@ -31,13 +35,14 @@ struct EmitProjectilesComponentConfig : ComponentConfig {
 class EmitProjectilesComponent : public EntityComponent
 {
 public:
-	EmitProjectilesComponent(Entity* _target, EmitProjectilesComponentConfig _config, std::vector<std::shared_ptr<Projectile>>& _projectilesArray,  GameObject* _projectilesTarget=nullptr);
+	EmitProjectilesComponent(ComponentsBasedEntity* _target, EmitProjectilesComponentConfig _config, std::vector<std::shared_ptr<Projectile>>& _projectilesArray,  GameObject* _projectilesTarget=nullptr);
 	void Process() override;
-	EmitProjectilesComponent* clone(Entity& _target) override;
+	EmitProjectilesComponent* clone(ComponentsBasedEntity& _target) override;
 
 private:
 	std::vector<int> direction = { -1, 0 };
-	float projectileSpeed;
+	float projectileSpeed = 1;
+	float projectileMaxTravelDistance = 40;
 	int numberOfEmissionsInOneSequence = 4;
 	int timeBetweenEmissionsInOneSequence = 2;
 	int timeBetweenSequences = 4;

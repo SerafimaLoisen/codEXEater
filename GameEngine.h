@@ -18,7 +18,7 @@ class ComponentsBasedEntity;
 class GameEngine {
 private:
     std::unique_ptr<Camera> camera;
-    std::unique_ptr<Player> player;
+    std::shared_ptr<Player> player;
     std::vector<std::shared_ptr<Projectile>> projectiles;
     std::vector<std::shared_ptr<Platform>> platforms;
     std::vector<std::shared_ptr<SidePlatform>> sidePlatforms;
@@ -65,7 +65,7 @@ private:
     HostileEntitiesPrefabs GlobalHostileEntitiesPrefabs;
     HostileEntitiesPrefabs LevelBasedHostileEntitiesPrefabs;
     std::vector<std::shared_ptr<ComponentsBasedEntity>> hostileEntitiesToProcess;
-    std::vector<char> reservedSymbols = { '=', ' ', '^', '>', '<', 'v', 'p', 's' };
+    std::vector<char> reservedSymbols = { '=', '#', '^', '>', '<', 'v', 'p', 's' };
     std::vector<char> spikes = { '^', 'v', '>', '<' };
     std::vector<std::shared_ptr<GameObject>> playerProjectiles;
 

@@ -16,9 +16,9 @@ struct DealDamageOnOverlapComponentConfig : ComponentConfig {
 class DealDamageOnOverlapComponent : public EntityComponent
 {
 public:
-	DealDamageOnOverlapComponent(Entity* _target, Player& _player, DealDamageOnOverlapComponentConfig _config);
+	DealDamageOnOverlapComponent(ComponentsBasedEntity* _target, Player& _player, DealDamageOnOverlapComponentConfig _config);
 	void Process() override;
-	DealDamageOnOverlapComponent* clone(Entity& _target) override;
+	DealDamageOnOverlapComponent* clone(ComponentsBasedEntity& _target) override;
 private:
 	int contactDamageAmount;
 	int contactDamageCooldownDuration;

@@ -82,14 +82,6 @@ void GameEngine::loadLevel(const std::string& levelName) {
 
     createPlatformsFromUIFrame();
 
-    
-    #pragma region CREATE_ENEMIES
-        DefineGlobalHostileEntitiesPrefabs();
-        // Создаём врагов для уровня
-        CreateHostileEntitiesFromLevelMap(DefineLevelBasedHostileEntitiesPrefabs(0));
-    #pragma endregion
-
-
     int spawnX = -1;
     int spawnY = -1;
     bool foundSpawnPoint = findPlayerSpawn(spawnX, spawnY);
@@ -124,7 +116,7 @@ void GameEngine::loadLevel(const std::string& levelName) {
         }
     }
 
-    player = std::make_unique<Player>(spawnX, spawnY, worldWidth, worldHeight);
+    player = std::make_shared<Player>(spawnX, spawnY, worldWidth, worldHeight);
 
     Logger::Log("Player created at world coords: (" +
         std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
@@ -139,6 +131,11 @@ void GameEngine::loadLevel(const std::string& levelName) {
     std::cout << "Viewport: " << camera->getViewportWidth() << "x" << camera->getViewportHeight() << std::endl;
     std::cout << "Player start: (" << spawnX << ", " << spawnY << ")" << std::endl;
 	
+#pragma region CREATE_ENEMIES
+    DefineGlobalHostileEntitiesPrefabs();
+    // Создаём врагов для уровня
+    CreateHostileEntitiesFromLevelMap(DefineLevelBasedHostileEntitiesPrefabs(0));
+#pragma endregion
 }
 
 void GameEngine::loadGraphicsForLevel() {
@@ -170,7 +167,7 @@ void GameEngine::DefineGlobalHostileEntitiesPrefabs() {
 
     // PREFABS
     
-    CBE spikeUp = std::make_shared<ComponentsBasedEntity>(20, 5, 2, 2, 5);
+    CBE spikeUp = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5);
     spikeUp->AddComponent(*new DealDamageOnOverlapComponent(spikeUp.get(), *getPlayerPtr(), instantKillOnOverlap));
     CBE spikeDown = std::shared_ptr<ComponentsBasedEntity>(spikeUp->clone(20, 5));
     CBE spikeRight = std::shared_ptr<ComponentsBasedEntity>(spikeUp->clone(20, 5));
@@ -188,43 +185,85 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
 {
     // COMPONENTS CONFIGS
     
-    // Movement on Axis X (to the left and to the right) with Speed of 1, Start Direction of 1 (to the right) and with the Rest Time of 4
-    FollowLineTrajectoryComponentConfig horizontalMovementBy8Units = FollowLineTrajectoryComponentConfig({ 8, 8 }, 1, 1, Axis::X, 4);
+    // Movement on Axis X (to the left and to the right) with Speed of 1, Start Direction of 1 (to the right) and with the Rest Time of 12
+    FollowLineTrajectoryComponentConfig horizontalMovement = FollowLineTrajectoryComponentConfig(false, 1, { 4, 4 }, -1, Axis::X, 12);
+    FollowLineTrajectoryComponentConfig horizontalMovementShorter = FollowLineTrajectoryComponentConfig(false, 1, { 2, 2 }, -1, Axis::X, 12);
+    
+    // { TO LEFT OFFSET, TO RIGHT OFFSET } FOR X AXIS
+    // { TO TOP OFFSET, TO BOTTOM OFFSET } FOR Y AXIS
+    FollowLineTrajectoryComponentConfig upSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 12, 80);
+
+    FollowLineTrajectoryComponentConfig leftSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 4, 0 }, 1, Axis::X, 20, 0);
+    FollowLineTrajectoryComponentConfig leftSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 4, 0 }, 1, Axis::X, 20, 10);
+    FollowLineTrajectoryComponentConfig rightSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 0, 4 }, 1, Axis::X, 20, 0);
+    FollowLineTrajectoryComponentConfig rightSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 0, 4 }, 1, Axis::X, 20, 10);
     
     // 
     DealDamageOnOverlapComponentConfig defaultOverlapDamage = DealDamageOnOverlapComponentConfig();
+    DealDamageOnOverlapComponentConfig instantKillOnOverlap = DealDamageOnOverlapComponentConfig(10, 0);
+
+    // Emit in the -1 direction on Axis X with Projectile Speed of 2 for MaxTravelDistance of 40 units, 3 Projectiles in a Row with Time Between Emissions=3 and Time Between Sequences of Emissions=6
+    EmitProjectilesComponentConfig emitToTheLeftWithSpeedOf2 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 20);
     
-    // Emit in the -1 direction on Axis X with Projectile Speed of 2, 3 Projectiles in a Row with Time Between Emissions=3 and Time Between Sequences of Emissions=6
-    EmitProjectilesComponentConfig emitToTheLeftWithSpeedOf2 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 3, 3, 6);
+    // Just for fun?..
+    EmitProjectilesComponentConfig emitTowardsTarget = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 0, true, false);
 
     std::shared_ptr<HostileEntitiesPrefabs> prefabs = std::make_shared<HostileEntitiesPrefabs>();
 
     switch (levelIndex) {
         case 0:
         {
-            // LEVEL BASED PREFABS
+            // LEVEL LOCAL PREFABS
 
             // TEST ENEMY PREFAB
             std::shared_ptr<ComponentsBasedEntity> testEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 5);
-            testEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovementBy8Units));
+            testEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovement));
+            testEnemy->AddComponent(*new DealDamageOnOverlapComponent(testEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            testEnemy->AddComponent(*new TakeDamageOnOverlapComponent(testEnemy.get(), playerProjectiles));
 
             // ANOTHER TEST ENEMY PREFAB
             std::shared_ptr<ComponentsBasedEntity> anotherTestEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 5, true);
-            anotherTestEnemy->AddComponent(*new FollowLineTrajectoryComponent(anotherTestEnemy.get(), horizontalMovementBy8Units));
             anotherTestEnemy->AddComponent(*new DealDamageOnOverlapComponent(anotherTestEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
             anotherTestEnemy->AddComponent(*new TakeDamageOnOverlapComponent(anotherTestEnemy.get(), playerProjectiles, 1));
+            anotherTestEnemy->AddComponent(*new EmitProjectilesComponent(anotherTestEnemy.get(), emitTowardsTarget, projectiles, getPlayerPtr()));
+            anotherTestEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovementShorter));
 
             // PROJECTILES EMITTER PREFAB
             std::shared_ptr<ComponentsBasedEntity> projectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
             projectilesEmitter->AddComponent(*new EmitProjectilesComponent(projectilesEmitter.get(), emitToTheLeftWithSpeedOf2, projectiles, getPlayerPtr()));
 
+            // CUSTOM SPIKES
+            std::shared_ptr<ComponentsBasedEntity> upSpikeCustom = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            upSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom.get(), *getPlayerPtr(), instantKillOnOverlap));
+            
+            std::shared_ptr<ComponentsBasedEntity> rightSpikeCustom = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
+            std::shared_ptr<ComponentsBasedEntity> rightSpikeCustomWithStartDelay = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
+            std::shared_ptr<ComponentsBasedEntity> leftSpikeCustom = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
+            std::shared_ptr<ComponentsBasedEntity> leftSpikeCustomWithStartDelay = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
+            
+            // SORRY FOR SUCH BAD EXAMPLE
+            upSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(upSpikeCustom.get(), upSpikeMovement));
+            rightSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(rightSpikeCustom.get(), rightSpikeMovement));
+            rightSpikeCustomWithStartDelay->AddComponent(*new FollowLineTrajectoryComponent(rightSpikeCustomWithStartDelay.get(), rightSpikeMovementWithStartDelay));
+            leftSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(leftSpikeCustom.get(), leftSpikeMovement));
+            leftSpikeCustomWithStartDelay->AddComponent(*new FollowLineTrajectoryComponent(leftSpikeCustomWithStartDelay.get(), leftSpikeMovementWithStartDelay));
+
+
             // BIND SYMBOL_ID TO PREFAB
 
-            (*prefabs)["p"] = testEnemy;
-            (*prefabs)["p2"] = testEnemy;
-            (*prefabs)["p3"] = anotherTestEnemy;
+            (*prefabs)["e"] = testEnemy;
+            (*prefabs)["e2"] = testEnemy;
+            (*prefabs)["e3"] = anotherTestEnemy;
             
             (*prefabs)["s"] = projectilesEmitter;
+
+            (*prefabs)["^1"] = upSpikeCustom;
+
+            (*prefabs)["<1"] = leftSpikeCustom;
+            (*prefabs)["<2"] = leftSpikeCustomWithStartDelay;
+            
+            (*prefabs)[">1"] = rightSpikeCustom;
+            (*prefabs)[">2"] = rightSpikeCustomWithStartDelay;
         }
         break;
         default:
@@ -597,7 +636,7 @@ void GameEngine::update() {
     for (auto& entity : hostileEntitiesToProcess) 
     {
         entity->update();
-        
+
         if (entity->GetIsGravityEnabled())
         {
             for (const auto& platform : platforms)
@@ -609,8 +648,44 @@ void GameEngine::update() {
                     break;
                 }
             }
+
+            // STOLEN FROM VIKA
+
+            int currentX = entity->getX();
+            int currentY = entity->getY();
+            int playerWidth = entity->getWidth();
+            float velocityX = entity->GetHorizontalVelocity();
+
+            int predictedX = currentX + static_cast<int>(velocityX);
+
+            bool collisionDetected = false;
+
+            for (const auto& sidePlatform : sidePlatforms) {
+                bool fromLeft = false;
+
+                entity->setX(predictedX);
+
+                if (entity->isCollidingWithSidePlatform(*sidePlatform, fromLeft)) {
+                    collisionDetected = true;
+
+                    entity->setX(currentX);
+
+                    if (fromLeft) {
+                        entity->setX(sidePlatform->getX() - playerWidth);
+                    }
+                    else {
+                        entity->setX(sidePlatform->getX() + 1);
+                    }
+
+                    entity->setDirection(-1*entity->getDirection());
+
+                    break;
+                }
+
+                entity->setX(currentX);
+            }
         }
-        
+
     }  
 #pragma endregion
 }
@@ -876,13 +951,11 @@ void GameEngine::render() {
     //    }
     //}
     
-    #pragma region RENDER_ENEMIES
-    for (auto& enemy : hostileEntitiesToProcess) {
-        if (enemy->isActive() &&
-            camera->isInViewport(enemy->getX(), enemy->getY(), enemy->getWidth(), enemy->getHeight())) {
-            int screenX = camera->worldToScreenX(enemy->getX());
-            int screenY = camera->worldToScreenY(enemy->getY());
-            enemy->renderAt(screenX, screenY);
+    #pragma region RENDER_HOSTILE_ENTITIES
+    for (auto& entity : hostileEntitiesToProcess) {
+        if (entity->isActive() &&
+            camera->isInViewport(entity->getX(), entity->getY(), entity->getWidth(), entity->getHeight())) {
+            entity->renderFitViewport(camera->getX(), camera->getY(), camera->getViewportWidth(), camera->getViewportHeight());
         }
     }
     #pragma endregion
