@@ -36,7 +36,7 @@ void FollowLineTrajectoryComponent::Process() {
 	if (restingTimer <= 0) 
 	{
 		int coord = axis == Axis::X ? target->getX() : target->getY();
-		coord += speed * target->getDirection() * (axis == Axis::Y ? -1 : 1);
+		coord += speed * target->getDirection();
 		if (axis == Axis::X) target->setX(coord);
 		else target->setY(coord);
 		
