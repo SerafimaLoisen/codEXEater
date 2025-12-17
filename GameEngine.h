@@ -186,4 +186,6 @@ public:
     void removeSpawnPointFromUIFrame(int spawnX, int spawnY);
     void respawnAtCheckpoint(); // Возрождение на чекпоинте
     std::shared_ptr<Checkpoint> getCurrentCheckpoint() const { return currentCheckpoint; }
+    void checkWinCondition();
+    void removeWinSymbolsFromUIFrame();
 };

@@ -36,7 +36,7 @@ void DealDamageOnOverlapComponent::Process() {
 				GameEngine* gameEngine = GameEngine::getInstance();
 				if (gameEngine) {
 					// Проверяем есть ли активный чекпоинт
-					auto currentCheckpoint = gameEngine->getCurrentCheckpoint(); // Нужно добавить этот метод!
+					auto currentCheckpoint = gameEngine->getCurrentCheckpoint();
 					if (currentCheckpoint) {
 						gameEngine->respawnAtCheckpoint();
 					}

@@ -63,6 +63,8 @@ void GameEngine::loadLevel(const std::string& levelName) {
     loadGraphicsForLevel();
     normalizeUIFrame();
 
+    //removeWinSymbolsFromUIFrame();
+
     int worldWidth = config.getWorldWidth(levelName);
     int worldHeight = config.getWorldHeight(levelName);
 
@@ -265,7 +267,11 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
     EmitProjectilesComponentConfig upEmit18 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 45);
     EmitProjectilesComponentConfig upEmit19 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 50);
 
-    // Just for fun?..
+    EmitProjectilesComponentConfig upEmitEnemy = EmitProjectilesComponentConfig({ 0, -1 }, 2, 25, 3, 1, 20, 0);
+    EmitProjectilesComponentConfig downEmitEnemy = EmitProjectilesComponentConfig({ 0, 1 }, 2, 25, 3, 1, 20, 0);
+    EmitProjectilesComponentConfig rightEmitEnemy = EmitProjectilesComponentConfig({ 1, 0 }, 2, 25, 3, 1, 20, 0); // ->
+    EmitProjectilesComponentConfig leftEmitEnemy = EmitProjectilesComponentConfig({ -1, 0 }, 2, 25, 3, 1, 20, 0); // <-
+
     EmitProjectilesComponentConfig emitTowardsTarget = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 0, true, false);
 
     std::shared_ptr<HostileEntitiesPrefabs> prefabs = std::make_shared<HostileEntitiesPrefabs>();
@@ -275,18 +281,25 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
         {
             // LEVEL LOCAL PREFABS
 
-            // TEST ENEMY PREFAB
-            std::shared_ptr<ComponentsBasedEntity> testEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 5);
-            testEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovement));
-            testEnemy->AddComponent(*new DealDamageOnOverlapComponent(testEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
-            testEnemy->AddComponent(*new TakeDamageOnOverlapComponent(testEnemy.get(), playerProjectiles));
+            // ENEMY PREFAB
+            std::shared_ptr<ComponentsBasedEntity> baseEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 2);
+            baseEnemy->AddComponent(*new DealDamageOnOverlapComponent(baseEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            baseEnemy->AddComponent(*new TakeDamageOnOverlapComponent(baseEnemy.get(), playerProjectiles));
 
-            // ANOTHER TEST ENEMY PREFAB
-            std::shared_ptr<ComponentsBasedEntity> anotherTestEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 5, true);
-            anotherTestEnemy->AddComponent(*new DealDamageOnOverlapComponent(anotherTestEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
-            anotherTestEnemy->AddComponent(*new TakeDamageOnOverlapComponent(anotherTestEnemy.get(), playerProjectiles, 1));
-            anotherTestEnemy->AddComponent(*new EmitProjectilesComponent(anotherTestEnemy.get(), emitTowardsTarget, projectiles, getPlayerPtr()));
-            anotherTestEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovementShorter));
+            std::shared_ptr<ComponentsBasedEntity> moveEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 3);
+            moveEnemy->AddComponent(*new FollowLineTrajectoryComponent(moveEnemy.get(), horizontalMovement));
+            moveEnemy->AddComponent(*new DealDamageOnOverlapComponent(moveEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            moveEnemy->AddComponent(*new TakeDamageOnOverlapComponent(moveEnemy.get(), playerProjectiles));
+
+            std::shared_ptr<ComponentsBasedEntity> attackEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 3, true);
+            attackEnemy->AddComponent(*new DealDamageOnOverlapComponent(attackEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            attackEnemy->AddComponent(*new TakeDamageOnOverlapComponent(attackEnemy.get(), playerProjectiles, 1));
+            attackEnemy->AddComponent(*new EmitProjectilesComponent(attackEnemy.get(), leftEmitEnemy, projectiles, getPlayerPtr()));
+
+            std::shared_ptr<ComponentsBasedEntity> attackOnPlayerEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 3, true);
+            attackOnPlayerEnemy->AddComponent(*new DealDamageOnOverlapComponent(attackOnPlayerEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            attackOnPlayerEnemy->AddComponent(*new TakeDamageOnOverlapComponent(attackOnPlayerEnemy.get(), playerProjectiles, 1));
+            attackOnPlayerEnemy->AddComponent(*new EmitProjectilesComponent(attackOnPlayerEnemy.get(), emitTowardsTarget, projectiles, getPlayerPtr()));
 
             // PROJECTILES EMITTER PREFAB
             std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
@@ -429,9 +442,10 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
 
             // BIND SYMBOL_ID TO PREFAB
 
-            (*prefabs)["e"] = testEnemy;
-            (*prefabs)["e2"] = testEnemy;
-            (*prefabs)["e3"] = anotherTestEnemy;
+            (*prefabs)["e"] = baseEnemy;
+            (*prefabs)["e2"] = moveEnemy;
+            (*prefabs)["e3"] = attackEnemy;
+            (*prefabs)["e4"] = attackOnPlayerEnemy;
             
             (*prefabs)["w"] = upProjectilesEmitter;
             (*prefabs)["s"] = downProjectilesEmitter;
@@ -795,6 +809,8 @@ void GameEngine::removePlatformsFromUIFrame() {
 
 void GameEngine::update() {
     if (!player) return;
+
+    checkWinCondition();
 
     handlePlayerCollisions();
 
@@ -1320,6 +1336,7 @@ void GameEngine::renderUIFrameWithCamera() {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
     std::vector<std::string> screenBuffer(viewportHeight, std::string(viewportWidth, ' '));
+    std::vector<std::vector<int>> colorBuffer(viewportHeight, std::vector<int>(viewportWidth, 7));
 
     for (int screenY = 0; screenY < viewportHeight; screenY++) {
         int worldY = cameraY + screenY;
@@ -1330,13 +1347,25 @@ void GameEngine::renderUIFrameWithCamera() {
 
         const std::string& worldLine = uiFrame[worldY];
         std::string& screenLine = screenBuffer[screenY];
+        std::vector<int>& colorLine = colorBuffer[screenY];
 
         int startX = cameraX;
         int endX = min(cameraX + viewportWidth, static_cast<int>(worldLine.length()));
 
         if (startX < endX && startX < worldLine.length()) {
             int copyLen = min(endX - startX, viewportWidth);
-            screenLine.replace(0, copyLen, worldLine.substr(startX, copyLen));
+
+            for (int i = 0; i < copyLen; i++) {
+                int worldX = startX + i;
+                int screenX = i;
+
+                char c = worldLine[worldX];
+                screenLine[screenX] = c;
+
+                if (c == 'W') {
+                    colorLine[screenX] = 14;
+                }
+            }
         }
     }
 
@@ -1346,8 +1375,32 @@ void GameEngine::renderUIFrameWithCamera() {
     for (int y = 0; y < viewportHeight; y++) {
         coord.Y = y;
         SetConsoleCursorPosition(hConsole, coord);
-        std::cout << screenBuffer[y];
+
+        const std::string& line = screenBuffer[y];
+        const std::vector<int>& colors = colorBuffer[y];
+
+        int currentColor = -1;
+        std::string currentSegment;
+
+        for (int x = 0; x < viewportWidth; x++) {
+            if (colors[x] != currentColor) {
+                if (!currentSegment.empty()) {
+                    SetConsoleTextAttribute(hConsole, currentColor);
+                    std::cout << currentSegment;
+                    currentSegment.clear();
+                }
+                currentColor = colors[x];
+            }
+            currentSegment += line[x];
+        }
+
+        if (!currentSegment.empty()) {
+            SetConsoleTextAttribute(hConsole, currentColor);
+            std::cout << currentSegment;
+        }
     }
+
+    SetConsoleTextAttribute(hConsole, 7);
 }
 
 //void GameEngine::renderBoss() {
@@ -1684,5 +1737,44 @@ void GameEngine::respawnAtLevelStart() {
         Logger::Log("Player respawned at level start: (" +
             std::to_string(levelStartX) + ", " +
             std::to_string(levelStartY) + ")");
+    }
+}
+
+void GameEngine::checkWinCondition() {
+    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
+
+    int playerX = player->getX();
+    int playerY = player->getY();
+    int playerWidth = player->getWidth();
+    int playerHeight = player->getHeight();
+
+    for (int py = playerY; py < playerY + playerHeight; py++) {
+        if (py >= 0 && py < uiFrame.size()) {
+            for (int px = playerX; px < playerX + playerWidth; px++) {
+                if (px >= 0 && px < uiFrame[py].length()) {
+                    if (uiFrame[py][px] == 'W') {
+                        respawnAtLevelStart();
+                        //////////ÂÎÒ ÒÓÒ ÇÀÃÐÓÇÊÀ ÑËÅÄÓÞÙÅÃÎ ÄÈÀËÎÃÀ
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void GameEngine::removeWinSymbolsFromUIFrame() {
+    auto& uiFrame = const_cast<std::vector<std::string>&>(GraphicsManager::getGraphic("UIFrame"));
+
+    for (int y = 0; y < uiFrame.size(); y++) {
+        std::string& line = uiFrame[y];
+        for (int x = 0; x < line.length(); x++) {
+            if (line[x] == 'W') {
+                line[x] = ' ';
+                Logger::Log("Removed win symbol 'W' at (" +
+                    std::to_string(x) + ", " +
+                    std::to_string(y) + ")");
+            }
+        }
     }
 }
