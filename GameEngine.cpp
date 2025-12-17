@@ -584,6 +584,8 @@ void GameEngine::CreateHostileEntitiesFromLevelMap(std::shared_ptr<HostileEntiti
                 if (direction == 0) spikes->SetWidth(scale);
                 else spikes->SetHeight(scale);
 
+                spikes->SetWidth(spikes->getWidth()-2); // Why do we have to subtract 2? (visual position of player is two spaces to the right of their's actual X coord)
+
                 hostileEntitiesToProcess.push_back(spikes);
 
                 scale = -1;

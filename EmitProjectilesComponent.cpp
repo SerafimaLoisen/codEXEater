@@ -36,7 +36,7 @@ void EmitProjectilesComponent::Process()
 
             if (emitTowardsTarget && projectilesTarget)
             {
-                std::vector<float> dir = { static_cast<float>(projectilesTarget->getX() - target->getX()), static_cast<float>((projectilesTarget->getY()+projectilesTarget->getHeight()) - target->getY()) };
+                std::vector<float> dir = { static_cast<float>((projectilesTarget->getX() + projectilesTarget->getWidth() / 2) - target->getX()), static_cast<float>((projectilesTarget->getY() + projectilesTarget->getHeight() / 2) - target->getY()) };
                 
                 float length = sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
 
