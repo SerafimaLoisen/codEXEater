@@ -201,16 +201,15 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
+    <Text Include="debug.log" />
     <Text Include="debug.txt" />
     <Text Include="graphics\bullet.txt" />
     <Text Include="graphics\levels\level1.txt" />
-    <Text Include="graphics\levels\level2.txt" />
-    <Text Include="graphics\levels\level3.txt" />
-    <Text Include="graphics\levels\level4.txt" />
-    <Text Include="graphics\levels\level5.txt" />
-    <Text Include="graphics\levels\level6.txt" />
-    <Text Include="graphics\levels\level7.txt" />
-    <Text Include="graphics\levels\test.txt" />
+    <Text Include="graphics\levels\level2-1.txt" />
+    <Text Include="graphics\levels\level2-2.txt" />
+    <Text Include="graphics\levels\level3-1.txt" />
+    <Text Include="graphics\levels\level3-2.txt" />
+    <Text Include="graphics\levels\level3-3.txt" />
     <Text Include="graphics\parry_bullet.txt" />
     <Text Include="graphics\player.txt" />
     <Text Include="graphics\player_dodge.txt" />

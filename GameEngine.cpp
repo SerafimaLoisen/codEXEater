@@ -31,7 +31,8 @@ GameEngine* GameEngine::getInstance() {
 GameEngine::GameEngine()
     : player(nullptr), bulletSpawnTimer(0), gameRunning(true), score(0),
     screenWidth(0), screenHeight(0), parryBulletSpeed(0), parryRange(5),
-    currentLevel("tutorial"), bossMode(false), camera(nullptr) {
+    currentLevel("tutorial"), bossMode(false), camera(nullptr),
+    currentCheckpoint(nullptr), levelStartX(0), levelStartY(0) {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     instance = this;
 }
@@ -47,6 +48,9 @@ void GameEngine::loadLevel(const std::string& levelName) {
 
     currentLevel = levelName;
     bossMode = (levelName == "boss");
+
+    checkpoints.clear();
+    currentCheckpoint = nullptr;
 
     auto& config = ConfigManager::getInstance();
     screenWidth = config.getScreenWidth();
@@ -79,8 +83,10 @@ void GameEngine::loadLevel(const std::string& levelName) {
     platforms.clear();
     sidePlatforms.clear();
     hostileEntitiesToProcess.clear();
+    checkpoints.clear();
 
     createPlatformsFromUIFrame();
+    createCheckpointsFromUIFrame();
 
     int spawnX = -1;
     int spawnY = -1;
@@ -98,6 +104,9 @@ void GameEngine::loadLevel(const std::string& levelName) {
 
         removeSpawnPointFromUIFrame(spawnX, spawnY);
     }
+
+    levelStartX = spawnX;
+    levelStartY = spawnY;
 
     const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
     if (!foundSpawnPoint && !uiFrame.empty()) {
@@ -163,7 +172,7 @@ void GameEngine::DefineGlobalHostileEntitiesPrefabs() {
     
     // COMPONENTS CONFIGS
 
-    DealDamageOnOverlapComponentConfig instantKillOnOverlap = DealDamageOnOverlapComponentConfig(10, 0);
+    DealDamageOnOverlapComponentConfig instantKillOnOverlap = DealDamageOnOverlapComponentConfig(1, 0);
 
     // PREFABS
     
@@ -191,20 +200,71 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
     
     // { TO LEFT OFFSET, TO RIGHT OFFSET } FOR X AXIS
     // { TO TOP OFFSET, TO BOTTOM OFFSET } FOR Y AXIS
-    FollowLineTrajectoryComponentConfig upSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 12, 80);
+    FollowLineTrajectoryComponentConfig upSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 20, 0);
+    FollowLineTrajectoryComponentConfig upSpikeMovement2 = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 20, 10);
+    FollowLineTrajectoryComponentConfig upSpikeMovement3 = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 20, 20);
+    FollowLineTrajectoryComponentConfig upSpikeMovement4 = FollowLineTrajectoryComponentConfig(false, 1, { 2, 0 }, 1, Axis::Y, 60, 0);
 
-    FollowLineTrajectoryComponentConfig leftSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 4, 0 }, 1, Axis::X, 20, 0);
-    FollowLineTrajectoryComponentConfig leftSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 4, 0 }, 1, Axis::X, 20, 10);
-    FollowLineTrajectoryComponentConfig rightSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 0, 4 }, 1, Axis::X, 20, 0);
-    FollowLineTrajectoryComponentConfig rightSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 0, 4 }, 1, Axis::X, 20, 10);
+    FollowLineTrajectoryComponentConfig downSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 0, 2 }, 1, Axis::Y, 20, 0);
+    FollowLineTrajectoryComponentConfig downSpikeMovement2 = FollowLineTrajectoryComponentConfig(false, 1, { 0, 2 }, 1, Axis::Y, 20, 10);
+    FollowLineTrajectoryComponentConfig downSpikeMovement3 = FollowLineTrajectoryComponentConfig(false, 1, { 0, 2 }, 1, Axis::Y, 20, 20);
+    FollowLineTrajectoryComponentConfig downSpikeMovement4 = FollowLineTrajectoryComponentConfig(false, 1, { 0, 2 }, 1, Axis::Y, 60, 0);
+
+    FollowLineTrajectoryComponentConfig leftSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 7, 0 }, 1, Axis::X, 20, 0);
+    FollowLineTrajectoryComponentConfig leftSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 0, 97 }, 1, Axis::X, 20, 0);
+    FollowLineTrajectoryComponentConfig rightSpikeMovement = FollowLineTrajectoryComponentConfig(false, 1, { 0, 7 }, 1, Axis::X, 20, 0);
+    FollowLineTrajectoryComponentConfig rightSpikeMovementWithStartDelay = FollowLineTrajectoryComponentConfig(false, 1, { 104, 0 }, 1, Axis::X, 20, 0);
+
+    FollowLineTrajectoryComponentConfig rightMovement = FollowLineTrajectoryComponentConfig(false, 1, { 99, 0 }, 1, Axis::X, 0, 0);
     
     // 
     DealDamageOnOverlapComponentConfig defaultOverlapDamage = DealDamageOnOverlapComponentConfig();
-    DealDamageOnOverlapComponentConfig instantKillOnOverlap = DealDamageOnOverlapComponentConfig(10, 0);
+    DealDamageOnOverlapComponentConfig instantKillOnOverlap = DealDamageOnOverlapComponentConfig(1, 0);
 
     // Emit in the -1 direction on Axis X with Projectile Speed of 2 for MaxTravelDistance of 40 units, 3 Projectiles in a Row with Time Between Emissions=3 and Time Between Sequences of Emissions=6
-    EmitProjectilesComponentConfig emitToTheLeftWithSpeedOf2 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 20);
+    EmitProjectilesComponentConfig upEmit = EmitProjectilesComponentConfig({ 0, -1 }, 2, 10, 3, 1, 20, 0);
+    EmitProjectilesComponentConfig downEmit = EmitProjectilesComponentConfig({ 0, 1 }, 2, 10, 3, 1, 20, 0);
+    EmitProjectilesComponentConfig rightEmit = EmitProjectilesComponentConfig({ 1, 0 }, 2, 10, 3, 1, 40, 0); // ->
+    EmitProjectilesComponentConfig leftEmit = EmitProjectilesComponentConfig({ -1, 0 }, 2, 10, 3, 1, 40, 0); // <-
+
+    EmitProjectilesComponentConfig upEmit1 = EmitProjectilesComponentConfig({ 0, -1 }, 1, 10, 10, 1, 20, 0);
+    EmitProjectilesComponentConfig downEmit1 = EmitProjectilesComponentConfig({ 0, 1 }, 1, 10, 10, 1, 20, 0);
+    EmitProjectilesComponentConfig rightEmit1 = EmitProjectilesComponentConfig({ 1, 0 }, 1, 10, 5, 1, 20, 0); // ->
+    EmitProjectilesComponentConfig leftEmit1 = EmitProjectilesComponentConfig({ -1, 0 }, 1, 10, 5, 1, 20, 0); // <-
+
+    EmitProjectilesComponentConfig upEmit2 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 10, 3, 1, 20, 20);
+    EmitProjectilesComponentConfig downEmit2 = EmitProjectilesComponentConfig({ 0, 1 }, 2, 10, 3, 1, 20, 20);
+    EmitProjectilesComponentConfig rightEmit2 = EmitProjectilesComponentConfig({ 1, 0 }, 2, 10, 3, 1, 40, 20); // ->
+    EmitProjectilesComponentConfig leftEmit2 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 10, 3, 1, 40, 20); // <-
+
+    EmitProjectilesComponentConfig upEmit3 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 10, 3, 1, 20, 40);
+    EmitProjectilesComponentConfig downEmit3 = EmitProjectilesComponentConfig({ 0, 1 }, 2, 10, 3, 1, 20, 40);
+    EmitProjectilesComponentConfig rightEmit3 = EmitProjectilesComponentConfig({ 1, 0 }, 2, 10, 3, 1, 40, 40); // ->
+    EmitProjectilesComponentConfig leftEmit3 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 10, 3, 1, 40, 40); // <-
+
+    EmitProjectilesComponentConfig upEmit4 = EmitProjectilesComponentConfig({ 0, -1 }, 1, 4, 3, 1, 0, 0);
+    EmitProjectilesComponentConfig downEmit4 = EmitProjectilesComponentConfig({ 0, 1 }, 1, 4, 3, 1, 0, 0);
+    EmitProjectilesComponentConfig rightEmit4 = EmitProjectilesComponentConfig({ 1, 0 }, 1, 7, 3, 1, 0, 0); // ->
+    EmitProjectilesComponentConfig leftEmit4 = EmitProjectilesComponentConfig({ -1, 0 }, 1, 7, 3, 1, 0, 0); // <-
+
+    EmitProjectilesComponentConfig rightEmit5 = EmitProjectilesComponentConfig({ 1, 0 }, 1, 97, 3, 1, 0, 0); // ->
+
+    EmitProjectilesComponentConfig upEmit7 = EmitProjectilesComponentConfig({ 0, -1 }, 1, 1, 5, 0, 0, 0);
+    EmitProjectilesComponentConfig downEmit7 = EmitProjectilesComponentConfig({ 0, 1 }, 1, 1, 5, 0, 0, 0);
+    EmitProjectilesComponentConfig rightEmit7 = EmitProjectilesComponentConfig({ 1, 0 }, 2, 10, 3, 1, 0, 0); // ->
+    EmitProjectilesComponentConfig leftEmit7 = EmitProjectilesComponentConfig({ -1, 0 }, 2, 10, 3, 1, 0, 0); // <-
     
+    EmitProjectilesComponentConfig upEmit10 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 0);
+    EmitProjectilesComponentConfig upEmit11 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 5);
+    EmitProjectilesComponentConfig upEmit12 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 10);
+    EmitProjectilesComponentConfig upEmit13 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 15);
+    EmitProjectilesComponentConfig upEmit14 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 25);
+    EmitProjectilesComponentConfig upEmit15 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 30);
+    EmitProjectilesComponentConfig upEmit16 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 35);
+    EmitProjectilesComponentConfig upEmit17 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 40);
+    EmitProjectilesComponentConfig upEmit18 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 45);
+    EmitProjectilesComponentConfig upEmit19 = EmitProjectilesComponentConfig({ 0, -1 }, 2, 50, 1, 1, 50, 50);
+
     // Just for fun?..
     EmitProjectilesComponentConfig emitTowardsTarget = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 0, true, false);
 
@@ -229,20 +289,138 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
             anotherTestEnemy->AddComponent(*new FollowLineTrajectoryComponent(testEnemy.get(), horizontalMovementShorter));
 
             // PROJECTILES EMITTER PREFAB
-            std::shared_ptr<ComponentsBasedEntity> projectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
-            projectilesEmitter->AddComponent(*new EmitProjectilesComponent(projectilesEmitter.get(), emitToTheLeftWithSpeedOf2, projectiles, getPlayerPtr()));
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter1 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter1 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter1 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter1 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter5 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter7 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> downProjectilesEmitter7 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> rightProjectilesEmitter7 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> leftProjectilesEmitter7 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter10 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter11 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter12 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter13 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter14 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter15 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter16 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter17 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter18 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+            std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter19 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
+
+            upProjectilesEmitter->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter.get(), upEmit, projectiles, getPlayerPtr()));
+            downProjectilesEmitter->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter.get(), downEmit, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter.get(), rightEmit, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter.get(), leftEmit, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter1->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter1.get(), upEmit1, projectiles, getPlayerPtr()));
+            downProjectilesEmitter1->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter1.get(), downEmit1, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter1->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter1.get(), rightEmit1, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter1->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter1.get(), leftEmit1, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter2->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter2.get(), upEmit2, projectiles, getPlayerPtr()));
+            downProjectilesEmitter2->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter2.get(), downEmit2, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter2->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter2.get(), rightEmit2, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter2->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter2.get(), leftEmit2, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter3->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter3.get(), upEmit3, projectiles, getPlayerPtr()));
+            downProjectilesEmitter3->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter3.get(), downEmit3, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter3->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter3.get(), rightEmit3, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter3->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter3.get(), leftEmit3, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter4->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter4.get(), upEmit4, projectiles, getPlayerPtr()));
+            downProjectilesEmitter4->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter4.get(), downEmit4, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter4->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter4.get(), rightEmit4, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter4->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter4.get(), leftEmit4, projectiles, getPlayerPtr()));
+
+            rightProjectilesEmitter5->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter5.get(), rightEmit5, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter7->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter7.get(), upEmit7, projectiles, getPlayerPtr()));
+            downProjectilesEmitter7->AddComponent(*new EmitProjectilesComponent(downProjectilesEmitter7.get(), downEmit7, projectiles, getPlayerPtr()));
+            rightProjectilesEmitter7->AddComponent(*new EmitProjectilesComponent(rightProjectilesEmitter7.get(), rightEmit7, projectiles, getPlayerPtr()));
+            leftProjectilesEmitter7->AddComponent(*new EmitProjectilesComponent(leftProjectilesEmitter7.get(), leftEmit7, projectiles, getPlayerPtr()));
+
+            upProjectilesEmitter7->AddComponent(*new FollowLineTrajectoryComponent(upProjectilesEmitter7.get(), rightMovement));
+            downProjectilesEmitter7->AddComponent(*new FollowLineTrajectoryComponent(downProjectilesEmitter7.get(), rightMovement));
+            rightProjectilesEmitter7->AddComponent(*new FollowLineTrajectoryComponent(rightProjectilesEmitter7.get(), rightMovement));
+            leftProjectilesEmitter7->AddComponent(*new FollowLineTrajectoryComponent(leftProjectilesEmitter7.get(), rightMovement));
+
+            upProjectilesEmitter10->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter10.get(), upEmit10, projectiles, getPlayerPtr()));
+            upProjectilesEmitter11->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter11.get(), upEmit11, projectiles, getPlayerPtr()));
+            upProjectilesEmitter12->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter12.get(), upEmit12, projectiles, getPlayerPtr()));
+            upProjectilesEmitter13->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter13.get(), upEmit13, projectiles, getPlayerPtr()));
+            upProjectilesEmitter14->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter14.get(), upEmit14, projectiles, getPlayerPtr()));
+            upProjectilesEmitter15->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter15.get(), upEmit15, projectiles, getPlayerPtr()));
+            upProjectilesEmitter16->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter16.get(), upEmit16, projectiles, getPlayerPtr()));
+            upProjectilesEmitter17->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter17.get(), upEmit17, projectiles, getPlayerPtr()));
+            upProjectilesEmitter18->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter18.get(), upEmit18, projectiles, getPlayerPtr()));
+            upProjectilesEmitter19->AddComponent(*new EmitProjectilesComponent(upProjectilesEmitter19.get(), upEmit19, projectiles, getPlayerPtr()));
+
+            //leftSpikeMovementWithStartDelay
 
             // CUSTOM SPIKES
             std::shared_ptr<ComponentsBasedEntity> upSpikeCustom = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
-            upSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom.get(), *getPlayerPtr(), instantKillOnOverlap));
+            std::shared_ptr<ComponentsBasedEntity> upSpikeCustom2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            std::shared_ptr<ComponentsBasedEntity> upSpikeCustom3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            std::shared_ptr<ComponentsBasedEntity> upSpikeCustom4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+
+            std::shared_ptr<ComponentsBasedEntity> downSpikeCustom = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            std::shared_ptr<ComponentsBasedEntity> downSpikeCustom2 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            std::shared_ptr<ComponentsBasedEntity> downSpikeCustom3 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
+            std::shared_ptr<ComponentsBasedEntity> downSpikeCustom4 = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false);
             
             std::shared_ptr<ComponentsBasedEntity> rightSpikeCustom = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
             std::shared_ptr<ComponentsBasedEntity> rightSpikeCustomWithStartDelay = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
             std::shared_ptr<ComponentsBasedEntity> leftSpikeCustom = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
             std::shared_ptr<ComponentsBasedEntity> leftSpikeCustomWithStartDelay = std::shared_ptr<ComponentsBasedEntity>(upSpikeCustom->clone(0,0));
             
-            // SORRY FOR SUCH BAD EXAMPLE
+            upSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom.get(), *getPlayerPtr(), defaultOverlapDamage));
+            upSpikeCustom2->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom2.get(), *getPlayerPtr(), defaultOverlapDamage));
+            upSpikeCustom3->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom3.get(), *getPlayerPtr(), defaultOverlapDamage));
+            upSpikeCustom4->AddComponent(*new DealDamageOnOverlapComponent(upSpikeCustom4.get(), *getPlayerPtr(), defaultOverlapDamage));
+
+            downSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(downSpikeCustom.get(), *getPlayerPtr(), defaultOverlapDamage));
+            downSpikeCustom2->AddComponent(*new DealDamageOnOverlapComponent(downSpikeCustom2.get(), *getPlayerPtr(), defaultOverlapDamage));
+            downSpikeCustom3->AddComponent(*new DealDamageOnOverlapComponent(downSpikeCustom3.get(), *getPlayerPtr(), defaultOverlapDamage));
+            downSpikeCustom4->AddComponent(*new DealDamageOnOverlapComponent(downSpikeCustom4.get(), *getPlayerPtr(), defaultOverlapDamage));
+
+            rightSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(rightSpikeCustom.get(), *getPlayerPtr(), defaultOverlapDamage));
+            rightSpikeCustomWithStartDelay->AddComponent(*new DealDamageOnOverlapComponent(rightSpikeCustomWithStartDelay.get(), *getPlayerPtr(), defaultOverlapDamage));
+            leftSpikeCustom->AddComponent(*new DealDamageOnOverlapComponent(leftSpikeCustom.get(), *getPlayerPtr(), defaultOverlapDamage));
+            leftSpikeCustomWithStartDelay->AddComponent(*new DealDamageOnOverlapComponent(leftSpikeCustomWithStartDelay.get(), *getPlayerPtr(), defaultOverlapDamage));
+
             upSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(upSpikeCustom.get(), upSpikeMovement));
+            upSpikeCustom2->AddComponent(*new FollowLineTrajectoryComponent(upSpikeCustom2.get(), upSpikeMovement2));
+            upSpikeCustom3->AddComponent(*new FollowLineTrajectoryComponent(upSpikeCustom3.get(), upSpikeMovement3));
+            upSpikeCustom4->AddComponent(*new FollowLineTrajectoryComponent(upSpikeCustom4.get(), upSpikeMovement4));
+            downSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(downSpikeCustom.get(), downSpikeMovement));
+            downSpikeCustom2->AddComponent(*new FollowLineTrajectoryComponent(downSpikeCustom2.get(), downSpikeMovement2));
+            downSpikeCustom3->AddComponent(*new FollowLineTrajectoryComponent(downSpikeCustom3.get(), downSpikeMovement3));
+            downSpikeCustom4->AddComponent(*new FollowLineTrajectoryComponent(downSpikeCustom4.get(), downSpikeMovement4));
             rightSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(rightSpikeCustom.get(), rightSpikeMovement));
             rightSpikeCustomWithStartDelay->AddComponent(*new FollowLineTrajectoryComponent(rightSpikeCustomWithStartDelay.get(), rightSpikeMovementWithStartDelay));
             leftSpikeCustom->AddComponent(*new FollowLineTrajectoryComponent(leftSpikeCustom.get(), leftSpikeMovement));
@@ -255,9 +433,58 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
             (*prefabs)["e2"] = testEnemy;
             (*prefabs)["e3"] = anotherTestEnemy;
             
-            (*prefabs)["s"] = projectilesEmitter;
+            (*prefabs)["w"] = upProjectilesEmitter;
+            (*prefabs)["s"] = downProjectilesEmitter;
+            (*prefabs)["a"] = leftProjectilesEmitter;
+            (*prefabs)["d"] = rightProjectilesEmitter;
+
+            (*prefabs)["w1"] = upProjectilesEmitter1;
+            (*prefabs)["s1"] = downProjectilesEmitter1;
+            (*prefabs)["a1"] = leftProjectilesEmitter1;
+            (*prefabs)["d1"] = rightProjectilesEmitter1;
+
+            (*prefabs)["w2"] = upProjectilesEmitter2;
+            (*prefabs)["s2"] = downProjectilesEmitter2;
+            (*prefabs)["a2"] = leftProjectilesEmitter2;
+            (*prefabs)["d2"] = rightProjectilesEmitter2;
+
+            (*prefabs)["w3"] = upProjectilesEmitter3;
+            (*prefabs)["s3"] = downProjectilesEmitter3;
+            (*prefabs)["a3"] = leftProjectilesEmitter3;
+            (*prefabs)["d3"] = rightProjectilesEmitter3;
+
+            (*prefabs)["w4"] = upProjectilesEmitter4;
+            (*prefabs)["s4"] = downProjectilesEmitter4;
+            (*prefabs)["a4"] = leftProjectilesEmitter4;
+            (*prefabs)["d4"] = rightProjectilesEmitter4;
+
+            (*prefabs)["d5"] = rightProjectilesEmitter5;
+
+            (*prefabs)["w7"] = upProjectilesEmitter7;
+            (*prefabs)["s7"] = downProjectilesEmitter7;
+            (*prefabs)["a7"] = leftProjectilesEmitter7;
+            (*prefabs)["d7"] = rightProjectilesEmitter7;
+
+            (*prefabs)["wr"] = upProjectilesEmitter10;
+            (*prefabs)["wt"] = upProjectilesEmitter11;
+            (*prefabs)["wy"] = upProjectilesEmitter12;
+            (*prefabs)["wu"] = upProjectilesEmitter13;
+            (*prefabs)["wi"] = upProjectilesEmitter14;
+            (*prefabs)["wo"] = upProjectilesEmitter15;
+            (*prefabs)["wl"] = upProjectilesEmitter16;
+            (*prefabs)["wk"] = upProjectilesEmitter17;
+            (*prefabs)["wj"] = upProjectilesEmitter18;
+            (*prefabs)["wh"] = upProjectilesEmitter19;
 
             (*prefabs)["^1"] = upSpikeCustom;
+            (*prefabs)["^2"] = upSpikeCustom2;
+            (*prefabs)["^3"] = upSpikeCustom3;
+            (*prefabs)["^4"] = upSpikeCustom4;
+
+            (*prefabs)["v1"] = downSpikeCustom;
+            (*prefabs)["v2"] = downSpikeCustom2;
+            (*prefabs)["v3"] = downSpikeCustom3;
+            (*prefabs)["v4"] = downSpikeCustom4;
 
             (*prefabs)["<1"] = leftSpikeCustom;
             (*prefabs)["<2"] = leftSpikeCustomWithStartDelay;
@@ -569,7 +796,53 @@ void GameEngine::update() {
 
     handlePlayerCollisions();
 
+    int activationRange = ConfigManager::getInstance().getCheckpointActivationRange();
+
+    // ВАЖНО: Добавляем дебаг информацию о текущем чекпоинте
+    if (currentCheckpoint) {
+        Logger::Log("Current active checkpoint: (" +
+            std::to_string(currentCheckpoint->getX()) + ", " +
+            std::to_string(currentCheckpoint->getY()) + ")");
+    }
+    else {
+        Logger::Log("No active checkpoint currently");
+    }
+
+    Logger::Log("Checking checkpoints activation. Range: " + std::to_string(activationRange));
+    Logger::Log("Player position: (" + std::to_string(player->getX()) + ", " +
+        std::to_string(player->getY()) + ")");
+    Logger::Log("Number of checkpoints: " + std::to_string(checkpoints.size()));
+
+    for (auto& checkpoint : checkpoints) {
+        Logger::Log("Checkpoint at (" + std::to_string(checkpoint->getX()) + ", " +
+            std::to_string(checkpoint->getY()) + "), active: " +
+            (checkpoint->isActive() ? "YES" : "NO"));
+
+        if (!checkpoint->isActive()) {
+            int playerCenterX = player->getX() + player->getWidth() / 2;
+            int playerCenterY = player->getY() + player->getHeight() / 2;
+
+            int checkpointX = checkpoint->getX();
+            int checkpointY = checkpoint->getY();
+
+            // Используем радиус из конфига
+            int diffX = abs(playerCenterX - checkpointX);
+            int diffY = abs(playerCenterY - checkpointY);
+
+            Logger::Log("Distance to checkpoint: dx=" + std::to_string(diffX) +
+                ", dy=" + std::to_string(diffY));
+
+            if (diffX <= activationRange && diffY <= activationRange) {
+                Logger::Log("CHECKPOINT ACTIVATION CONDITION MET!");
+                activateCheckpoint(checkpoint);
+                break;
+            }
+        }
+    }
+
     player->update();
+
+    handlePlayerAttack();
 
     updateCamera();
 
@@ -581,7 +854,7 @@ void GameEngine::update() {
         }
     }
 
-    // РћР±РЅРѕРІР»СЏРµРј Р°РєС‚РёРІРЅС‹Рµ РїСѓР»Рё
+    // Обновляем активные пули
     for (auto& bullet : projectiles) {
         if (bullet->isActive()) {
             bullet->update();
@@ -599,18 +872,18 @@ void GameEngine::update() {
         }
     }
 
-    // РЎРїР°РІРЅ РЅРѕРІС‹С… РїСѓР»СЊ
+    // Спавн новых пуль
     /*bulletSpawnTimer++;
     int randomSpawnRate;*/
 
     //if (bossMode) {
-    //    // Р‘РѕСЃСЃ СЂРµР¶РёРј - С‡Р°С‰Рµ Рё СЃР»РѕР¶РЅРµРµ
+    //    // Босс режим - чаще и сложнее
     //    /*updateBoss();
     //    checkBossCollisions();
     //    randomSpawnRate = 10 + (std::rand() % 15);*/
     //}
     //else {
-    //    // РўСѓС‚РѕСЂРёР°Р» - СЂРµР¶Рµ Рё РїСЂРѕС‰Рµ
+    //    // Туториал - реже и проще
     //    randomSpawnRate = 20 + (std::rand() % 25);
     //}
 
@@ -619,17 +892,16 @@ void GameEngine::update() {
     //    bulletSpawnTimer = 0;
     //}
 
-    // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ РїСѓР»СЊ СЃ РёРіСЂРѕРєРѕРј
+    // Проверяем столкновения пуль с игроком
     checkCollisions();
 
-    // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РїР°СЂРёСЂРѕРІР°РЅРёРµ
+    // Обрабатываем парирование
     handleParry();
 
-    // РџСЂРѕРІРµСЂСЏРµРј СѓСЃР»РѕРІРёРµ Р·Р°РІРµСЂС€РµРЅРёСЏ РёРіСЂС‹
+    // Проверяем условие смерти (HP = 0)
     if (!player->isAlive()) {
-        UIManager::renderGameOver();
-        Sleep(2000);
-        gameRunning = false;
+        Logger::Log("Player died! Respawning at level start");
+        respawnAtLevelStart();
     }
 
 #pragma region UPDATE_ENEMIES
@@ -843,16 +1115,21 @@ void GameEngine::handlePlayerAttack() {
 }
 
 void GameEngine::checkCollisions() {
+    Logger::Log("ЧЕК 1");
     for (auto& bullet : projectiles) {
         if (!bullet->isActive()) continue;
+        Logger::Log("ЧЕК 2");
 
         bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
-        if (isPlayerBullet) continue;  
+        if (isPlayerBullet) continue;
+        Logger::Log("ЧЕК 3");
 
         if (player->checkCollision(*bullet)) {
+            Logger::Log("ЧЕК 4");
             if (player->getIsDodging()) {
                 continue;
             }
+            Logger::Log("ЧЕК 5");
 
             ParryBullet* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
             if (parryBullet && player->getIsParrying()) {
@@ -862,8 +1139,32 @@ void GameEngine::checkCollisions() {
                 continue;
             }
 
+            // Запоминаем здоровье ДО получения урона
+            int healthBeforeDamage = player->getHealth();
+
+            // Наносим урон
+            Logger::Log("ЧЕК 6");
             player->takeDamage(1);
+            Logger::Log("ЧЕК 7");
             bullet->setActive(false);
+
+            Logger::Log("Player took damage. Health before: " + std::to_string(healthBeforeDamage) +
+                ", after: " + std::to_string(player->getHealth()));
+
+            // ИМЕННО ЗДЕСЬ НУЖНО ТЕЛЕПОРТИРОВАТЬСЯ НА ЧЕКПОИНТ ПРИ ЛЮБОМ УРОНЕ
+            if (currentCheckpoint) {
+                Logger::Log("ЧЕК 8");
+                Logger::Log("Teleporting to checkpoint after taking damage! Current checkpoint: (" +
+                    std::to_string(currentCheckpoint->getX()) + ", " +
+                    std::to_string(currentCheckpoint->getY()) + ")");
+                respawnAtCheckpoint();
+                // Не выходим из цикла - продолжаем проверять другие пули
+            }
+            else {
+                Logger::Log("No active checkpoint to teleport to!");
+            }
+
+            // Если игрок умер, ничего не делаем здесь - update() обработает смерть
         }
     }
 }
@@ -922,6 +1223,38 @@ void GameEngine::render() {
     if (!player || !camera) return;
 
     renderUIFrameWithCamera();
+
+    for (auto& checkpoint : checkpoints) {
+        if (camera->isInViewport(checkpoint->getX(), checkpoint->getY(), 1, 1)) {
+            int screenX = camera->worldToScreenX(checkpoint->getX());
+            int screenY = camera->worldToScreenY(checkpoint->getY());
+
+            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+            COORD coord;
+            coord.X = screenX;
+            coord.Y = screenY;
+            SetConsoleCursorPosition(hConsole, coord);
+
+            // Используем цвета из конфига
+            int color;
+            if (checkpoint->isActive()) {
+                color = ConfigManager::getInstance().getCheckpointActiveColor();
+                Logger::Log("Rendering ACTIVE checkpoint at (" +
+                    std::to_string(screenX) + "," + std::to_string(screenY) +
+                    ") with color " + std::to_string(color));
+            }
+            else {
+                color = ConfigManager::getInstance().getCheckpointInactiveColor();
+                Logger::Log("Rendering INACTIVE checkpoint at (" +
+                    std::to_string(screenX) + "," + std::to_string(screenY) +
+                    ") with color " + std::to_string(color));
+            }
+
+            SetConsoleTextAttribute(hConsole, color);
+            std::cout << ConfigManager::getInstance().getCheckpointSymbol();
+            SetConsoleTextAttribute(hConsole, 7);
+        }
+    }
 
     // Отрисовываем игрока
     if (camera->isInViewport(player->getX(), player->getY(),
@@ -1171,16 +1504,11 @@ void GameEngine::normalizeUIFrame() {
 void GameEngine::switchLevel(const std::string& levelName) {
     Logger::Log("=== Switching from level '" + currentLevel + "' to '" + levelName + "' ===");
 
-    int savedHealth = player ? player->getHealth() : ConfigManager::getInstance().getPlayerHealth();
     int savedScore = score;
 
     loadLevel(levelName);
 
-    if (player) {
-        player->heal(player->getMaxHealth());
-    }
-
-    score = 0;
+    score = savedScore;
 
     Logger::Log("Level switched successfully to: " + levelName);
 }
@@ -1235,5 +1563,124 @@ void GameEngine::removeSpawnPointFromUIFrame(int spawnX, int spawnY) {
         uiFrame[spawnY][spawnX] = ' ';
         Logger::Log("Removed spawn point 'P' at (" +
             std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
+    }
+}
+
+void GameEngine::createCheckpointsFromUIFrame() {
+    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
+    char checkpointSymbol = ConfigManager::getInstance().getCheckpointSymbol();
+
+    Logger::Log("Searching for checkpoints with symbol: " + std::string(1, checkpointSymbol));
+    Logger::Log("UIFrame size: " + std::to_string(uiFrame.size()) + " lines");
+
+    for (int y = 0; y < uiFrame.size(); y++) {
+        const std::string& line = uiFrame[y];
+        for (int x = 0; x < line.length(); x++) {
+            char currentChar = line[x];
+
+            // Используем символ из конфига для обозначения чекпоинта
+            if (currentChar == checkpointSymbol) {
+                auto checkpoint = std::make_shared<Checkpoint>(x, y);
+                checkpoints.push_back(checkpoint);
+
+                // Удаляем символ чекпоинта из UIFrame
+                const_cast<std::string&>(line)[x] = ' ';
+
+                Logger::Log("Checkpoint created at: (" +
+                    std::to_string(x) + ", " + std::to_string(y) + ")");
+            }
+        }
+    }
+    Logger::Log("Total checkpoints created: " + std::to_string(checkpoints.size()));
+}
+
+void GameEngine::activateCheckpoint(std::shared_ptr<Checkpoint> checkpoint) {
+    Logger::Log("=== activateCheckpoint called ===");
+
+    if (checkpoint) {
+        Logger::Log("Checkpoint pointer is valid at: (" +
+            std::to_string(checkpoint->getX()) + ", " +
+            std::to_string(checkpoint->getY()) + ")");
+
+        if (!checkpoint->isActive()) {
+            Logger::Log("Checkpoint is not active, activating...");
+
+            // Деактивируем ВСЕ предыдущие чекпоинты
+            for (auto& cp : checkpoints) {
+                if (cp->isActive()) {
+                    cp->setActive(false);
+                    Logger::Log("Deactivated checkpoint at (" +
+                        std::to_string(cp->getX()) + ", " +
+                        std::to_string(cp->getY()) + ")");
+                }
+            }
+
+            // Активируем новый
+            checkpoint->setActive(true);
+            currentCheckpoint = checkpoint;
+
+            if (player) {
+                int healthBefore = player->getHealth();
+                player->heal(player->getMaxHealth());
+            }
+
+            Logger::Log("Checkpoint activated at: (" +
+                std::to_string(checkpoint->getX()) + ", " +
+                std::to_string(checkpoint->getY()) + ")");
+            Logger::Log("Current checkpoint set to: (" +
+                std::to_string(currentCheckpoint->getX()) + ", " +
+                std::to_string(currentCheckpoint->getY()) + ")");
+        }
+        else {
+            Logger::Log("Checkpoint is already active");
+        }
+    }
+    else {
+        Logger::Log("ERROR: Checkpoint pointer is null!");
+    }
+}
+
+void GameEngine::respawnAtCheckpoint() {
+    Logger::Log("=== respawnAtCheckpoint called ===");
+
+    if (currentCheckpoint && player) {
+        Logger::Log("Teleporting player to checkpoint: (" +
+            std::to_string(currentCheckpoint->getX()) + ", " +
+            std::to_string(currentCheckpoint->getY()) + ")");
+
+        player->setX(currentCheckpoint->getX());
+        player->setY(currentCheckpoint->getY());
+        player->setVelocityX(0);
+        player->setVelocityY(0);
+        player->setOnGround(false);
+
+        // Центрируем камеру на игроке
+        if (camera) {
+            camera->centerOn(player->getX(), player->getY());
+            Logger::Log("Camera recentered on player");
+        }
+    }
+    else {
+        if (!currentCheckpoint) {
+            Logger::Log("ERROR: currentCheckpoint is null!");
+        }
+        if (!player) {
+            Logger::Log("ERROR: player is null!");
+        }
+    }
+}
+
+void GameEngine::respawnAtLevelStart() {
+    if (player) {
+        player->setX(levelStartX);
+        player->setY(levelStartY);
+        player->setVelocityX(0);
+        player->setVelocityY(0);
+        player->setOnGround(false);
+        player->heal(player->getMaxHealth()); // Восстанавливаем все HP
+
+        Logger::Log("Player respawned at level start: (" +
+            std::to_string(levelStartX) + ", " +
+            std::to_string(levelStartY) + ")");
     }
 }

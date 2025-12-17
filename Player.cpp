@@ -122,11 +122,11 @@ bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
     return false;
 }
 void Player::moveLeft() {
-    velocityX = -3.0f;
+    velocityX = -2.0f;
 }
 
 void Player::moveRight() {
-    velocityX = 3.0f;
+    velocityX = 2.0f;
 }
 
 void Player::stopMoving() {
@@ -136,7 +136,7 @@ void Player::stopMoving() {
 void Player::jump() {
     if (onGround) {
         onGround = false;
-        velocityY = -2.0f;
+        velocityY = -1.8f;
     }
 }
 

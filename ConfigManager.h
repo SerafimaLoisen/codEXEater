@@ -10,6 +10,7 @@ private:
     std::unordered_map<std::string, float> floatCache;
 
     void loadConfigInternal();
+    char getChar(const std::string& key, char defaultValue = '+');
 
 public:
     static ConfigManager& getInstance();
@@ -64,4 +65,9 @@ public:
     std::string getLevelName(int index);
     std::string getLevelFile(int index);
     std::string getLevelDescription(int index);
+
+    char getCheckpointSymbol();          // Символ чекпоинта в файле уровня
+    int getCheckpointActivationRange();  // Радиус активации чекпоинта
+    int getCheckpointActiveColor();      // Цвет активного чекпоинта
+    int getCheckpointInactiveColor();    // Цвет неактивного чекпоинта
 };

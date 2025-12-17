@@ -87,7 +87,7 @@ void ScriptEngine::initialize()
 
             // no args should be provided
 
-            QuestController::setNextLevel("level7");
+            QuestController::setNextLevel("boss");
             QuestController::setNextDialog("game_finish");
         }
         });

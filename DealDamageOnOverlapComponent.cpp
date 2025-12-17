@@ -1,6 +1,7 @@
 #include "DealDamageOnOverlapComponent.h"
 #include "Player.h"
 #include "ComponentsBasedEntity.h"
+#include "GameEngine.h"
 
 DealDamageOnOverlapComponentConfig::DealDamageOnOverlapComponentConfig(
 	int _contactDamageAmount, int _contactDamageCooldownDuration, 
@@ -26,7 +27,22 @@ void DealDamageOnOverlapComponent::Process() {
 
 		if (ignorePlayerDodgingOnContact || !player.getIsDodging())
 		{
+			int healthBefore = player.getHealth();
+
 			player.takeDamage(contactDamageAmount);
+
+			if (player.getHealth() < healthBefore) {
+				// Получаем экземпляр GameEngine
+				GameEngine* gameEngine = GameEngine::getInstance();
+				if (gameEngine) {
+					// Проверяем есть ли активный чекпоинт
+					auto currentCheckpoint = gameEngine->getCurrentCheckpoint(); // Нужно добавить этот метод!
+					if (currentCheckpoint) {
+						gameEngine->respawnAtCheckpoint();
+					}
+				}
+			}
+
 			contactDamageCooldownTimer = contactDamageCooldownDuration;
 		}
 	}

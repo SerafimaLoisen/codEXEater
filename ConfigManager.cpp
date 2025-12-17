@@ -95,6 +95,14 @@ std::string ConfigManager::getString(const std::string& key) {
     return config[key];
 }
 
+char ConfigManager::getChar(const std::string& key, char defaultValue) {
+    std::string value = getString(key);
+    if (value.empty()) {
+        return defaultValue;
+    }
+    return value[0];
+}
+
 // Кэшированные геттеры для часто используемых параметров
 int ConfigManager::getScreenWidth() {
     static int cached = getInt("SCREEN_WIDTH");
@@ -305,24 +313,46 @@ int ConfigManager::getCameraFollowSpeed() {
 
 int ConfigManager::getWorldWidth(const std::string& levelName) {
     if (levelName == "level1") return getInt("WORLD_WIDTH_LEVEL1");
-    if (levelName == "level2") return getInt("WORLD_WIDTH_LEVEL2");
-    if (levelName == "level3") return getInt("WORLD_WIDTH_LEVEL3");
-    if (levelName == "level4") return getInt("WORLD_WIDTH_LEVEL4");
-    if (levelName == "level5") return getInt("WORLD_WIDTH_LEVEL5");
-    if (levelName == "level6") return getInt("WORLD_WIDTH_LEVEL6");
-    if (levelName == "level7") return getInt("WORLD_WIDTH_LEVEL7");
+    if (levelName == "level2-1") return getInt("WORLD_WIDTH_LEVEL2-1");
+    if (levelName == "level2-2") return getInt("WORLD_WIDTH_LEVEL2-2");
+    if (levelName == "level3-1") return getInt("WORLD_WIDTH_LEVEL3-1");
+    if (levelName == "level3-2") return getInt("WORLD_WIDTH_LEVEL3-2");
+    if (levelName == "level3-3") return getInt("WORLD_WIDTH_LEVEL3-3");
 
-    return getInt("WORLD_WIDTH_TUTORIAL"); // По умолчанию
+    return getInt("WORLD_WIDTH_LEVEL1"); // По умолчанию
 }
 
 int ConfigManager::getWorldHeight(const std::string& levelName) {
     if (levelName == "level1") return getInt("WORLD_HEIGHT_LEVEL1");
-    if (levelName == "level2") return getInt("WORLD_HEIGHT_LEVEL2");
-    if (levelName == "level3") return getInt("WORLD_HEIGHT_LEVEL3");
-    if (levelName == "level4") return getInt("WORLD_HEIGHT_LEVEL4");
-    if (levelName == "level5") return getInt("WORLD_HEIGHT_LEVEL5");
-    if (levelName == "level6") return getInt("WORLD_HEIGHT_LEVEL6");
-    if (levelName == "level7") return getInt("WORLD_HEIGHT_LEVEL7");
+    if (levelName == "level2-1") return getInt("WORLD_HEIGHT_LEVEL2-1");
+    if (levelName == "level2-2") return getInt("WORLD_HEIGHT_LEVEL2-2");
+    if (levelName == "level3-1") return getInt("WORLD_HEIGHT_LEVEL3-1");
+    if (levelName == "level3-2") return getInt("WORLD_HEIGHT_LEVEL3-2");
+    if (levelName == "level3-2") return getInt("WORLD_HEIGHT_LEVEL3-3");
 
-    return getInt("WORLD_HEIGHT_TUTORIAL"); // По умолчанию
+    return getInt("WORLD_HEIGHT_LEVEL1"); // По умолчанию
+}
+
+// ========== ЧЕКПОИНТЫ ==========
+char ConfigManager::getCheckpointSymbol() {
+    static char cached = getChar("CHECKPOINT_SYMBOL", '+');
+    return cached;
+}
+
+int ConfigManager::getCheckpointActivationRange() {
+    static int cached = getInt("CHECKPOINT_ACTIVATION_RANGE");
+    if (cached == 0) cached = 2; // Значение по умолчанию
+    return cached;
+}
+
+int ConfigManager::getCheckpointActiveColor() {
+    static int cached = getInt("CHECKPOINT_ACTIVE_COLOR");
+    if (cached == 0) cached = 10; // Ярко-зеленый по умолчанию
+    return cached;
+}
+
+int ConfigManager::getCheckpointInactiveColor() {
+    static int cached = getInt("CHECKPOINT_INACTIVE_COLOR");
+    if (cached == 0) cached = 2; // Темно-зеленый по умолчанию
+    return cached;
 }

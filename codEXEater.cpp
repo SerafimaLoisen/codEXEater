@@ -57,12 +57,11 @@ void setConsoleFont(int fontSize) {
 std::string getLevelNameByChoice(int choice) {
     switch (choice) {
     case 1: return "Level1";
-    case 2: return "level2";
-    case 3: return "level3";
-    case 4: return "level4";
-    case 5: return "level5";
-    case 6: return "level6";
-    case 7: return "level7";
+    case 2: return "level2-1";
+    case 3: return "level2-2";
+    case 4: return "level3-1";
+    case 5: return "level3-2";
+    case 6: return "level3-3";
     default: return "";
     }
 }
@@ -120,18 +119,16 @@ void handleInput(GameEngine& game) {
     bool current4 = (GetAsyncKeyState('4') & 0x8000);
     bool current5 = (GetAsyncKeyState('5') & 0x8000);
     bool current6 = (GetAsyncKeyState('6') & 0x8000);
-    bool current7 = (GetAsyncKeyState('7') & 0x8000);
 
     if (current1 && !key1) game.switchLevel("level1");
-    if (current2 && !key2) game.switchLevel("level2");
-    if (current3 && !key3) game.switchLevel("test");
-    if (current4 && !key4) game.switchLevel("level4");
-    if (current5 && !key5) game.switchLevel("level5");
-    if (current6 && !key6) game.switchLevel("level6");
-    if (current7 && !key7) game.switchLevel("level7");
+    if (current2 && !key2) game.switchLevel("level2-1");
+    if (current3 && !key3) game.switchLevel("level2-2");
+    if (current4 && !key4) game.switchLevel("level3-1");
+    if (current5 && !key5) game.switchLevel("level3-2");
+    if (current6 && !key6) game.switchLevel("level3-3");
 
     key1 = current1; key2 = current2; key3 = current3; key4 = current4;
-    key5 = current5; key6 = current6; key7 = current7;
+    key5 = current5; key6 = current6;
 
     if (_kbhit()) {
         int key = _getch();
@@ -145,7 +142,6 @@ void handleInput(GameEngine& game) {
         //case '4': game.switchLevel("level4"); break;
         //case '5': game.switchLevel("level5"); break;
         //case '6': game.switchLevel("level6"); break;
-        //case '7': game.switchLevel("level7"); break;
         }
     }
 }
@@ -230,9 +226,9 @@ int main() {
     CONSOLE_CURSOR_INFO cursor = { 1, 0 };
     SetConsoleCursorInfo(console, &cursor);
 
-    SetupDialogSystem();
+    ////////////////////////SetupDialogSystem();
 
-    QuestController::setNextDialog("game_start");
+    ////////////////////////QuestController::setNextDialog("game_start");
 
     //EncodingUtils::setupConsoleEncodingGame();
 
@@ -240,39 +236,39 @@ int main() {
     while (true) {
 
 
-        EncodingUtils::setupConsoleEncodingDialog();
+        ////////////////////////EncodingUtils::setupConsoleEncodingDialog();
 
-        string dialogTreeId = QuestController::getNextDialog();
+       //////////////////////// string dialogTreeId = QuestController::getNextDialog();
 
-        DialogSystem::showDialog(dialogTreeId, "start");
+        ////////////////////////DialogSystem::showDialog(dialogTreeId, "start");
         // Обработка диалога
-        while (DialogSystem::isDialogActive()) {
-            int dialogChoice;
-            cin >> dialogChoice;
-            clearInputBuffer();
-
-            DialogSystem::processInput(dialogChoice);
-        }
+        ////////////////////////while (DialogSystem::isDialogActive()) {
+        ////////////////////////    int dialogChoice;
+        ////////////////////////    cin >> dialogChoice;
+        ////////////////////////    clearInputBuffer();
+        ////////////////////////
+        ////////////////////////    DialogSystem::processInput(dialogChoice);
+        ////////////////////////}
 
 
         //SetConsoleOutputCP(65001);
         EncodingUtils::setupConsoleEncodingGame();
 
         setConsoleSize(80, 25);
-        //showMainMenu();
+        showMainMenu();
 
-        //int choice = _getch() - '0';
+        int choice = _getch() - '0';
 
-        //if (choice == 8) return 0;
+        if (choice == 8) return 0;
 
-        //std::string levelName = getLevelNameByChoice(choice);
-        //if (levelName.empty()) {
-        //    std::cout << "\nInvalid choice!\n";
-        //    Sleep(1000);
-        //    continue;
-        //}
+        std::string levelName = getLevelNameByChoice(choice);
+        if (levelName.empty()) {
+            std::cout << "\nInvalid choice!\n";
+            Sleep(1000);
+            continue;
+        }
 
-        string levelName = QuestController::getNextLevel();
+        ////////////////////////string levelName = QuestController::getNextLevel();
 
         setConsoleSize(viewportWidth, viewportHeight + 5);
         hideScrollBars();
@@ -284,7 +280,7 @@ int main() {
 
             game.update();
             game.render();
-            Sleep(16); //50
+            Sleep(19); //50
         }
 
         showGameOverMenu(game);

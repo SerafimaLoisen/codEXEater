@@ -5,15 +5,48 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <iostream>
+#include <windows.h>
 #include "Boss.h"
 #include "BossRoot.h"
-
 #include "Camera.h"
 #include "SidePlatform.h"
-
 #include "IClonable.h"
+#include "ConfigManager.h"
 
 class ComponentsBasedEntity;
+
+class Checkpoint {
+public:
+    Checkpoint(int x, int y) : x(x), y(y), active(false) {}
+
+    int getX() const { return x; }
+    int getY() const { return y; }
+    bool isActive() const { return active; }
+    void setActive(bool active) { this->active = active; }
+
+    void render() const {
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        COORD coord;
+        coord.X = x;
+        coord.Y = y;
+        SetConsoleCursorPosition(hConsole, coord);
+
+        if (active) {
+            SetConsoleTextAttribute(hConsole, ConfigManager::getInstance().getCheckpointActiveColor());
+        }
+        else {
+            SetConsoleTextAttribute(hConsole, ConfigManager::getInstance().getCheckpointInactiveColor());
+        }
+
+        std::cout << ConfigManager::getInstance().getCheckpointSymbol();
+        SetConsoleTextAttribute(hConsole, 7);
+    }
+
+private:
+    int x, y;
+    bool active;
+};
 
 class GameEngine {
 private:
@@ -22,6 +55,9 @@ private:
     std::vector<std::shared_ptr<Projectile>> projectiles;
     std::vector<std::shared_ptr<Platform>> platforms;
     std::vector<std::shared_ptr<SidePlatform>> sidePlatforms;
+    std::vector<std::shared_ptr<Checkpoint>> checkpoints; // Вектор чекпоинтов
+    std::shared_ptr<Checkpoint> currentCheckpoint; // Текущий активный чекпоинт
+    int levelStartX, levelStartY; // Координаты начала уровня
     //std::unique_ptr<Boss> boss;
     //std::vector<std::unique_ptr<BossRoot>> bossRoots;
     int bulletSpawnTimer;
@@ -48,6 +84,11 @@ private:
     void renderGameObject(const GameObject& obj) const;
     void renderProjectile(const Projectile& projectile) const;
     void renderUIFrameWithCamera();
+
+    void createCheckpointsFromUIFrame(); // Создание чекпоинтов из UIFrame
+    void activateCheckpoint(std::shared_ptr<Checkpoint> checkpoint); // Активация чекпоинта
+    void respawnAtLevelStart(); // Возрождение в начале уровня
+    bool findLevelStart(int& startX, int& startY); // Поиск точки начала уровня
 
     void handlePlayerSidePlatformCollisions();
 
@@ -143,4 +184,6 @@ public:
     int getVisualPosition(const std::string& str, int bytePos) const;
     bool findPlayerSpawn(int& spawnX, int& spawnY);
     void removeSpawnPointFromUIFrame(int spawnX, int spawnY);
+    void respawnAtCheckpoint(); // Возрождение на чекпоинте
+    std::shared_ptr<Checkpoint> getCurrentCheckpoint() const { return currentCheckpoint; }
 };
