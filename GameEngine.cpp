@@ -38,6 +38,8 @@ GameEngine::GameEngine()
 }
 
 void GameEngine::initialize(const std::string& levelName) {
+    setGameRunning(true);
+
     ConfigManager::initialize();
     UIManager::initialize();
     loadLevel(levelName);
@@ -1470,6 +1472,16 @@ void GameEngine::updateCamera() {
     camera->setPosition(targetX, targetY);
 }
 
+void GameEngine::setDeathScreenFlag(bool flag)
+{
+    showDeathScreen = flag;
+}
+
+bool GameEngine::getDeathScreenFlag()
+{
+    return showDeathScreen;
+}
+
 int GameEngine::ourClamp(int value, int min, int max) {
     if (value < min) {
         return min;
@@ -1724,8 +1736,10 @@ void GameEngine::checkWinCondition() {
             for (int px = playerX; px < playerX + playerWidth; px++) {
                 if (px >= 0 && px < uiFrame[py].length()) {
                     if (uiFrame[py][px] == 'W') {
-                        respawnAtLevelStart(); /// YOU CAN COMMENT ON THIS
-                        ////////// THE NEXT DIALOGUE IS LOADING HERE
+                        //respawnAtLevelStart(); /// YOU CAN COMMENT ON THIS
+
+                        // TO LOAD NEXT DIALOG - SIMPLY EXIT RUNNING LOOP
+                        setGameRunning(false);
                         return;
                     }
                 }

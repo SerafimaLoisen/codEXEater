@@ -35,7 +35,7 @@
           "text": "[Продолжить]",
           "next_node": "end"
           "scripts": [
-			{ "set_next_level" , [ { "level4","" } ] },
+			{ "set_next_level" , [ { "level3-1","" } ] },
 			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
 		  ]
         },
@@ -53,7 +53,7 @@
           "text": "[Продолжить]",
           "next_node": "end"
           "scripts": [
-			{ "set_next_level" , [ { "level5","" } ] },
+			{ "set_next_level" , [ { "level3-2","" } ] },
 			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
 		  ]
         },
@@ -71,7 +71,7 @@
           "text": "[Продолжить]",
           "next_node": "end"
           "scripts": [
-			{ "set_next_level" , [ { "level6","" } ] },
+			{ "set_next_level" , [ { "level3-3","" } ] },
 			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
 		  ]
         },

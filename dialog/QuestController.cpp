@@ -27,14 +27,15 @@ map<string, bool> QuestController::flags = {};
 
 void QuestController::initialize() {
 	// Пытаемся загрузить файл, если не существует - создаем default
-	ifstream file(saveFileName);
-	if (file.good()) {
-		file.close();
-		loadSaveFile();
-	}
-	else {
-		createDefaultSaveFile();
-	}
+	//ifstream file(saveFileName);
+	//if (file.good()) {
+	//	file.close();
+	//	loadSaveFile();
+	//}
+	//else {
+	//	createDefaultSaveFile();
+	//}
+	resetSavedValues();
 }
 
 // in future need tp add here reading of save file
@@ -105,11 +106,10 @@ void QuestController::resetSavedValues()
 
 	ints = {
 		{"points",0},
-		{"feature_fix",0},
+		{"feature_fix",0}
 	};
 
 	flags = {
-		// All of the origin flags
 		{"fixedFeatureWithDialog",0},
 	};
 }
@@ -178,7 +178,7 @@ bool QuestController::checkConditions(vector<Condition> conditions)
 				string value = params[2];
 
 				// Предпоиск такого поля в словаре
-				if (ints.find(field) != ints.end()) {
+				if (ints.count(field) == 0) {
 					tmp_result = false;
 					break;
 				}
@@ -237,7 +237,7 @@ bool QuestController::checkConditions(vector<Condition> conditions)
 				string value = params[1];
 
 				// Предпоиск такого поля в словаре
-				if (flags.find(field) != flags.end()) {
+				if (flags.count(field) == 0) {
 					tmp_result = false;
 					break;
 				}

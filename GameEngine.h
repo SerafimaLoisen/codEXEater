@@ -72,6 +72,8 @@ private:
     int parryBulletSpeed;
     int parryRange;
 
+    bool showDeathScreen;
+
     // Уровень игры
     std::string currentLevel;
     bool bossMode;
@@ -79,6 +81,7 @@ private:
 
     void updateCamera();
     void renderWithCamera();
+
 
     // Измените сигнатуры методов рендеринга
     void renderGameObject(const GameObject& obj) const;
@@ -141,6 +144,12 @@ public:
     void spawnBullet();
     void checkCollisions();
     void handleParry();
+
+
+
+    void setDeathScreenFlag(bool flag);
+    bool getDeathScreenFlag();
+
 
     /*void spawnBoss();
     void updateBoss();

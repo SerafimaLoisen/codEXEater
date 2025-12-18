@@ -85,6 +85,14 @@ void handleInput(GameEngine& game) {
     static bool key1 = false, key2 = false, key3 = false, key4 = false,
         key5 = false, key6 = false, key7 = false;
 
+    bool currentX = (GetAsyncKeyState('X') & 0x8000);
+    if (currentX) {
+        game.setGameRunning(false);
+        return;
+    }
+    
+
+
     bool currentA = (GetAsyncKeyState('A') & 0x8000);
     bool currentD = (GetAsyncKeyState('D') & 0x8000);
     bool currentW = (GetAsyncKeyState('W') & 0x8000);
@@ -226,9 +234,10 @@ int main() {
     CONSOLE_CURSOR_INFO cursor = { 1, 0 };
     SetConsoleCursorInfo(console, &cursor);
 
-    ////////////////////////SetupDialogSystem();
+    SetupDialogSystem();
 
-    ////////////////////////QuestController::setNextDialog("game_start");
+    QuestController::setNextDialog("game_start");
+    //QuestController::setNextDialog("talk_with_feature");
 
     //EncodingUtils::setupConsoleEncodingGame();
 
@@ -236,39 +245,40 @@ int main() {
     while (true) {
 
 
-        ////////////////////////EncodingUtils::setupConsoleEncodingDialog();
+        EncodingUtils::setupConsoleEncodingDialog();
 
-       //////////////////////// string dialogTreeId = QuestController::getNextDialog();
+        string dialogTreeId = QuestController::getNextDialog();
 
-        ////////////////////////DialogSystem::showDialog(dialogTreeId, "start");
+        DialogSystem::showDialog(dialogTreeId, "start");
         // Обработка диалога
-        ////////////////////////while (DialogSystem::isDialogActive()) {
-        ////////////////////////    int dialogChoice;
-        ////////////////////////    cin >> dialogChoice;
-        ////////////////////////    clearInputBuffer();
-        ////////////////////////
-        ////////////////////////    DialogSystem::processInput(dialogChoice);
-        ////////////////////////}
+        while (DialogSystem::isDialogActive()) {
+            int dialogChoice;
+            cin >> dialogChoice;
+            clearInputBuffer();
+        
+            DialogSystem::processInput(dialogChoice);
+        }
 
 
         //SetConsoleOutputCP(65001);
         EncodingUtils::setupConsoleEncodingGame();
 
         setConsoleSize(80, 25);
-        showMainMenu();
 
-        int choice = _getch() - '0';
+#pragma region FOR TESTING - QUICK LOAD OF LEVELS
+        //showMainMenu();
+        //int choice = _getch() - '0';
+        //if (choice == 8) return 0;
+        //std::string levelName = getLevelNameByChoice(choice);
+        //if (levelName.empty()) {
+        //    std::cout << "\nInvalid choice!\n";
+        //    Sleep(1000);
+        //    continue;
+        //}
+#pragma endregion
 
-        if (choice == 8) return 0;
 
-        std::string levelName = getLevelNameByChoice(choice);
-        if (levelName.empty()) {
-            std::cout << "\nInvalid choice!\n";
-            Sleep(1000);
-            continue;
-        }
-
-        ////////////////////////string levelName = QuestController::getNextLevel();
+        string levelName = QuestController::getNextLevel();
 
         setConsoleSize(viewportWidth, viewportHeight + 5);
         hideScrollBars();
@@ -280,10 +290,14 @@ int main() {
 
             game.update();
             game.render();
-            Sleep(19); //50
+            Sleep(50); //50
         }
 
-        showGameOverMenu(game);
+        //if (game.getDeathScreenFlag()) { 
+        //    game.setDeathScreenFlag(false);
+        //    showGameOverMenu(game); 
+        //}
+        
     }
 
     return 0;

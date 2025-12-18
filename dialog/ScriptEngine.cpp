@@ -72,24 +72,16 @@ void ScriptEngine::initialize()
 
     // script to start game
     registerScript("start_game", [](const map<string, string>& args) {
-        for (const auto& arg : args) {
-
-            // no args should be provided
-
-            QuestController::setNextLevel("level1");
-            QuestController::setNextDialog("second_level_choice");
-        }
+        // no args should be provided
+        QuestController::setNextLevel("level1");
+        QuestController::setNextDialog("second_level_choice");
         });
 
     // script to start boss battle
     registerScript("start_boss_battle", [](const map<string, string>& args) {
-        for (const auto& arg : args) {
-
-            // no args should be provided
-
-            QuestController::setNextLevel("boss");
-            QuestController::setNextDialog("game_finish");
-        }
+        // no args should be provided
+        QuestController::setNextLevel("boss");
+        QuestController::setNextDialog("game_finish");
         });
 
     // script to set next level
@@ -120,6 +112,7 @@ void ScriptEngine::initialize()
 
             // no args should be provided
 
+            exit(0);
         }
         });
 
