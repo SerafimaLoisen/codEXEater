@@ -199,6 +199,8 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
     // Movement on Axis X (to the left and to the right) with Speed of 1, Start Direction of 1 (to the right) and with the Rest Time of 12
     FollowLineTrajectoryComponentConfig horizontalMovement = FollowLineTrajectoryComponentConfig(false, 1, { 4, 4 }, -1, Axis::X, 12);
     FollowLineTrajectoryComponentConfig horizontalMovementShorter = FollowLineTrajectoryComponentConfig(false, 1, { 2, 2 }, -1, Axis::X, 12);
+
+    FollowLineTrajectoryComponentConfig verticalMovement = FollowLineTrajectoryComponentConfig(false, 1, { 4, 0 }, -1, Axis::Y, 12);
     
     // { TO LEFT OFFSET, TO RIGHT OFFSET } FOR X AXIS
     // { TO TOP OFFSET, TO BOTTOM OFFSET } FOR Y AXIS
@@ -300,6 +302,16 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
             attackOnPlayerEnemy->AddComponent(*new DealDamageOnOverlapComponent(attackOnPlayerEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
             attackOnPlayerEnemy->AddComponent(*new TakeDamageOnOverlapComponent(attackOnPlayerEnemy.get(), playerProjectiles, 1));
             attackOnPlayerEnemy->AddComponent(*new EmitProjectilesComponent(attackOnPlayerEnemy.get(), emitTowardsTarget, projectiles, getPlayerPtr()));
+
+            std::shared_ptr<ComponentsBasedEntity> attackBackEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 3, true);
+            attackBackEnemy->AddComponent(*new DealDamageOnOverlapComponent(attackBackEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            attackBackEnemy->AddComponent(*new TakeDamageOnOverlapComponent(attackBackEnemy.get(), playerProjectiles, 1));
+            attackBackEnemy->AddComponent(*new EmitProjectilesComponent(attackBackEnemy.get(), rightEmitEnemy, projectiles, getPlayerPtr()));
+
+            std::shared_ptr<ComponentsBasedEntity> jumpEnemy = std::make_shared<ComponentsBasedEntity>(20, 5, 5, 3, 3);
+            jumpEnemy->AddComponent(*new FollowLineTrajectoryComponent(jumpEnemy.get(), verticalMovement));
+            jumpEnemy->AddComponent(*new DealDamageOnOverlapComponent(jumpEnemy.get(), *getPlayerPtr(), defaultOverlapDamage));
+            jumpEnemy->AddComponent(*new TakeDamageOnOverlapComponent(jumpEnemy.get(), playerProjectiles));
 
             // PROJECTILES EMITTER PREFAB
             std::shared_ptr<ComponentsBasedEntity> upProjectilesEmitter = std::make_shared<ComponentsBasedEntity>(20, 5, 1, 1, 5, false, true, std::vector<std::string>{" "});
@@ -446,6 +458,8 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
             (*prefabs)["e2"] = moveEnemy;
             (*prefabs)["e3"] = attackEnemy;
             (*prefabs)["e4"] = attackOnPlayerEnemy;
+            (*prefabs)["e5"] = attackBackEnemy;
+            (*prefabs)["e6"] = jumpEnemy;
             
             (*prefabs)["w"] = upProjectilesEmitter;
             (*prefabs)["s"] = downProjectilesEmitter;
@@ -816,26 +830,7 @@ void GameEngine::update() {
 
     int activationRange = ConfigManager::getInstance().getCheckpointActivationRange();
 
-    // ВАЖНО: Добавляем дебаг информацию о текущем чекпоинте
-    if (currentCheckpoint) {
-        Logger::Log("Current active checkpoint: (" +
-            std::to_string(currentCheckpoint->getX()) + ", " +
-            std::to_string(currentCheckpoint->getY()) + ")");
-    }
-    else {
-        Logger::Log("No active checkpoint currently");
-    }
-
-    Logger::Log("Checking checkpoints activation. Range: " + std::to_string(activationRange));
-    Logger::Log("Player position: (" + std::to_string(player->getX()) + ", " +
-        std::to_string(player->getY()) + ")");
-    Logger::Log("Number of checkpoints: " + std::to_string(checkpoints.size()));
-
     for (auto& checkpoint : checkpoints) {
-        Logger::Log("Checkpoint at (" + std::to_string(checkpoint->getX()) + ", " +
-            std::to_string(checkpoint->getY()) + "), active: " +
-            (checkpoint->isActive() ? "YES" : "NO"));
-
         if (!checkpoint->isActive()) {
             int playerCenterX = player->getX() + player->getWidth() / 2;
             int playerCenterY = player->getY() + player->getHeight() / 2;
@@ -846,9 +841,6 @@ void GameEngine::update() {
             // Используем радиус из конфига
             int diffX = abs(playerCenterX - checkpointX);
             int diffY = abs(playerCenterY - checkpointY);
-
-            Logger::Log("Distance to checkpoint: dx=" + std::to_string(diffX) +
-                ", dy=" + std::to_string(diffY));
 
             if (diffX <= activationRange && diffY <= activationRange) {
                 Logger::Log("CHECKPOINT ACTIVATION CONDITION MET!");
@@ -918,8 +910,13 @@ void GameEngine::update() {
 
     // Проверяем условие смерти (HP = 0)
     if (!player->isAlive()) {
-        Logger::Log("Player died! Respawning at level start");
-        respawnAtLevelStart();
+        if (currentCheckpoint) {
+            respawnAtCheckpoint();
+        }
+        else {
+            respawnAtLevelStart();
+        }
+        player->heal(player->getMaxHealth());
     }
 
 #pragma region UPDATE_ENEMIES
@@ -995,20 +992,17 @@ void GameEngine::update() {
 void GameEngine::spawnBullet() {
     bool isParryBullet = (std::rand() % 2 == 0);
 
-    // РСЃРїРѕР»СЊР·СѓРµРј Р»РѕРєР°Р»СЊРЅРѕ СЂР°СЃСЃС‡РёС‚Р°РЅРЅС‹Рµ СЂР°Р·РјРµСЂС‹ РјРёСЂР°
     auto& config = ConfigManager::getInstance();
     int worldWidth = config.getWorldWidth(currentLevel);
     int worldHeight = config.getWorldHeight(currentLevel);
 
-    int spawnX = worldWidth;  // РЎРїСЂР°РІР° РѕС‚ РјРёСЂР°
+    int spawnX = worldWidth;
     int spawnY;
 
     if (bossMode) {
-        // Р‘РѕСЃСЃ СЂРµР¶РёРј - РїСѓР»Рё РЅР° СЂР°Р·РЅС‹С… РІС‹СЃРѕС‚Р°С…
         spawnY = 5 + (std::rand() % (worldHeight - 10));
     }
     else {
-        // РўСѓС‚РѕСЂРёР°Р» - РїСѓР»Рё С‚РѕР»СЊРєРѕ РЅР° СЃСЂРµРґРЅРёС… РІС‹СЃРѕС‚Р°С…
         spawnY = 8 + (std::rand() % 5);
     }
 
@@ -1133,21 +1127,16 @@ void GameEngine::handlePlayerAttack() {
 }
 
 void GameEngine::checkCollisions() {
-    Logger::Log("ЧЕК 1");
     for (auto& bullet : projectiles) {
         if (!bullet->isActive()) continue;
-        Logger::Log("ЧЕК 2");
 
         bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
         if (isPlayerBullet) continue;
-        Logger::Log("ЧЕК 3");
 
         if (player->checkCollision(*bullet)) {
-            Logger::Log("ЧЕК 4");
             if (player->getIsDodging()) {
                 continue;
             }
-            Logger::Log("ЧЕК 5");
 
             ParryBullet* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
             if (parryBullet && player->getIsParrying()) {
@@ -1157,32 +1146,14 @@ void GameEngine::checkCollisions() {
                 continue;
             }
 
-            // Запоминаем здоровье ДО получения урона
             int healthBeforeDamage = player->getHealth();
 
-            // Наносим урон
-            Logger::Log("ЧЕК 6");
             player->takeDamage(1);
-            Logger::Log("ЧЕК 7");
             bullet->setActive(false);
 
-            Logger::Log("Player took damage. Health before: " + std::to_string(healthBeforeDamage) +
-                ", after: " + std::to_string(player->getHealth()));
-
-            // ИМЕННО ЗДЕСЬ НУЖНО ТЕЛЕПОРТИРОВАТЬСЯ НА ЧЕКПОИНТ ПРИ ЛЮБОМ УРОНЕ
             if (currentCheckpoint) {
-                Logger::Log("ЧЕК 8");
-                Logger::Log("Teleporting to checkpoint after taking damage! Current checkpoint: (" +
-                    std::to_string(currentCheckpoint->getX()) + ", " +
-                    std::to_string(currentCheckpoint->getY()) + ")");
                 respawnAtCheckpoint();
-                // Не выходим из цикла - продолжаем проверять другие пули
             }
-            else {
-                Logger::Log("No active checkpoint to teleport to!");
-            }
-
-            // Если игрок умер, ничего не делаем здесь - update() обработает смерть
         }
     }
 }
@@ -1753,8 +1724,8 @@ void GameEngine::checkWinCondition() {
             for (int px = playerX; px < playerX + playerWidth; px++) {
                 if (px >= 0 && px < uiFrame[py].length()) {
                     if (uiFrame[py][px] == 'W') {
-                        respawnAtLevelStart();
-                        //////////ВОТ ТУТ ЗАГРУЗКА СЛЕДУЮЩЕГО ДИАЛОГА
+                        respawnAtLevelStart(); /// YOU CAN COMMENT ON THIS
+                        ////////// THE NEXT DIALOGUE IS LOADING HERE
                         return;
                     }
                 }

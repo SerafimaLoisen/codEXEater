@@ -319,7 +319,7 @@ int ConfigManager::getWorldWidth(const std::string& levelName) {
     if (levelName == "level3-2") return getInt("WORLD_WIDTH_LEVEL3-2");
     if (levelName == "level3-3") return getInt("WORLD_WIDTH_LEVEL3-3");
 
-    return getInt("WORLD_WIDTH_LEVEL1"); // По умолчанию
+    return getInt("WORLD_WIDTH_LEVEL3-3"); // По умолчанию
 }
 
 int ConfigManager::getWorldHeight(const std::string& levelName) {
@@ -328,9 +328,9 @@ int ConfigManager::getWorldHeight(const std::string& levelName) {
     if (levelName == "level2-2") return getInt("WORLD_HEIGHT_LEVEL2-2");
     if (levelName == "level3-1") return getInt("WORLD_HEIGHT_LEVEL3-1");
     if (levelName == "level3-2") return getInt("WORLD_HEIGHT_LEVEL3-2");
-    if (levelName == "level3-2") return getInt("WORLD_HEIGHT_LEVEL3-3");
+    if (levelName == "level3-3") return getInt("WORLD_HEIGHT_LEVEL3-3");
 
-    return getInt("WORLD_HEIGHT_LEVEL1"); // По умолчанию
+    return getInt("WORLD_HEIGHT_LEVEL3-3"); // По умолчанию
 }
 
 // ========== ЧЕКПОИНТЫ ==========
