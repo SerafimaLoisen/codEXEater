@@ -3,6 +3,7 @@
 #include <vector>
 
 class Projectile : public GameObject {
+// !!! From general
 protected:
     int speed;
     int direction; // 1 = РІРїСЂР°РІРѕ, -1 = РІР»РµРІРѕ
@@ -28,6 +29,37 @@ public:
     void setDirection(int newDirection) { direction = newDirection; }
     int getDirection() const { return direction; }
     int getSpeed() const { return speed; }
+	
+// !!! From sima
+//protected:
+//    // --- ПЛАВНАЯ позиция ---
+//    float posX;
+//    float posY;
+//
+//    // --- скорость ---
+//    float velocityX = 0.f;
+//    float velocityY = 0.f;
+//
+//    bool enemy;
+//    int damage;
+//
+//public:
+//    Projectile(
+//        int x,
+//        int y,
+//        int width,
+//        int height,
+//        int color,
+//        bool enemy,
+//        int damage
+//    );
+//
+//    virtual ~Projectile() = default;
+//
+//    virtual void update();
 
-    virtual void render() override = 0;
+    bool isEnemy() const { return enemy; }
+    int getDamage() const { return damage; }
+
+    void setVelocity(float vx, float vy);
 };

@@ -1,5 +1,6 @@
-#include "ConfigManager.h"
+﻿#include "ConfigManager.h"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 
@@ -104,6 +105,8 @@ char ConfigManager::getChar(const std::string& key, char defaultValue) {
 }
 
 // Кэшированные геттеры для часто используемых параметров
+
+//============= ЭКРАН =============
 int ConfigManager::getScreenWidth() {
     static int cached = getInt("SCREEN_WIDTH");
     return cached;
@@ -113,6 +116,8 @@ int ConfigManager::getScreenHeight() {
     static int cached = getInt("SCREEN_HEIGHT");
     return cached;
 }
+
+//============= ИГРОК =============
 
 int ConfigManager::getPlayerStartX() {
     static int cached = getInt("PLAYER_START_X");
@@ -139,15 +144,24 @@ int ConfigManager::getPlayerHealth() {
     return cached;
 }
 
-int ConfigManager::getBulletSpeed() {
-    static int cached = getInt("BULLET_SPEED");
+int ConfigManager::getPlayerColor() {
+    static int cached = getInt("PLAYER_COLOR");
     return cached;
 }
 
-int ConfigManager::getParryBulletSpeed() {
-    static int cached = getInt("PARRY_BULLET_SPEED");
+// ========== АТАКА ИГРОКА ==========
+
+int ConfigManager::getPlayerCooldown() {
+    static int cached = getInt("PLAYER_COOLDOWN");
     return cached;
 }
+
+int ConfigManager::getPlayerBulletColor() {
+    static int cached = getInt("PLAYER_BULLET_COLOR");
+    return cached;
+}
+
+//============= ТАЙМИНГИ ИГРОКА =============
 
 int ConfigManager::getParryDuration() {
     static int cached = getInt("PARRY_DURATION");
@@ -169,38 +183,40 @@ int ConfigManager::getParryRange() {
     return cached;
 }
 
-int ConfigManager::getLevelCount() {
-    static int cached = getInt("LEVEL_COUNT");
+//============= ОБЫЧНЫЕ ПУЛИ =============
+
+int ConfigManager::getBulletSpeed() {
+    static int cached = getInt("BULLET_SPEED");
     return cached;
 }
 
-std::string ConfigManager::getLevelName(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_NAME");
+int ConfigManager::getBulletColor() {
+    static int cached = getInt("BULLET_COLOR");
+    return cached > 0 ? cached : 7; // дефолт 7 если нет
 }
 
-std::string ConfigManager::getLevelFile(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_FILE");
+int ConfigManager::getBulletDamage() {
+    static int cached = getInt("BULLET_DAMAGE");
+    return cached > 0 ? cached : 10; // дефолт 10
 }
 
-std::string ConfigManager::getLevelDescription(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_DESC");
-}
+//============= ПАРИРУЕМЫЕ ПУЛИ =============
 
 // ========== АТАКА ИГРОКА (уже были упомянуты) ==========
-
+//WAS getParryBulletSpeed CAN LEAD TO POTENTIAL PROBLEMS
 int ConfigManager::getPlayerBulletSpeed() {
     static int cached = getInt("PLAYER_BULLET_SPEED");
     return cached;
 }
 
-int ConfigManager::getPlayerFireRate() {
-    static int cached = getInt("PLAYER_FIRE_RATE");
-    return cached;
+int ConfigManager::getParryBulletColor() {
+    static int cached = getInt("PARRY_BULLET_COLOR");
+    return cached > 0 ? cached : 13; // дефолт 13
 }
 
-int ConfigManager::getPlayerBulletColor() {
-    static int cached = getInt("PLAYER_BULLET_COLOR");
-    return cached;
+int ConfigManager::getParryBulletDamage() {
+    static int cached = getInt("PARRY_BULLET_DAMAGE");
+    return cached > 0 ? cached : 10; // дефолт 10
 }
 
 // ========== БОСС (все параметры которые упоминались) ==========
@@ -229,6 +245,7 @@ int ConfigManager::getBossHealth() {
     static int cached = getInt("BOSS_HEALTH");
     return cached;
 }
+// ========== ФАЗЫ БОССА  ==========
 
 int ConfigManager::getBossPhase2HP() {
     static int cached = getInt("BOSS_PHASE2_HP");
@@ -239,21 +256,34 @@ int ConfigManager::getBossPhase3HP() {
     static int cached = getInt("BOSS_PHASE3_HP");
     return cached;
 }
+// ========== ПРИСЛЕДУЮЩИЕ ПУЛИ  ==========
 
-int ConfigManager::getBossBulletSpeed() {
-    static int cached = getInt("BOSS_BULLET_SPEED");
+int ConfigManager::getFollowBulletDamage() {
+    static int cached = getInt("FOLLOW_BULLET_DAMAGE");
     return cached;
 }
 
-int ConfigManager::getBossBulletColor() {
-    static int cached = getInt("BOSS_BULLET_COLOR");
+int ConfigManager::getFollowBulletSpeed() {
+    static int cached = getInt("FOLLOW_BULLET_SPEED");
     return cached;
 }
 
-int ConfigManager::getBossBulletCooldown() {
-    static int cached = getInt("BOSS_BULLET_COOLDOWN");
+int ConfigManager::getFollowBulletColor() {
+    static int cached = getInt("FOLLOW_BULLET_COLOR");
     return cached;
 }
+
+int ConfigManager::getFollowBulletCooldown() {
+    static int cached = getInt("FOLLOW_BULLET_COOLDOWN");
+    return cached;
+}
+
+int ConfigManager::getFollowBulletFollowDuration() {
+    static int cached = getInt("FOLLOW_BULLET_FOLLOW_DURATION");
+    return cached;
+}
+
+// ========== КОРНИ  ==========
 
 int ConfigManager::getBossRootWarningDuration() {
     static int cached = getInt("BOSS_ROOT_WARNING_DURATION");
@@ -263,6 +293,11 @@ int ConfigManager::getBossRootWarningDuration() {
 int ConfigManager::getBossRootGrowDuration() {
     static int cached = getInt("BOSS_ROOT_GROW_DURATION");
     return cached;
+}
+
+int ConfigManager::getBossRootMaxLength() {
+    static int cached = getInt("BOSS_ROOT_MAX_LENGTH");
+    return cached > 0 ? cached : 10; // дефолт 1
 }
 
 int ConfigManager::getBossRootDamage() {
@@ -279,6 +314,67 @@ int ConfigManager::getBossRootColor() {
     static int cached = getInt("BOSS_ROOT_COLOR");
     return cached;
 }
+
+int ConfigManager::getBossRootHealth() {
+    static int cached = getInt("BOSS_ROOT_HEALTH");
+    return cached > 0 ? cached : 10;
+}
+
+int ConfigManager::getBossRootCollisionCooldown() {
+    static int cached = getInt("BOSS_ROOT_COLLISION_COOLDOWN");
+    return cached > 0 ? cached : 10; // дефолт 10, если не задано
+}
+
+std::vector<RootSpawn> ConfigManager::getBossRootPositions() {
+    std::vector<RootSpawn> positions;
+    std::string value = getString("BOSS_ROOT_POSITIONS"); // пример: 10,20,Up;30,20,Down
+    if (value.empty()) return positions;
+
+    std::stringstream ss(value);
+    std::string token;
+
+    while (std::getline(ss, token, ';')) {
+        std::stringstream st(token);
+        std::string xStr, yStr, dirStr;
+
+        if (!std::getline(st, xStr, ',')) continue;
+        if (!std::getline(st, yStr, ',')) continue;
+        if (!std::getline(st, dirStr, ',')) continue;
+
+        int x = std::stoi(xStr);
+        int y = std::stoi(yStr);
+        GrowDirection dir = GrowDirection::Up;
+
+        if (dirStr == "Up") dir = GrowDirection::Up;
+        //else if (dirStr == "Down") dir = GrowDirection::Down;
+        //else if (dirStr == "Left") dir = GrowDirection::Left;
+        //else if (dirStr == "Right") dir = GrowDirection::Right;
+
+        positions.push_back({ x, y, dir });
+    }
+
+    return positions;
+}
+
+//============= УРОВНИ =============
+
+int ConfigManager::getLevelCount() {
+    static int cached = getInt("LEVEL_COUNT");
+    return cached;
+}
+
+std::string ConfigManager::getLevelName(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_NAME");
+}
+
+std::string ConfigManager::getLevelFile(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_FILE");
+}
+
+std::string ConfigManager::getLevelDescription(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_DESC");
+}
+
 
 void ConfigManager::reload() {
     if (instance) {

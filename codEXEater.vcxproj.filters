@@ -57,15 +57,13 @@
     <ClCompile Include="BossBulletAttack.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="BossAttack.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="BossRootAttack.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="BossRoot.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+	
     <ClCompile Include="ComponentsBasedEntity.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -120,6 +118,14 @@
     <ClCompile Include="IClonableComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+	
+    <ClCompile Include="BossManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowBullet.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+	
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h">
@@ -170,6 +176,7 @@
     <ClInclude Include="Boss.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+	
     <ClInclude Include="ComponentsBasedEntity.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -224,6 +231,17 @@
     <ClInclude Include="IClonableComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+	
+    <ClInclude Include="BossManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowBullet.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GrowDirection.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+	
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">

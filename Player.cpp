@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "ConfigManager.h"
 #include "GraphicsManager.h"
 #include "Platform.h"
@@ -19,10 +19,12 @@ Player::Player(int x, int y, int worldWidth, int worldHeight)
     isParrying(false), isDodging(false),
     parryTimer(0), dodgeTimer(0),
     fireTimer(0),
-    lastDirection(1),
+	
+    lastDirection(1),  // По умолчанию смотрим вправо
+	
     isAttacking(false),
-    playerBulletSpeed(ConfigManager::getInstance().getPlayerBulletSpeed()),
-    playerFireRate(ConfigManager::getInstance().getPlayerFireRate()),
+    bulletSpeed(ConfigManager::getInstance().getBulletSpeed()),
+    playerCooldown(ConfigManager::getInstance().getPlayerCooldown()),
     playerBulletColor(ConfigManager::getInstance().getPlayerBulletColor()) {
 }
 
@@ -52,17 +54,37 @@ void Player::update() {
     x = newX;
     y = newY;
 
-    if (!onGround) {
-        velocityY += 0.5f;
-    }
-
     if (velocityX > 0) {
         lastDirection = 1;
     }
     else if (velocityX < 0) {
         lastDirection = -1;
     }
+	
+    // Физика
 
+    if (!onGround) {
+        velocityY += 0.5f;
+    }
+
+
+	// !!! From sima
+    // Движение
+    //x += velocityX;
+    //if (velocityX > 0) {
+    //    lastDirection = 1;  // Движемся вправо
+    //}
+    //else if (velocityX < 0) {
+    //    lastDirection = -1; // Движемся влево
+    //}
+	//
+    //// Границы
+    //if (x < 1) x = 1;
+    //if (x > screenWidth - width - 1) x = screenWidth - width - 1;
+    //if (y < 1) y = 1;
+
+
+    // Таймеры способностей
     if (isParrying) parryTimer--;
     if (isDodging) dodgeTimer--;
     if (parryTimer <= 0) isParrying = false;
@@ -90,6 +112,11 @@ bool Player::checkGroundCollision() const {
 }
 
 bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
+	
+    // !!! From sima
+    //int groundLevel = screenHeight - 3;
+    //return y >= groundLevel;
+	
     bool xCollision = (x < platform.getX() + platform.getWidth()) &&
         (x + width > platform.getX());
 
@@ -109,6 +136,14 @@ bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
             return true;
         }
     }
+	// !!! From sima
+	// Проверяем столкновение сверху (падаем на платформу)
+    //if (velocityY >= 0 &&
+    //    y + height <= platform.getY() &&
+    //    y + height + velocityY >= platform.getY()) {
+    //    fromTop = true;
+    //    return true;
+    //}
     else if (velocityY < 0) {
 
         bool playerFullyBelow = (currentBottom <= platformTop);
@@ -118,6 +153,15 @@ bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
             return true;
         }
     }
+	// !!! From sima
+    // Проверяем столкновение снизу (прыгаем в платформу)
+    //if (velocityY < 0 &&
+    //    y >= platform.getY() + platform.getHeight() &&
+    //    y + velocityY <= platform.getY() + platform.getHeight()) {
+    //    fromTop = false;
+    //    return true;
+    //}
+
 
     return false;
 }
@@ -148,6 +192,8 @@ void Player::stopAttack() {
     isAttacking = false;
 }
 
+
+// !!! From general
 std::shared_ptr<Projectile> Player::tryFire() {
     if (isAttacking && fireTimer <= 0) {
         int bulletX, bulletY;
@@ -177,6 +223,25 @@ std::shared_ptr<Projectile> Player::tryFire() {
 
     return nullptr;
 }
+	
+// !!! From sima
+//std::unique_ptr<Projectile> Player::tryFire() {
+//    if (!isAttacking || fireTimer > 0)
+//        return nullptr;
+//
+//    int bulletX = (lastDirection == 1) ? x + width : x - 1;
+//    int bulletY = y + height / 2;
+//
+//    auto bullet = std::make_unique<Bullet>(bulletX, bulletY, lastDirection);
+//
+//    bullet->setVelocity(
+//        bulletSpeed * lastDirection,
+//        0.f
+//    );
+//
+//    fireTimer = playerCooldown;
+//    return bullet;
+//}
 
 void Player::startParry() {
     if (!isParrying) {
@@ -191,7 +256,7 @@ void Player::startDodge() {
         dodgeTimer = dodgeDuration;
 
         int targetX = x + dodgeDistance;
-
+		
         if (targetX < 1) {
             x = 1;
         }

@@ -21,10 +21,14 @@ private:
     int lastDirection;  // 1 = вправо, -1 = влево
     bool isAttacking;
 
+
     // Настройки атаки из конфига
     int playerBulletSpeed;
     int playerFireRate;
+	
     int playerBulletColor;
+    int bulletSpeed; // !!! May be unused?
+    int playerCooldown;
 
     int worldWidth;
     int worldHeight;

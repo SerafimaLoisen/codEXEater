@@ -11,8 +11,3 @@ void Entity::takeDamage(int damage) {
     Logger::Log("Player took " + std::to_string(damage) + " damage. Health: " +
         std::to_string(health) + "/" + std::to_string(maxHealth));
 }
-
-void Entity::heal(int amount) {
-    health += amount;
-    if (health > maxHealth) health = maxHealth;
-}

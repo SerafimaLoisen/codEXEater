@@ -1,57 +1,55 @@
-# Настройки экрана
+п»ї# ============ Р­РљР РђРќ
 SCREEN_WIDTH=80
 SCREEN_HEIGHT=20
 
-# Настройки игрока
-PLAYER_START_X=10
-PLAYER_START_Y=10
+# ============ РР“Р РћРљ
+PLAYER_START_X=1
+PLAYER_START_Y=20
 PLAYER_HEALTH=5
 PLAYER_WIDTH=5
 PLAYER_HEIGHT=3
-
-# Настройки пуль
-BULLET_SPEED=1
-PARRY_BULLET_SPEED=2
-PLAYER_BULLET_SPEED=5
-PLAYER_FIRE_RATE=5
+PLAYER_COLOR=14
+PLAYER_COOLDOWN=6
 PLAYER_BULLET_COLOR=10
 
-# Время действий
+# РўР°Р№РјРёРЅРіРё
 PARRY_DURATION=10
 PARRY_RANGE=5
 DODGE_DURATION=10
 DODGE_DISTANCE=10
 
-# Цвета
-PLAYER_COLOR=14
-BULLET_COLOR=12
-PARRY_COLOR=10
+# ============ РџРЈР›Р
+BULLET_SPEED=2
+BULLET_DAMAGE=2
+BULLET_COLOR=7
+PARRY_BULLET_SPEED=2
+PARRY_BULLET_DAMAGE=1
+PARRY_BULLET_COLOR=13
+
 
 VIEWPORT_WIDTH=80      # Можно сделать меньше, чем WORLD_WIDTH
 VIEWPORT_HEIGHT=20     # Можно сделать меньше, чем WORLD_HEIGHT
 CAMERA_FOLLOW_SPEED=3
 
-# ========== БОСС ==========
-BOSS_START_X=90
-BOSS_START_Y=10
-BOSS_WIDTH=20
-BOSS_HEIGHT=15
-BOSS_HEALTH=300
+# ============ Р‘РћРЎРЎ
+BOSS_HEIGHT=14
+BOSS_WIDTH=18
+BOSS_START_X=60
+BOSS_START_Y=4
 
-# Фазы босса (в процентах HP)
-BOSS_PHASE2_HP=66    # Переход на 2 фазу при 66% HP
-BOSS_PHASE3_HP=33    # Переход на 3 фазу при 33% HP
 
-# Атаки босса
-BOSS_BULLET_SPEED=3
-BOSS_BULLET_COLOR=12       # Красные пули
-BOSS_BULLET_COOLDOWN=30    # Кадры между выстрелами
+# Р¤Р°Р·С‹ Р±РѕСЃСЃР° (РІ РїСЂРѕС†РµРЅС‚Р°С… Р·РґРѕСЂРѕРІСЊСЏ)
+BOSS_HEALTH=100
+BOSS_PHASE2_HP=66    # Р¤Р°Р·Р° 2 РЅР°С‡РёРЅР°РµС‚СЃСЏ РїСЂРё 66% Р·РґРѕСЂРѕРІСЊСЏ
+BOSS_PHASE3_HP=33    # Р¤Р°Р·Р° 3 РЅР°С‡РёРЅР°РµС‚СЃСЏ РїСЂРё 33% Р·РґРѕСЂРѕРІСЊСЏ
 
-BOSS_ROOT_WARNING_DURATION=20   # Длительность предупреждения "!"
-BOSS_ROOT_GROW_DURATION=15      # Длительность роста корня
-BOSS_ROOT_DAMAGE=2              # Урон от корня
-BOSS_ROOT_COOLDOWN=60           # Кадры между корнями
-BOSS_ROOT_COLOR=13              # Пурпурный цвет корней
+# РђС‚Р°РєР° РїСЂРёСЃР»РµРґСѓСЋС‰РёРјРё РїСѓР»СЏРјРё
+FOLLOW_BULLET_DAMAGE=1
+FOLLOW_BULLET_SPEED=2.5
+FOLLOW_BULLET_COLOR=12       # РљСЂР°СЃРЅС‹Рµ РїСѓР»Рё
+FOLLOW_BULLET_COOLDOWN=15    # РљР°РґСЂС‹ РјРµР¶РґСѓ РІС‹СЃС‚СЂРµР»Р°РјРё
+FOLLOW_BULLET_HOMING=1     # 1 - РІРєР»СЋС‡РµРЅРѕ РїСЂРµСЃР»РµРґРѕРІР°РЅРёРµ
+FOLLOW_BULLET_FOLLOW_DURATION=120  
 
 # Размеры уровней
 
@@ -73,11 +71,24 @@ WORLD_HEIGHT_LEVEL3-2=700
 WORLD_WIDTH_LEVEL3-3=700
 WORLD_HEIGHT_LEVEL3-3=700
 
-WORLD_WIDTH_BOSS=300
-WORLD_HEIGHT_BOSS=60
+#WORLD_WIDTH_BOSS=300
+#WORLD_HEIGHT_BOSS=60
 
 # ========== ЧЕКПОИНТЫ ==========
 CHECKPOINT_SYMBOL=+                    # Символ чекпоинта в файле уровня
 CHECKPOINT_ACTIVATION_RANGE=2          # Радиус активации (в клетках)
 CHECKPOINT_ACTIVE_COLOR=10             # Цвет активного чекпоинта (ярко-зеленый)
 CHECKPOINT_INACTIVE_COLOR=2            # Цвет неактивного чекпоинта (темно-зеленый)
+
+
+# РђС‚Р°РєР° РєРѕСЂРЅСЏРјРё
+BOSS_ROOT_WARNING_DURATION=30   
+BOSS_ROOT_GROW_DURATION=2  
+BOSS_ROOT_MAX_LENGTH=10
+BOSS_ROOT_DAMAGE=2              # РЈСЂРѕРЅ РѕС‚ РєРѕСЂРЅСЏ
+BOSS_ROOT_COOLDOWN=180          # 3 СЃРµРєСѓРЅРґС‹ РјРµР¶РґСѓ РєРѕСЂРЅСЏРјРё
+BOSS_ROOT_COLOR=10              # Р—РµР»РµРЅС‹Р№
+BOSS_ROOT_HEALTH=10             # 10 РїСѓР»СЊ С‡С‚РѕР±С‹ СѓРЅРёС‡С‚РѕР¶РёС‚СЊ
+BOSS_ROOT_POSITIONS=6,16,Up;29,16,Up;58,16,Up
+BOSS_ROOT_COLLISION_COOLDOWN=10
+

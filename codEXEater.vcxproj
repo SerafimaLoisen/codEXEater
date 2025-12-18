@@ -128,8 +128,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Boss.cpp" />
-    <ClCompile Include="BossAttack.cpp" />
     <ClCompile Include="BossBulletAttack.cpp" />
+    <ClCompile Include="BossManager.cpp" />
     <ClCompile Include="BossRoot.cpp" />
     <ClCompile Include="BossRootAttack.cpp" />
     <ClCompile Include="Bullet.cpp" />
@@ -145,12 +145,16 @@
     <ClCompile Include="dialog\ScriptEngine.cpp" />
     <ClCompile Include="EmitProjectilesComponent.cpp" />
     <ClCompile Include="Entity.cpp" />
+	
     <ClCompile Include="EntityComponent.cpp" />
     <ClCompile Include="IClonableComponent.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="SidePlatform.cpp" />
     <ClCompile Include="TakeDamageOnOverlapComponent.cpp" />
     <ClCompile Include="FollowLineTrajectoryComponent.cpp" />
+	
+    <ClCompile Include="FollowBullet.cpp" />
+	
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
@@ -167,6 +171,7 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAttack.h" />
     <ClInclude Include="BossBulletAttack.h" />
+    <ClInclude Include="BossManager.h" />
     <ClInclude Include="BossRoot.h" />
     <ClInclude Include="BossRootAttack.h" />
     <ClInclude Include="Bullet.h" />
@@ -181,6 +186,7 @@
     <ClInclude Include="dialog\ScriptEngine.h" />
     <ClInclude Include="EmitProjectilesComponent.h" />
     <ClInclude Include="Entity.h" />
+	
     <ClInclude Include="EntityComponent.h" />
     <ClInclude Include="IClonableComponent.h" />
     <ClInclude Include="Logger.h" />
@@ -192,6 +198,10 @@
     <ClInclude Include="GraphicsManager.h" />
     <ClInclude Include="ComponentConfig.h" />
     <ClInclude Include="IClonable.h" />
+	
+    <ClInclude Include="FollowBullet.h" />
+    <ClInclude Include="GrowDirection.h" />
+	
     <ClInclude Include="ParryBullet.h" />
     <ClInclude Include="ComponentsBasedEntity.h" />
     <ClInclude Include="Platform.h" />
