@@ -1,20 +1,36 @@
-#include "GameEngine.h"
+п»ї#include "GameEngine.h"
+
 #include "ConfigManager.h"
 #include "GraphicsManager.h"
 #include "UIManager.h"
-#include "Bullet.h"
 #include "ParryBullet.h"
+#include "BossManager.h"
+#include "Boss.h"
+#include "Platform.h"
+
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <windows.h>
 
+// =================== ctor ===================
+
 GameEngine::GameEngine()
-    : player(nullptr), bulletSpawnTimer(0), gameRunning(true), score(0),
-    screenWidth(0), screenHeight(0), parryBulletSpeed(0), parryRange(5),
-    currentLevel("tutorial"), bossMode(false) {
+    : player(nullptr),
+    bossManager(nullptr),
+    gameRunning(true),
+    score(0),
+    screenWidth(0),
+    screenHeight(0),
+    parryBulletSpeed(0),
+    parryRange(5),
+    currentLevel("tutorial") {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 }
+
+GameEngine::~GameEngine() = default;
+
+// =================== init ===================
 
 void GameEngine::initialize(const std::string& levelName) {
     ConfigManager::initialize();
@@ -24,7 +40,6 @@ void GameEngine::initialize(const std::string& levelName) {
 
 void GameEngine::loadLevel(const std::string& levelName) {
     currentLevel = levelName;
-    bossMode = (levelName == "boss");
 
     auto& config = ConfigManager::getInstance();
     screenWidth = config.getScreenWidth();
@@ -32,179 +47,93 @@ void GameEngine::loadLevel(const std::string& levelName) {
     parryBulletSpeed = config.getParryBulletSpeed();
     parryRange = config.getParryRange();
 
-    // Очищаем старые объекты
     projectiles.clear();
     platforms.clear();
+    bossManager.reset();
 
-    // Загружаем графику для уровня
-    loadGraphicsForLevel();
-
-    // Создаем игрока
-    player = std::make_unique<Player>(
-        config.getPlayerStartX(),
-        config.getPlayerStartY()
-    );
-
-    // Создаем платформы для уровня
-    createPlatformsFromUIFrame();
-
-    std::cout << "Level '" << levelName << "' loaded successfully!" << std::endl;
-}
-
-void GameEngine::loadGraphicsForLevel() {
-    // Базовая графика (общая для всех уровней)
+    // ===== РіСЂР°С„РёРєР° =====
     GraphicsManager::loadGraphics("graphics/player.txt", "player");
     GraphicsManager::loadGraphics("graphics/player_dodge.txt", "player_dodge");
     GraphicsManager::loadGraphics("graphics/bullet.txt", "bullet");
     GraphicsManager::loadGraphics("graphics/parry_bullet.txt", "parry_bullet");
 
-    // Графика для конкретного уровня
-    if (currentLevel == "tutorial") {
-        GraphicsManager::loadGraphics("graphics/tutorial/UIFrame.txt", "UIFrame");
-    }
-    else if (currentLevel == "boss") {
+    if (levelName == "boss") {
         GraphicsManager::loadGraphics("graphics/boss/UIFrame.txt", "UIFrame");
         GraphicsManager::loadGraphics("graphics/boss/boss.txt", "boss");
+        GraphicsManager::loadGraphics("graphics/boss/warning.txt", "warning");
+        GraphicsManager::loadGraphics("graphics/boss/root.txt", "root");
+        GraphicsManager::loadGraphics("graphics/boss/root_h.txt", "root_h");
+
+        bossManager = std::make_unique<BossManager>(this);
     }
     else {
-        // Уровень по умолчанию
-        GraphicsManager::loadGraphics("graphics/UIFrame.txt", "UIFrame");
-    }
-}
-
-void GameEngine::createPlatformsFromUIFrame() {
-    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
-
-    for (int y = 0; y < uiFrame.size(); y++) {
-        const std::string& line = uiFrame[y];
-
-        int platformStart = -1;
-
-        for (int x = 0; x < line.length(); x++) {
-            if (line[x] == '=') {
-                if (platformStart == -1) {
-                    platformStart = x;
-                }
-            }
-            else {
-                if (platformStart != -1) {
-                    int platformWidth = x - platformStart;
-                    if (platformWidth > 0) {
-                        platforms.push_back(std::make_shared<Platform>(platformStart, y, platformWidth));
-                    }
-                    platformStart = -1;
-                }
-            }
-        }
-
-        if (platformStart != -1) {
-            int platformWidth = line.length() - platformStart;
-            if (platformWidth > 0) {
-                platforms.push_back(std::make_shared<Platform>(platformStart, y, platformWidth));
-            }
-        }
+        GraphicsManager::loadGraphics("graphics/tutorial/UIFrame.txt", "UIFrame");
     }
 
-    removePlatformsFromUIFrame();
-}
-
-void GameEngine::removePlatformsFromUIFrame() {
-    auto& uiFrame = const_cast<std::vector<std::string>&>(GraphicsManager::getGraphic("UIFrame"));
-
-    for (int y = 0; y < uiFrame.size(); y++) {
-        std::string& line = uiFrame[y];
-        for (int x = 0; x < line.length(); x++) {
-            if (line[x] == '=') {
-                line[x] = ' ';
-            }
-        }
-    }
-}
-
-void GameEngine::spawnBoss() {
-    if (!bossMode) return;
-
-    auto& config = ConfigManager::getInstance();
-    boss = std::make_unique<Boss>(
-        config.getScreenWidth() - config.getBossWidth() - 5,
-        config.getScreenHeight() / 2 - config.getBossHeight() / 2,
-        config.getBossWidth(),
-        config.getBossHeight(),
-        config.getBossHealth(),
-        config.getBossPhase2HP(),
-        config.getBossPhase3HP(),
-        config.getBossBulletSpeed(),
-        config.getBossBulletColor(),
-        config.getBossBulletCooldown(),
-        config.getBossRootWarningDuration(),
-        config.getBossRootGrowDuration(),
-        config.getBossRootDamage(),
-        config.getBossRootCooldown(),
-        config.getBossRootColor()
+    // ===== РёРіСЂРѕРє =====
+    player = std::make_unique<Player>(
+        config.getPlayerStartX(),
+        config.getPlayerStartY()
     );
+
+    createPlatformsFromUIFrame();
+
+    std::cout << "Level '" << levelName << "' loaded successfully!\n";
 }
 
+// =================== update ===================
 
 void GameEngine::update() {
     if (!player) return;
 
-    // Обновляем игрока
+    // --- РёРіСЂРѕРє ---
     player->update();
-
-    // Обрабатываем коллизии
     handlePlayerCollisions();
-
     handlePlayerAttack();
 
-    // Удаляем неактивные пули
-    for (int i = projectiles.size() - 1; i >= 0; --i) {
-        if (!projectiles[i]->isActive()) {
+    // --- РїСѓР»Рё ---
+    for (int i = static_cast<int>(projectiles.size()) - 1; i >= 0; --i) {
+        auto& bullet = projectiles[i];
+        if (!bullet->isActive()) {
             projectiles.erase(projectiles.begin() + i);
+            continue;
         }
-    }
 
-    // Обновляем активные пули
-    for (auto& bullet : projectiles) {
-        if (bullet->isActive()) {
-            bullet->update();
+        bullet->update();
 
-            // Удаляем пули за границами экрана
-            if (bullet->getX() < 0 ||
-                bullet->getX() > screenWidth + 10 ||
-                bullet->getY() < 0 ||
-                bullet->getY() > screenHeight) {
+        // --- РїСѓР»Рё Р±РѕСЃСЃР° РЅР°РЅРѕСЃСЏС‚ СѓСЂРѕРЅ РёРіСЂРѕРєСѓ ---
+        if (bullet->isEnemy() && player->checkCollision(*bullet)) {
+            player->takeDamage(bullet->getDamage());
+            bullet->setActive(false);
+        }
+
+        // --- РїСѓР»Рё РёРіСЂРѕРєР° РЅР°РЅРѕСЃСЏС‚ СѓСЂРѕРЅ Р±РѕСЃСЃСѓ ---
+        if (bossManager && !bullet->isEnemy()) {
+            Boss& boss = bossManager->getBoss();
+            if (bullet->checkCollision(boss)) {
+                boss.takeDamage(bullet->getDamage());
                 bullet->setActive(false);
             }
         }
+
+        // --- РїСЂРѕРІРµСЂРєР° РІС‹С…РѕРґР° Р·Р° РіСЂР°РЅРёС†С‹ СЌРєСЂР°РЅР° ---
+        if (bullet->getX() < -10 || bullet->getX() > screenWidth + 10 ||
+            bullet->getY() < -10 || bullet->getY() > screenHeight + 10) {
+            bullet->setActive(false);
+        }
     }
 
-    // Спавн новых пуль
-    bulletSpawnTimer++;
-    int randomSpawnRate;
-
-    if (bossMode) {
-        // Босс режим - чаще и сложнее
-        updateBoss();
-        checkBossCollisions();
-        randomSpawnRate = 10 + (std::rand() % 15);
-    }
-    else {
-        // Туториал - реже и проще
-        randomSpawnRate = 20 + (std::rand() % 25);
+    // --- Р±РѕСЃСЃ ---
+    if (bossManager) {
+        bossManager->update();
+        bossManager->checkPlayerCollisions(*player);
+        bossManager->checkPlayerBulletCollisions(projectiles);
     }
 
-    if (bulletSpawnTimer >= randomSpawnRate) {
-        spawnBullet();
-        bulletSpawnTimer = 0;
-    }
-
-    // Проверяем столкновения пуль с игроком
-    checkCollisions();
-
-    // Обрабатываем парирование
+    // --- РїР°СЂСЂРё ---
     handleParry();
 
-    // Проверяем условие завершения игры
+    // --- СЃРјРµСЂС‚СЊ РёРіСЂРѕРєР° ---
     if (!player->isAlive()) {
         UIManager::renderGameOver();
         Sleep(2000);
@@ -212,53 +141,52 @@ void GameEngine::update() {
     }
 }
 
-void GameEngine::updateBoss() {
-    boss->update(*this);
+// =================== render ===================
 
-    // Обновляем корни
-    for (int i = bossRoots.size() - 1; i >= 0; --i) {
-        bossRoots[i]->update();
-        if (bossRoots[i]->getHealth() <= 0) {  // Или другой критерий удаления
-            bossRoots.erase(bossRoots.begin() + i);
-        }
+void GameEngine::render() {
+    system("cls");
+
+    GraphicsManager::renderAt(0, 0, GraphicsManager::getGraphic("UIFrame"));
+    UIManager::renderGameUI(*player, score);
+
+    for (auto& platform : platforms)
+        platform->render();
+
+    player->render();
+
+    for (auto& bullet : projectiles) {
+        if (bullet->isActive())
+            bullet->render();
+    }
+
+    if (bossManager)
+        bossManager->render();
+
+    if (bossManager && currentLevel == "boss") {
+        UIManager::renderBossPhase(bossManager->getBoss().getPhase());
+        UIManager::renderBossHealth(bossManager->getBoss());
+    }
+    if (currentLevel == "tutorial") {
+        UIManager::renderHints();
+        UIManager::renderControls();
     }
 }
 
-void GameEngine::spawnBullet() {
-    bool isParryBullet = (std::rand() % 2 == 0);
+// =================== player logic ===================
 
-    int spawnX = screenWidth;
-    int spawnY;
-
-    if (bossMode) {
-        // Босс режим - пули на разных высотах
-        spawnY = 5 + (std::rand() % (screenHeight - 10));
-    }
-    else {
-        // Туториал - пули только на средних высотах
-        spawnY = 8 + (std::rand() % 5);
-    }
-
-    int direction = -1;
-
-    if (isParryBullet) {
-        projectiles.push_back(std::make_unique<ParryBullet>(spawnX, spawnY, direction));
-    } else {
-        projectiles.push_back(std::make_unique<Bullet>(spawnX, spawnY, direction));
-    }
+void GameEngine::handlePlayerAttack() {
+    auto bullet = player->tryFire();
+    if (bullet)
+        projectiles.push_back(std::move(bullet));
 }
 
 void GameEngine::handlePlayerCollisions() {
-    if (!player) return;
-
     player->setOnGround(false);
     handlePlayerWorldCollisions();
     handlePlayerPlatformCollisions();
 }
 
 void GameEngine::handlePlayerWorldCollisions() {
-    if (!player) return;
-
     if (player->checkGroundCollision()) {
         int groundLevel = screenHeight - 10;
         player->setY(groundLevel);
@@ -268,8 +196,6 @@ void GameEngine::handlePlayerWorldCollisions() {
 }
 
 void GameEngine::handlePlayerPlatformCollisions() {
-    if (!player) return;
-
     for (const auto& platform : platforms) {
         bool fromTop = false;
 
@@ -287,165 +213,87 @@ void GameEngine::handlePlayerPlatformCollisions() {
     }
 }
 
-void GameEngine::handlePlayerAttack() {
-    // Пытаемся выстрелить
-    auto newBullet = player->tryFire();
-    if (newBullet) {
-        // Добавляем в общий массив projectiles
-        projectiles.push_back(std::move(newBullet));
-    }
-}
-
-void GameEngine::checkCollisions() {
-    for (auto& bullet : projectiles) {
-        if (!bullet->isActive()) continue;
-
-        // Пропускаем пули игрока при проверке столкновения с самим игроком
-        bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
-        if (isPlayerBullet) continue;  
-
-        if (player->checkCollision(*bullet)) {
-            if (player->getIsDodging()) {
-                continue;
-            }
-
-            ParryBullet* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
-            if (parryBullet && player->getIsParrying()) {
-                bullet->setDirection(-bullet->getDirection());
-                bullet->setSpeed(parryBulletSpeed * 2);
-                score += 10;
-                continue;
-            }
-
-            player->takeDamage(1);
-            bullet->setActive(false);
-        }
-    }
-}
-
-void GameEngine::checkBossCollisions() {
-    if (!boss || !player) return;
-
-    // Проверяем попадание пуль игрока в босса
-    for (int i = projectiles.size() - 1; i >= 0; --i) {
-        if (!projectiles[i]->isActive()) continue;
-
-        bool isPlayerBullet = (projectiles[i]->getColor() ==
-            ConfigManager::getInstance().getPlayerBulletColor());
-
-        if (isPlayerBullet && boss->checkCollision(*projectiles[i])) {
-            boss->takeDamage(1);  // Каждая пуля наносит 1 урон
-            projectiles[i]->setActive(false);
-        }
-    }
-
-    // Проверяем столкновение игрока с корнями босса
-    for (auto& root : bossRoots) {
-        if (player->checkCollision(*root)) {
-            player->takeDamage(root->getDamage());
-            // Можно удалить корень после нанесения урона
-            root->takeDamage(root->getHealth());  // Уничтожаем корень
-        }
-    }
-}
+// =================== parry ===================
 
 void GameEngine::handleParry() {
-    if (player->getIsParrying()) {
-        for (auto& bullet : projectiles) {
-            if (!bullet->isActive()) continue;
+    if (!player->getIsParrying()) return;
 
-            if (isInParryRange(*bullet)) {
-                ParryBullet* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
-                if (parryBullet) {
-                    bullet->setDirection(-bullet->getDirection());
-                    bullet->setSpeed(parryBulletSpeed * 2);
-                    score += 10;
-                }
-            }
-        }
+    for (auto& bullet : projectiles) {
+        if (!bullet->isActive()) continue;
+        if (!bullet->isEnemy()) continue;
+        if (!isInParryRange(*bullet)) continue;
+
+        auto* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
+        if (!parryBullet) continue;
+
+        // РѕС‚СЂР°Р¶Р°РµРј РїСѓР»СЋ
+        parryBullet->parry(parryBulletSpeed * 2);
+
+        score += 10;
     }
 }
 
 bool GameEngine::isInParryRange(const GameObject& bullet) const {
     int playerRight = player->getX() + player->getWidth();
-    return (bullet.getX() >= playerRight &&
+    return bullet.getX() >= playerRight &&
         bullet.getX() <= playerRight + parryRange &&
-        abs(bullet.getY() - player->getY()) <= 2);
+        abs(bullet.getY() - player->getY()) <= 2;
 }
 
-void GameEngine::render() {
-    if (!player) return;
+// =================== platforms ===================
 
-    system("cls");
+void GameEngine::createPlatformsFromUIFrame() {
+    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
 
-    // Отрисовываем UI Frame
-    GraphicsManager::renderAt(0, 0, GraphicsManager::getGraphic("UIFrame"));
+    for (int y = 0; y < static_cast<int>(uiFrame.size()); y++) {
+        const std::string& line = uiFrame[y];
+        int platformStart = -1;
 
-    // Отрисовываем игровой UI
-    UIManager::renderGameUI(*player, score);
+        for (int x = 0; x < static_cast<int>(line.length()); x++) {
+            if (line[x] == '=') {
+                if (platformStart == -1)
+                    platformStart = x;
+            }
+            else if (platformStart != -1) {
+                int width = x - platformStart;
+                if (width > 0)
+                    platforms.push_back(
+                        std::make_shared<Platform>(platformStart, y, width)
+                    );
+                platformStart = -1;
+            }
+        }
 
-    // Отрисовываем платформы
-    for (auto& platform : platforms) {
-        platform->render();
-    }
-
-    // Отрисовываем игрока
-    player->render();
-
-    // Отрисовываем пули
-    for (auto& bullet : projectiles) {
-        if (bullet->isActive()) {
-            bullet->render();
+        if (platformStart != -1) {
+            int width = static_cast<int>(line.length()) - platformStart;
+            if (width > 0)
+                platforms.push_back(
+                    std::make_shared<Platform>(platformStart, y, width)
+                );
         }
     }
 
-    renderBoss();
-
-    // Отрисовываем подсказки и управление
-    UIManager::renderHints();
-    UIManager::renderControls();
-
+    removePlatformsFromUIFrame();
 }
 
-void GameEngine::renderBoss() {
-    if (bossMode && boss) {
-        boss->render();
+void GameEngine::removePlatformsFromUIFrame() {
+    auto& uiFrame =
+        const_cast<std::vector<std::string>&>(GraphicsManager::getGraphic("UIFrame"));
 
-        // Рендерим корни
-        for (auto& root : bossRoots) {
-            root->render();
-        }
-    }
+    for (auto& line : uiFrame)
+        for (char& c : line)
+            if (c == '=') c = ' ';
 }
 
-void GameEngine::addEnemyBullet(std::unique_ptr<Bullet> bullet) {
-    if (bullet) {
+
+void GameEngine::addEnemyBullet(std::unique_ptr<Projectile> bullet) {
+    if (bullet)
         projectiles.push_back(std::move(bullet));
-    }
 }
 
-void GameEngine::addBossRoot(std::unique_ptr<BossRoot> root) {
-    if (root) {
-        bossRoots.push_back(std::move(root));
-    }
-}
+Player& GameEngine::getPlayer() { return *player; }
+const Player& GameEngine::getPlayer() const { return *player; }
 
-Player& GameEngine::getPlayer() {
-    return *player;
-}
-
-const Player& GameEngine::getPlayer() const {
-    return *player;
-}
-
-bool GameEngine::isRunning() const {
-    return gameRunning;
-}
-
-int GameEngine::getScore() const {
-    return score;
-}
-
-void GameEngine::setGameRunning(bool running) {
-    gameRunning = running;
-}
+bool GameEngine::isRunning() const { return gameRunning; }
+int GameEngine::getScore() const { return score; }
+void GameEngine::setGameRunning(bool running) { gameRunning = running; }

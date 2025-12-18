@@ -3,18 +3,34 @@
 
 class Projectile : public GameObject {
 protected:
-    int speed;
-    int direction; // 1 = вправо, -1 = влево
+    // --- ѕЋј¬Ќјя позици€ ---
+    float posX;
+    float posY;
+
+    // --- скорость ---
+    float velocityX = 0.f;
+    float velocityY = 0.f;
+
+    bool enemy;
+    int damage;
 
 public:
-    Projectile(int x, int y, int width, int height, int speed, int direction, int color);
+    Projectile(
+        int x,
+        int y,
+        int width,
+        int height,
+        int color,
+        bool enemy,
+        int damage
+    );
 
-    void update() override;
+    virtual ~Projectile() = default;
 
-    void setSpeed(int newSpeed) { speed = newSpeed; }
-    void setDirection(int newDirection) { direction = newDirection; }
-    int getDirection() const { return direction; }
-    int getSpeed() const { return speed; }
+    virtual void update();
 
-    virtual void render() override = 0;
+    bool isEnemy() const { return enemy; }
+    int getDamage() const { return damage; }
+
+    void setVelocity(float vx, float vy);
 };

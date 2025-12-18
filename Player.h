@@ -21,9 +21,9 @@ private:
     bool isAttacking;
 
     // Настройки атаки из конфига
-    int playerBulletSpeed;
-    int playerFireRate;
     int playerBulletColor;
+    int bulletSpeed;
+    int playerCooldown;
 
 public:
     Player(int x, int y);

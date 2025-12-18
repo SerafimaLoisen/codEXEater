@@ -1,8 +1,10 @@
 #pragma once
-#include "Projectile.h"
+#include "Bullet.h"
 
-class ParryBullet : public Projectile {
+class ParryBullet : public Bullet {
 public:
-    ParryBullet(int x, int y, int direction);
+    ParryBullet(int x, int y, float vx, float vy);
+
+    void parry(float newSpeed);
     void render() override;
 };

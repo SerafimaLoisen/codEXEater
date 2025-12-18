@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "GameObject.h"
 
 class Entity : public GameObject {
@@ -12,11 +12,10 @@ public:
     virtual ~Entity() = default;
 
     virtual void takeDamage(int damage);
-    virtual void heal(int amount);
     bool isAlive() const { return health > 0; }
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
 
-    // Базовый метод update (может быть пустым)
+    // Р‘Р°Р·РѕРІС‹Р№ РјРµС‚РѕРґ update (РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј)
     virtual void update() {}
 };

@@ -1,5 +1,6 @@
-#include "ConfigManager.h"
+Ôªø#include "ConfigManager.h"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 
@@ -25,7 +26,7 @@ void ConfigManager::loadConfigInternal() {
 
     std::string line;
     while (std::getline(file, line)) {
-        // œÓÔÛÒÍ‡ÂÏ ÔÛÒÚ˚Â ÒÚÓÍË Ë ÍÓÏÏÂÌÚ‡ËË
+        // –ü—Ä–æ–ø—É—Å–∫–∞–µ–º –ø—É—Å—Ç—ã–µ —Å—Ç—Ä–æ–∫–∏ –∏ –∫–æ–º–º–µ–Ω—Ç–∞—Ä–∏–∏
         if (line.empty() || line[0] == '#') continue;
 
         size_t pos = line.find('=');
@@ -33,7 +34,7 @@ void ConfigManager::loadConfigInternal() {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 1);
 
-            // ”·Ë‡ÂÏ ÔÓ·ÂÎ˚ ‚ÓÍÛ„ ÍÎ˛˜‡ Ë ÁÌ‡˜ÂÌËˇ
+            // –£–±–∏—Ä–∞–µ–º –ø—Ä–æ–±–µ–ª—ã –≤–æ–∫—Ä—É–≥ –∫–ª—é—á–∞ –∏ –∑–Ω–∞—á–µ–Ω–∏—è
             key.erase(0, key.find_first_not_of(" \t"));
             key.erase(key.find_last_not_of(" \t") + 1);
             value.erase(0, value.find_first_not_of(" \t"));
@@ -47,7 +48,7 @@ void ConfigManager::loadConfigInternal() {
 }
 
 int ConfigManager::getInt(const std::string& key) {
-    // »ÒÔÓÎ¸ÁÛÂÏ Í˝¯ ‰Îˇ ËÁ·ÂÊ‡ÌËˇ ÔÓ‚ÚÓÌÓ„Ó Ô‡ÒËÌ„‡
+    // –ò—Å–ø–æ–ª—å–∑—É–µ–º –∫—ç—à –¥–ª—è –∏–∑–±–µ–∂–∞–Ω–∏—è –ø–æ–≤—Ç–æ—Ä–Ω–æ–≥–æ –ø–∞—Ä—Å–∏–Ω–≥–∞
     if (intCache.find(key) != intCache.end()) {
         return intCache[key];
     }
@@ -59,7 +60,7 @@ int ConfigManager::getInt(const std::string& key) {
 
     try {
         int value = std::stoi(config[key]);
-        intCache[key] = value; // —Óı‡ÌˇÂÏ ‚ Í˝¯
+        intCache[key] = value; // –°–æ—Ö—Ä–∞–Ω—è–µ–º –≤ –∫—ç—à
         return value;
     }
     catch (const std::exception& e) {
@@ -97,7 +98,9 @@ std::string ConfigManager::getString(const std::string& key) {
     return config[key];
 }
 
-//  ˝¯ËÓ‚‡ÌÌ˚Â „ÂÚÚÂ˚ ‰Îˇ ˜‡ÒÚÓ ËÒÔÓÎ¸ÁÛÂÏ˚ı Ô‡‡ÏÂÚÓ‚
+// –ö—ç—à–∏—Ä–æ–≤–∞–Ω–Ω—ã–µ –≥–µ—Ç—Ç–µ—Ä—ã –¥–ª—è —á–∞—Å—Ç–æ –∏—Å–ø–æ–ª—å–∑—É–µ–º—ã—Ö –ø–∞—Ä–∞–º–µ—Ç—Ä–æ–≤
+
+//============= –≠–ö–†–ê–ù =============
 int ConfigManager::getScreenWidth() {
     static int cached = getInt("SCREEN_WIDTH");
     return cached;
@@ -107,6 +110,8 @@ int ConfigManager::getScreenHeight() {
     static int cached = getInt("SCREEN_HEIGHT");
     return cached;
 }
+
+//============= –ò–ì–†–û–ö =============
 
 int ConfigManager::getPlayerStartX() {
     static int cached = getInt("PLAYER_START_X");
@@ -133,15 +138,24 @@ int ConfigManager::getPlayerHealth() {
     return cached;
 }
 
-int ConfigManager::getBulletSpeed() {
-    static int cached = getInt("BULLET_SPEED");
+int ConfigManager::getPlayerColor() {
+    static int cached = getInt("PLAYER_COLOR");
     return cached;
 }
 
-int ConfigManager::getParryBulletSpeed() {
-    static int cached = getInt("PARRY_BULLET_SPEED");
+// ========== –ê–¢–ê–ö–ê –ò–ì–†–û–ö–ê ==========
+
+int ConfigManager::getPlayerCooldown() {
+    static int cached = getInt("PLAYER_COOLDOWN");
     return cached;
 }
+
+int ConfigManager::getPlayerBulletColor() {
+    static int cached = getInt("PLAYER_BULLET_COLOR");
+    return cached;
+}
+
+//============= –¢–ê–ô–ú–ò–ù–ì–ò –ò–ì–†–û–ö–ê =============
 
 int ConfigManager::getParryDuration() {
     static int cached = getInt("PARRY_DURATION");
@@ -163,41 +177,41 @@ int ConfigManager::getParryRange() {
     return cached;
 }
 
-int ConfigManager::getLevelCount() {
-    static int cached = getInt("LEVEL_COUNT");
+//============= –û–ë–´–ß–ù–´–ï –ü–£–õ–ò =============
+
+int ConfigManager::getBulletSpeed() {
+    static int cached = getInt("BULLET_SPEED");
     return cached;
 }
 
-std::string ConfigManager::getLevelName(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_NAME");
+int ConfigManager::getBulletColor() {
+    static int cached = getInt("BULLET_COLOR");
+    return cached > 0 ? cached : 7; // –¥–µ—Ñ–æ–ª—Ç 7 –µ—Å–ª–∏ –Ω–µ—Ç
 }
 
-std::string ConfigManager::getLevelFile(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_FILE");
+int ConfigManager::getBulletDamage() {
+    static int cached = getInt("BULLET_DAMAGE");
+    return cached > 0 ? cached : 10; // –¥–µ—Ñ–æ–ª—Ç 10
 }
 
-std::string ConfigManager::getLevelDescription(int index) {
-    return getString("LEVEL_" + std::to_string(index) + "_DESC");
-}
+//============= –ü–ê–†–ò–†–£–ï–ú–´–ï –ü–£–õ–ò =============
 
-// ========== ¿“¿ ¿ »√–Œ ¿ (ÛÊÂ ·˚ÎË ÛÔÓÏˇÌÛÚ˚) ==========
-
-int ConfigManager::getPlayerBulletSpeed() {
-    static int cached = getInt("PLAYER_BULLET_SPEED");
+int ConfigManager::getParryBulletSpeed() {
+    static int cached = getInt("PARRY_BULLET_SPEED");
     return cached;
 }
 
-int ConfigManager::getPlayerFireRate() {
-    static int cached = getInt("PLAYER_FIRE_RATE");
-    return cached;
+int ConfigManager::getParryBulletColor() {
+    static int cached = getInt("PARRY_BULLET_COLOR");
+    return cached > 0 ? cached : 13; // –¥–µ—Ñ–æ–ª—Ç 13
 }
 
-int ConfigManager::getPlayerBulletColor() {
-    static int cached = getInt("PLAYER_BULLET_COLOR");
-    return cached;
+int ConfigManager::getParryBulletDamage() {
+    static int cached = getInt("PARRY_BULLET_DAMAGE");
+    return cached > 0 ? cached : 10; // –¥–µ—Ñ–æ–ª—Ç 10
 }
 
-// ========== ¡Œ—— (‚ÒÂ Ô‡‡ÏÂÚ˚ ÍÓÚÓ˚Â ÛÔÓÏËÌ‡ÎËÒ¸) ==========
+// ========== –ë–û–°–° ==========
 
 int ConfigManager::getBossStartX() {
     static int cached = getInt("BOSS_START_X");
@@ -223,6 +237,7 @@ int ConfigManager::getBossHealth() {
     static int cached = getInt("BOSS_HEALTH");
     return cached;
 }
+// ========== –§–ê–ó–´ –ë–û–°–°–ê  ==========
 
 int ConfigManager::getBossPhase2HP() {
     static int cached = getInt("BOSS_PHASE2_HP");
@@ -233,21 +248,34 @@ int ConfigManager::getBossPhase3HP() {
     static int cached = getInt("BOSS_PHASE3_HP");
     return cached;
 }
+// ========== –ü–†–ò–°–õ–ï–î–£–Æ–©–ò–ï –ü–£–õ–ò  ==========
 
-int ConfigManager::getBossBulletSpeed() {
-    static int cached = getInt("BOSS_BULLET_SPEED");
+int ConfigManager::getFollowBulletDamage() {
+    static int cached = getInt("FOLLOW_BULLET_DAMAGE");
     return cached;
 }
 
-int ConfigManager::getBossBulletColor() {
-    static int cached = getInt("BOSS_BULLET_COLOR");
+int ConfigManager::getFollowBulletSpeed() {
+    static int cached = getInt("FOLLOW_BULLET_SPEED");
     return cached;
 }
 
-int ConfigManager::getBossBulletCooldown() {
-    static int cached = getInt("BOSS_BULLET_COOLDOWN");
+int ConfigManager::getFollowBulletColor() {
+    static int cached = getInt("FOLLOW_BULLET_COLOR");
     return cached;
 }
+
+int ConfigManager::getFollowBulletCooldown() {
+    static int cached = getInt("FOLLOW_BULLET_COOLDOWN");
+    return cached;
+}
+
+int ConfigManager::getFollowBulletFollowDuration() {
+    static int cached = getInt("FOLLOW_BULLET_FOLLOW_DURATION");
+    return cached;
+}
+
+// ========== –ö–û–†–ù–ò  ==========
 
 int ConfigManager::getBossRootWarningDuration() {
     static int cached = getInt("BOSS_ROOT_WARNING_DURATION");
@@ -257,6 +285,11 @@ int ConfigManager::getBossRootWarningDuration() {
 int ConfigManager::getBossRootGrowDuration() {
     static int cached = getInt("BOSS_ROOT_GROW_DURATION");
     return cached;
+}
+
+int ConfigManager::getBossRootMaxLength() {
+    static int cached = getInt("BOSS_ROOT_MAX_LENGTH");
+    return cached > 0 ? cached : 10; // –¥–µ—Ñ–æ–ª—Ç 1
 }
 
 int ConfigManager::getBossRootDamage() {
@@ -273,6 +306,67 @@ int ConfigManager::getBossRootColor() {
     static int cached = getInt("BOSS_ROOT_COLOR");
     return cached;
 }
+
+int ConfigManager::getBossRootHealth() {
+    static int cached = getInt("BOSS_ROOT_HEALTH");
+    return cached > 0 ? cached : 10;
+}
+
+int ConfigManager::getBossRootCollisionCooldown() {
+    static int cached = getInt("BOSS_ROOT_COLLISION_COOLDOWN");
+    return cached > 0 ? cached : 10; // –¥–µ—Ñ–æ–ª—Ç 10, –µ—Å–ª–∏ –Ω–µ –∑–∞–¥–∞–Ω–æ
+}
+
+std::vector<RootSpawn> ConfigManager::getBossRootPositions() {
+    std::vector<RootSpawn> positions;
+    std::string value = getString("BOSS_ROOT_POSITIONS"); // –ø—Ä–∏–º–µ—Ä: 10,20,Up;30,20,Down
+    if (value.empty()) return positions;
+
+    std::stringstream ss(value);
+    std::string token;
+
+    while (std::getline(ss, token, ';')) {
+        std::stringstream st(token);
+        std::string xStr, yStr, dirStr;
+
+        if (!std::getline(st, xStr, ',')) continue;
+        if (!std::getline(st, yStr, ',')) continue;
+        if (!std::getline(st, dirStr, ',')) continue;
+
+        int x = std::stoi(xStr);
+        int y = std::stoi(yStr);
+        GrowDirection dir = GrowDirection::Up;
+
+        if (dirStr == "Up") dir = GrowDirection::Up;
+        //else if (dirStr == "Down") dir = GrowDirection::Down;
+        //else if (dirStr == "Left") dir = GrowDirection::Left;
+        //else if (dirStr == "Right") dir = GrowDirection::Right;
+
+        positions.push_back({ x, y, dir });
+    }
+
+    return positions;
+}
+
+//============= –£–†–û–í–ù–ò =============
+
+int ConfigManager::getLevelCount() {
+    static int cached = getInt("LEVEL_COUNT");
+    return cached;
+}
+
+std::string ConfigManager::getLevelName(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_NAME");
+}
+
+std::string ConfigManager::getLevelFile(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_FILE");
+}
+
+std::string ConfigManager::getLevelDescription(int index) {
+    return getString("LEVEL_" + std::to_string(index) + "_DESC");
+}
+
 
 void ConfigManager::reload() {
     if (instance) {

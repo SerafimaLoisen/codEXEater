@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include "GameEngine.h"
+#include "Player.h"
 #include "ConfigManager.h"
 #include "GraphicsManager.h"
 #include <unordered_map>
@@ -16,37 +17,35 @@ int main() {
     SetConsoleCursorInfo(console, &cursor);
 
     while (true) {
-        //system("cls");
-        //std::cout << "=== BULLET PARRY GAME ===\n\n";
-        //std::cout << "1. Tutorial Level\n";
-        //std::cout << "2. Boss Arena\n";
-        //std::cout << "3. Exit\n\n";
-        //std::cout << "Select level (1-3): ";
+        system("cls");
+        std::cout << "=== BULLET PARRY GAME ===\n\n";
+        std::cout << "1. Tutorial Level\n";
+        std::cout << "2. Boss Arena\n";
+        std::cout << "3. Exit\n\n";
+        std::cout << "Select level (1-3): ";
 
-        //int choice = _getch() - '0';
-
-        //GameEngine game;
-
-        //switch (choice) {
-        //case 1: // Tutorial
-        //    game.initialize("tutorial");
-        //    break;
-
-        //case 2: // Boss
-        //    game.initialize("boss");
-        //    break;
-
-        //case 3: // Exit
-        //    return 0;
-
-        //default:
-        //    std::cout << "\nInvalid choice!\n";
-        //    Sleep(1000);
-        //    continue;
-        //}
+        int choice = _getch() - '0';
 
         GameEngine game;
-        game.initialize("tutorial");
+
+        switch (choice) {
+        case 1: // Tutorial
+            game.initialize("tutorial");
+            break;
+
+        case 2: // Boss
+            game.initialize("boss");
+            break;
+
+        case 3: // Exit
+            return 0;
+
+        default:
+            std::cout << "\nInvalid choice!\n";
+            Sleep(1000);
+            continue;
+        }
+
         game.render();
 
         // ОБЩИЙ ИГРОВОЙ ЦИКЛ ДЛЯ ЛЮБОГО УРОВНЯ
@@ -111,7 +110,7 @@ int main() {
 
             game.update();
             game.render();
-            Sleep(50);
+            Sleep(20);
         }
 
         // После завершения игры спрашиваем, что дальше

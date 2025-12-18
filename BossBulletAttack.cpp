@@ -1,33 +1,23 @@
 #include "BossBulletAttack.h"
+#include "BossManager.h"
 #include "Boss.h"
-#include "GameEngine.h"
-#include "Bullet.h"
-#include <cstdlib>
+#include "FollowBullet.h"
+#include "ConfigManager.h"
 
-BossBulletAttack::BossBulletAttack(Boss* boss, int cooldown, int speed, int color)
-    : BossAttack(boss, cooldown), bulletSpeed(speed), bulletColor(color) {
-    currentCooldown = 0;  // Начинаем сразу
+BossBulletAttack::BossBulletAttack(int cooldown, Player* player)
+    : BossAttack(cooldown),
+    player(player) {
 }
 
-void BossBulletAttack::update() {
-    decreaseCooldown();
-}
+void BossBulletAttack::execute(BossManager& manager, Boss& boss) {
+    auto& cfg = ConfigManager::getInstance();
 
-void BossBulletAttack::execute(GameEngine& engine) {
-    // Стреляем в сторону игрока
-    int bossX = boss->getX();
-    int bossY = boss->getY();
-    int bossHeight = boss->getHeight();
+    auto bullet = std::make_unique<FollowBullet>(
+        boss.getX(),
+        boss.getY() + std::rand() % boss.getHeight(),
+        player,
+        cfg.getFollowBulletFollowDuration()
+    );
 
-    // Случайная высота для выстрела
-    int bulletY = bossY + (std::rand() % bossHeight);
-
-    // Создаем пулю (летит влево, к игроку)
-    auto bullet = std::make_unique<Bullet>(bossX - 1, bulletY, -1);
-    bullet->setSpeed(bulletSpeed);
-    bullet->setColor(bulletColor);
-
-    // Добавляем в движок
-    // Нужно добавить метод в GameEngine для добавления вражеских пуль
-    // или использовать существующий projectiles
+    manager.spawnBossBullet(std::move(bullet));
 }

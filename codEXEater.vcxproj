@@ -128,14 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Boss.cpp" />
-    <ClCompile Include="BossAttack.cpp" />
     <ClCompile Include="BossBulletAttack.cpp" />
+    <ClCompile Include="BossManager.cpp" />
     <ClCompile Include="BossRoot.cpp" />
     <ClCompile Include="BossRootAttack.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="codEXEater.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FollowBullet.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
@@ -149,14 +150,17 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossAttack.h" />
     <ClInclude Include="BossBulletAttack.h" />
+    <ClInclude Include="BossManager.h" />
     <ClInclude Include="BossRoot.h" />
     <ClInclude Include="BossRootAttack.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FollowBullet.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsManager.h" />
+    <ClInclude Include="GrowDirection.h" />
     <ClInclude Include="ParryBullet.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />

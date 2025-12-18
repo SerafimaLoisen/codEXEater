@@ -1,24 +1,30 @@
 #pragma once
 
 class Boss;
-class GameEngine;
+class BossManager;
 
 class BossAttack {
 protected:
-    Boss* boss;
     int cooldown;
-    int currentCooldown;
+    int timer;
 
 public:
-    BossAttack(Boss* boss, int cooldown);
+    explicit BossAttack(int cooldown)
+        : cooldown(cooldown), timer(0) {
+    }
+
     virtual ~BossAttack() = default;
 
-    virtual void update() {
-        if (currentCooldown > 0) currentCooldown--;
-    }
-    virtual void update(GameEngine& engine) { update(); }  // Перегруженная версия
+    void update(BossManager& manager, Boss& boss) {
+        if (timer > 0) {
+            --timer;
+            return;
+        }
 
-    virtual void execute(GameEngine& engine) = 0;
-    virtual bool canExecute() const { return currentCooldown <= 0; }
-    virtual void resetCooldown() { currentCooldown = cooldown; }
+        execute(manager, boss);
+        timer = cooldown;
+    }
+
+protected:
+    virtual void execute(BossManager& manager, Boss& boss) = 0;
 };

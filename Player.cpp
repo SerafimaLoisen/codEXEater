@@ -1,4 +1,4 @@
-#include "Player.h"
+п»ї#include "Player.h"
 #include "ConfigManager.h"
 #include "GraphicsManager.h"
 #include "Platform.h"
@@ -17,35 +17,35 @@ Player::Player(int x, int y)
     isParrying(false), isDodging(false),
     parryTimer(0), dodgeTimer(0),
     fireTimer(0),
-    lastDirection(1),  // По умолчанию смотрим вправо
+    lastDirection(1),  // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРјРѕС‚СЂРёРј РІРїСЂР°РІРѕ
     isAttacking(false),
-    playerBulletSpeed(ConfigManager::getInstance().getPlayerBulletSpeed()),
-    playerFireRate(ConfigManager::getInstance().getPlayerFireRate()),
+    bulletSpeed(ConfigManager::getInstance().getBulletSpeed()),
+    playerCooldown(ConfigManager::getInstance().getPlayerCooldown()),
     playerBulletColor(ConfigManager::getInstance().getPlayerBulletColor()) {
 }
 
 void Player::update() {
-    // Физика
+    // Р¤РёР·РёРєР°
     if (!onGround) {
         velocityY += 0.5f;
         y += velocityY;
     }
 
-    // Движение
+    // Р”РІРёР¶РµРЅРёРµ
     x += velocityX;
     if (velocityX > 0) {
-        lastDirection = 1;  // Движемся вправо
+        lastDirection = 1;  // Р”РІРёР¶РµРјСЃСЏ РІРїСЂР°РІРѕ
     }
     else if (velocityX < 0) {
-        lastDirection = -1; // Движемся влево
+        lastDirection = -1; // Р”РІРёР¶РµРјСЃСЏ РІР»РµРІРѕ
     }
 
-    // Границы
+    // Р“СЂР°РЅРёС†С‹
     if (x < 1) x = 1;
     if (x > screenWidth - width - 1) x = screenWidth - width - 1;
     if (y < 1) y = 1;
 
-    // Таймеры способностей
+    // РўР°Р№РјРµСЂС‹ СЃРїРѕСЃРѕР±РЅРѕСЃС‚РµР№
     if (isParrying) parryTimer--;
     if (isDodging) dodgeTimer--;
     if (parryTimer <= 0) isParrying = false;
@@ -69,18 +69,18 @@ void Player::render() {
 
 bool Player::checkGroundCollision() const {
     
-    int groundLevel = screenHeight - 10;
+    int groundLevel = screenHeight - 3;
     return y >= groundLevel;
 }
 
 bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
-    // Проверяем пересечение по X
+    // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ РїРѕ X
     bool xCollision = (x < platform.getX() + platform.getWidth()) &&
         (x + width > platform.getX());
 
     if (!xCollision) return false;
 
-    // Проверяем столкновение сверху (падаем на платформу)
+    // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃРІРµСЂС…Сѓ (РїР°РґР°РµРј РЅР° РїР»Р°С‚С„РѕСЂРјСѓ)
     if (velocityY >= 0 &&
         y + height <= platform.getY() &&
         y + height + velocityY >= platform.getY()) {
@@ -88,7 +88,7 @@ bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
         return true;
     }
 
-    // Проверяем столкновение снизу (прыгаем в платформу)
+    // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃРЅРёР·Сѓ (РїСЂС‹РіР°РµРј РІ РїР»Р°С‚С„РѕСЂРјСѓ)
     if (velocityY < 0 &&
         y >= platform.getY() + platform.getHeight() &&
         y + velocityY <= platform.getY() + platform.getHeight()) {
@@ -127,36 +127,21 @@ void Player::stopAttack() {
 }
 
 std::unique_ptr<Projectile> Player::tryFire() {
-    if (isAttacking && fireTimer <= 0) {
-        // Рассчитываем позицию выстрела
-        int bulletX, bulletY;
+    if (!isAttacking || fireTimer > 0)
+        return nullptr;
 
-        if (lastDirection == 1) {  // Стреляем вправо
-            bulletX = x + width;  // Справа от игрока
-        }
-        else {  // Стреляем влево
-            bulletX = x - 1;  // Слева от игрока
-        }
+    int bulletX = (lastDirection == 1) ? x + width : x - 1;
+    int bulletY = y + height / 2;
 
-        bulletY = y + height / 2;  // Центр по вертикали
+    auto bullet = std::make_unique<Bullet>(bulletX, bulletY, lastDirection);
 
-        // Создаем пулю (используем существующий класс Bullet)
-        auto bullet = std::make_unique<Bullet>(  // Но создаем Bullet
-            bulletX, bulletY,
-            lastDirection
-        );
+    bullet->setVelocity(
+        bulletSpeed * lastDirection,
+        0.f
+    );
 
-        // Настраиваем специфичные для игрока параметры
-        bullet->setSpeed(playerBulletSpeed);
-        bullet->setColor(playerBulletColor);
-
-        // Сбрасываем таймер
-        fireTimer = playerFireRate;
-
-        return bullet;
-    }
-
-    return nullptr;
+    fireTimer = playerCooldown;
+    return bullet;
 }
 
 void Player::startParry() {
@@ -172,7 +157,7 @@ void Player::startDodge() {
         dodgeTimer = dodgeDuration;
         x += dodgeDistance;
 
-        // Проверка границ после уворота
+        // РџСЂРѕРІРµСЂРєР° РіСЂР°РЅРёС† РїРѕСЃР»Рµ СѓРІРѕСЂРѕС‚Р°
         if (x < 1) x = 1;
         if (x > screenWidth - width - 1) x = screenWidth - width - 1;
     }

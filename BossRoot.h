@@ -1,17 +1,54 @@
-#pragma once
-#include "Entity.h"
+﻿#pragma once
+#include "GrowDirection.h"
+#include <string>
+#include <vector>
 
-class BossRoot : public Entity {
-private:
-    int growTimer;
-    int maxHeight;
-    bool growingUp;  // true = ������ �����, false = ������ ����
-
+class BossRoot {
 public:
-    BossRoot(int x, int y, bool growUp, int maxHeight, int damage, int color);
+    BossRoot(
+        int x, int y,
+        GrowDirection dir,
+        int maxLength,
+        int damage,
+        int color,
+        int collisionCooldownMax
+    );
 
-    void update() override;
-    void render() override;
-    bool isFullyGrown() const;
-    int getDamage() const { return getHealth(); }
+    void update();   // рост и обновление кулдауна
+    void render();   // отрисовка
+
+    // ===== Геттеры для коллизий =====
+    int getX() const;
+    int getY() const;
+    int getWidth() const;
+    int getHeight() const;
+
+    int getDamage() const { return damage; }
+    int getHealth() const { return health; }
+    void takeDamage(int dmg) { health -= dmg; }
+
+    // ===== Кулдаун для столкновения =====
+    bool canCollide();
+    void resetCollisionCooldown();
+
+private:
+    int startX;
+    int startY;
+    GrowDirection direction;
+
+
+    std::vector<std::string> graphic;
+
+
+    int length;        // текущая длина
+    int maxLength;     // максимальная длина
+
+    int damage;
+    int color;
+    int health;
+
+    bool isGrown;
+
+    int collisionCooldown = 0;
+    int collisionCooldownMax = 10;
 };

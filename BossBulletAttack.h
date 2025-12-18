@@ -1,15 +1,16 @@
 #pragma once
+
 #include "BossAttack.h"
 
+class Player;
+
 class BossBulletAttack : public BossAttack {
-private:
-    int bulletSpeed;
-    int bulletColor;
-
 public:
-    BossBulletAttack(Boss* boss, int cooldown, int speed, int color);
+    BossBulletAttack(int cooldown, Player* player);
 
-    void update() override;
-    void update(GameEngine& engine) override { update(); } // Вызываем базовый
-    void execute(GameEngine& engine) override;
+protected:
+    void execute(BossManager& manager, Boss& boss) override;
+
+private:
+    Player* player;
 };
