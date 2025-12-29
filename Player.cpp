@@ -256,18 +256,61 @@ void Player::startDodge() {
         isDodging = true;
         dodgeTimer = dodgeDuration;
 
-        int targetX = x + dodgeDistance;
-		
-        if (targetX < 1) {
-            x = 1;
+        // Определяем направление уворота на основе lastDirection
+        int direction = lastDirection; // 1 = вправо, -1 = влево
+
+        // Проверяем, есть ли стена на пути
+        int targetX = x;
+        int step = (direction > 0) ? 1 : -1; // Направление движения
+
+        for (int i = 0; i < dodgeDistance; i++) {
+            int checkX = x + (i + 1) * step; // Проверяем следующую позицию в нужном направлении
+
+            // Проверяем, выходит ли за границы мира
+            if (checkX < 1) {
+                targetX = 1;
+                break;
+            }
+            else if (checkX >= worldWidth - width - 1) {
+                targetX = worldWidth - width - 1;
+                break;
+            }
+
+            // Проверяем столкновение с символом '#'
+            if (checkWallCollision(checkX, y)) {
+                // Если нашли стену, останавливаемся перед ней
+                targetX = checkX - step;
+                break;
+            }
+
+            targetX = checkX; // Продолжаем движение
         }
-        else if (targetX > worldWidth - width - 1) {
-            x = worldWidth - width - 1;
-        }
-        else {
-            x = targetX;
+
+        x = targetX;
+    }
+}
+
+bool Player::checkWallCollision(int checkX, int checkY) const {
+    // Получаем доступ к игровому миру (UI Frame)
+    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
+
+    // Проверяем все точки, которые занимает игрок
+    for (int py = 0; py < height; py++) {
+        int worldY = checkY + py;
+        if (worldY >= 0 && worldY < uiFrame.size()) {
+            for (int px = 0; px < width; px++) {
+                int worldX = checkX + px;
+                if (worldX >= 0 && worldX < uiFrame[worldY].length()) {
+                    // Проверяем символ стены '#'
+                    if (uiFrame[worldY][worldX] == '#') {
+                        return true; // Найдено столкновение
+                    }
+                }
+            }
         }
     }
+
+    return false; // Столкновений нет
 }
 
 void Player::renderAt(int screenX, int screenY) const {

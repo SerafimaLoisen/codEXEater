@@ -30,6 +30,8 @@ private:
     int worldWidth;
     int worldHeight;
 
+    bool checkWallCollision(int checkX, int checkY) const;
+
 public:
     Player(int x, int y, int worldWidth, int worldHeight);
 

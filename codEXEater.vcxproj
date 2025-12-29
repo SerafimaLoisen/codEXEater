@@ -125,6 +125,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)dialog_trees\*.txt" "$(OutDir)dialog_trees\" /Y /I &amp; xcopy "$(ProjectDir)config\*.txt" "$(OutDir)config\" /Y /I &amp; xcopy "$(ProjectDir)leфvels\*.txt" "$(OutDir)levels\" /Y /I &amp; xcopy "$(ProjectDir)graphics\*" "$(OutDir)graphics\" /Y /I /E &amp; xcopy "$(ProjectDir)config.txt" "$(OutDir)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Boss.cpp" />

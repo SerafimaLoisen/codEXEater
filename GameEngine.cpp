@@ -285,8 +285,8 @@ std::shared_ptr<GameEngine::HostileEntitiesPrefabs> GameEngine::DefineLevelBased
 
     EmitProjectilesComponentConfig upEmitEnemy = EmitProjectilesComponentConfig({ 0, -1 }, 2, 25, 3, 1, 20, 0);
     EmitProjectilesComponentConfig downEmitEnemy = EmitProjectilesComponentConfig({ 0, 1 }, 2, 25, 3, 1, 20, 0);
-    EmitProjectilesComponentConfig rightEmitEnemy = EmitProjectilesComponentConfig({ 1, 0 }, 2, 25, 3, 1, 20, 0); // ->
-    EmitProjectilesComponentConfig leftEmitEnemy = EmitProjectilesComponentConfig({ -1, 0 }, 2, 25, 3, 1, 20, 0); // <-
+    EmitProjectilesComponentConfig rightEmitEnemy = EmitProjectilesComponentConfig({ 1, 0 }, 2, 25, 3, 1, 20, 0, false, true, 0.5f); // ->
+    EmitProjectilesComponentConfig leftEmitEnemy = EmitProjectilesComponentConfig({ -1, 0 }, 2, 25, 3, 1, 20, 0, false, true, 0.5f); // <-
 
     EmitProjectilesComponentConfig emitTowardsTarget = EmitProjectilesComponentConfig({ -1, 0 }, 2, 40, 3, 3, 18, 0, true, false);
 
