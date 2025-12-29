@@ -1,13 +1,15 @@
-#include "Player.h"
+п»ї#include "Player.h"
 #include "ConfigManager.h"
 #include "GraphicsManager.h"
 #include "Platform.h"
+#include "SidePlatform.h"
 
-Player::Player(int x, int y)
+Player::Player(int x, int y, int worldWidth, int worldHeight)
     : Entity(x, y,
         ConfigManager::getInstance().getPlayerWidth(),
         ConfigManager::getInstance().getPlayerHeight(),
         ConfigManager::getInstance().getPlayerHealth(), 14),
+    worldWidth(worldWidth), worldHeight(worldHeight),
     screenWidth(ConfigManager::getInstance().getScreenWidth()),
     screenHeight(ConfigManager::getInstance().getScreenHeight()),
     parryDuration(ConfigManager::getInstance().getParryDuration()),
@@ -17,7 +19,9 @@ Player::Player(int x, int y)
     isParrying(false), isDodging(false),
     parryTimer(0), dodgeTimer(0),
     fireTimer(0),
-    lastDirection(1),  // По умолчанию смотрим вправо
+	
+    lastDirection(1),  // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРјРѕС‚СЂРёРј РІРїСЂР°РІРѕ
+	
     isAttacking(false),
     playerBulletSpeed(ConfigManager::getInstance().getPlayerBulletSpeed()),
     playerFireRate(ConfigManager::getInstance().getPlayerFireRate()),
@@ -25,27 +29,62 @@ Player::Player(int x, int y)
 }
 
 void Player::update() {
-    // Физика
-    if (!onGround) {
-        velocityY += 0.5f;
-        y += velocityY;
+    float newX = x + velocityX;
+    float newY = y + velocityY;
+
+    if (newX < 1) {
+        newX = 1;
+        velocityX = 0;
+    }
+    else if (newX >= worldWidth - width - 1) {
+        newX = worldWidth - width - 1;
+        velocityX = 0;
     }
 
-    // Движение
-    x += velocityX;
+    if (newY < 1) {
+        newY = 1;
+        velocityY = 0;
+    }
+    else if (newY >= worldHeight - height - 1) {
+        newY = worldHeight - height - 1;
+        velocityY = 0;
+        onGround = true;
+    }
+
+    x = newX;
+    y = newY;
+
     if (velocityX > 0) {
-        lastDirection = 1;  // Движемся вправо
+        lastDirection = 1;
     }
     else if (velocityX < 0) {
-        lastDirection = -1; // Движемся влево
+        lastDirection = -1;
+    }
+	
+    // Р¤РёР·РёРєР°
+
+    if (!onGround) {
+        velocityY += 0.5f;
     }
 
-    // Границы
-    if (x < 1) x = 1;
-    if (x > screenWidth - width - 1) x = screenWidth - width - 1;
-    if (y < 1) y = 1;
 
-    // Таймеры способностей
+	// !!! From sima
+    // Р”РІРёР¶РµРЅРёРµ
+    //x += velocityX;
+    //if (velocityX > 0) {
+    //    lastDirection = 1;  // Р”РІРёР¶РµРјСЃСЏ РІРїСЂР°РІРѕ
+    //}
+    //else if (velocityX < 0) {
+    //    lastDirection = -1; // Р”РІРёР¶РµРјСЃСЏ РІР»РµРІРѕ
+    //}
+	//
+    //// Р“СЂР°РЅРёС†С‹
+    //if (x < 1) x = 1;
+    //if (x > screenWidth - width - 1) x = screenWidth - width - 1;
+    //if (y < 1) y = 1;
+
+
+    // РўР°Р№РјРµСЂС‹ СЃРїРѕСЃРѕР±РЅРѕСЃС‚РµР№
     if (isParrying) parryTimer--;
     if (isDodging) dodgeTimer--;
     if (parryTimer <= 0) isParrying = false;
@@ -54,6 +93,7 @@ void Player::update() {
         fireTimer--;
     }
 }
+
 
 void Player::render() {
     static const auto& playerSprite = GraphicsManager::getGraphic("player");
@@ -68,43 +108,69 @@ void Player::render() {
 }
 
 bool Player::checkGroundCollision() const {
-    
-    int groundLevel = screenHeight - 10;
-    return y >= groundLevel;
+    return y >= worldHeight - height;
 }
 
 bool Player::isCollidingWithPlatform(const Platform& platform, bool& fromTop) {
-    // Проверяем пересечение по X
+	
+    // !!! From sima
+    //int groundLevel = screenHeight - 3;
+    //return y >= groundLevel;
+	
     bool xCollision = (x < platform.getX() + platform.getWidth()) &&
         (x + width > platform.getX());
 
     if (!xCollision) return false;
 
-    // Проверяем столкновение сверху (падаем на платформу)
-    if (velocityY >= 0 &&
-        y + height <= platform.getY() &&
-        y + height + velocityY >= platform.getY()) {
-        fromTop = true;
-        return true;
-    }
+    float currentBottom = y + height;
+    float currentTop = y;
+    float nextBottom = currentBottom + velocityY;
+    float nextTop = currentTop + velocityY;
 
-    // Проверяем столкновение снизу (прыгаем в платформу)
-    if (velocityY < 0 &&
-        y >= platform.getY() + platform.getHeight() &&
-        y + velocityY <= platform.getY() + platform.getHeight()) {
-        fromTop = false;
-        return true;
+    float platformTop = platform.getY();
+    float platformBottom = platform.getY() + platform.getHeight();
+
+    if (velocityY >= 0) {
+        if (currentBottom <= platformTop && nextBottom >= platformTop) {
+            fromTop = true;
+            return true;
+        }
     }
+	// !!! From sima
+	// РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃРІРµСЂС…Сѓ (РїР°РґР°РµРј РЅР° РїР»Р°С‚С„РѕСЂРјСѓ)
+    //if (velocityY >= 0 &&
+    //    y + height <= platform.getY() &&
+    //    y + height + velocityY >= platform.getY()) {
+    //    fromTop = true;
+    //    return true;
+    //}
+    else if (velocityY < 0) {
+
+        bool playerFullyBelow = (currentBottom <= platformTop);
+
+        if (playerFullyBelow && nextTop >= platformBottom) {
+            fromTop = false;
+            return true;
+        }
+    }
+	// !!! From sima
+    // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃРЅРёР·Сѓ (РїСЂС‹РіР°РµРј РІ РїР»Р°С‚С„РѕСЂРјСѓ)
+    //if (velocityY < 0 &&
+    //    y >= platform.getY() + platform.getHeight() &&
+    //    y + velocityY <= platform.getY() + platform.getHeight()) {
+    //    fromTop = false;
+    //    return true;
+    //}
+
 
     return false;
 }
-
 void Player::moveLeft() {
-    velocityX = -3.0f;
+    velocityX = -2.0f;
 }
 
 void Player::moveRight() {
-    velocityX = 3.0f;
+    velocityX = 2.0f;
 }
 
 void Player::stopMoving() {
@@ -114,7 +180,7 @@ void Player::stopMoving() {
 void Player::jump() {
     if (onGround) {
         onGround = false;
-        velocityY = -2.0f;
+        velocityY = -1.8f;
     }
 }
 
@@ -126,31 +192,31 @@ void Player::stopAttack() {
     isAttacking = false;
 }
 
-std::unique_ptr<Projectile> Player::tryFire() {
+
+// !!! From general
+std::shared_ptr<Projectile> Player::tryFire() {
     if (isAttacking && fireTimer <= 0) {
-        // Рассчитываем позицию выстрела
         int bulletX, bulletY;
 
-        if (lastDirection == 1) {  // Стреляем вправо
-            bulletX = x + width;  // Справа от игрока
+        if (lastDirection == 1) {
+            bulletX = x + width;
         }
-        else {  // Стреляем влево
-            bulletX = x - 1;  // Слева от игрока
+        else {
+            bulletX = x - 1;
         }
 
-        bulletY = y + height / 2;  // Центр по вертикали
+        bulletY = y + height / 2;
 
-        // Создаем пулю (используем существующий класс Bullet)
-        auto bullet = std::make_unique<Bullet>(  // Но создаем Bullet
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Bullet)
+        auto bullet = std::make_shared<Bullet>(  // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Bullet
             bulletX, bulletY,
             lastDirection
         );
 
-        // Настраиваем специфичные для игрока параметры
         bullet->setSpeed(playerBulletSpeed);
         bullet->setColor(playerBulletColor);
+        bullet->setIsEnemy(false);
 
-        // Сбрасываем таймер
         fireTimer = playerFireRate;
 
         return bullet;
@@ -158,6 +224,25 @@ std::unique_ptr<Projectile> Player::tryFire() {
 
     return nullptr;
 }
+	
+// !!! From sima
+//std::unique_ptr<Projectile> Player::tryFire() {
+//    if (!isAttacking || fireTimer > 0)
+//        return nullptr;
+//
+//    int bulletX = (lastDirection == 1) ? x + width : x - 1;
+//    int bulletY = y + height / 2;
+//
+//    auto bullet = std::make_unique<Bullet>(bulletX, bulletY, lastDirection);
+//
+//    bullet->setVelocity(
+//        bulletSpeed * lastDirection,
+//        0.f
+//    );
+//
+//    fireTimer = playerCooldown;
+//    return bullet;
+//}
 
 void Player::startParry() {
     if (!isParrying) {
@@ -170,10 +255,116 @@ void Player::startDodge() {
     if (!isDodging) {
         isDodging = true;
         dodgeTimer = dodgeDuration;
-        x += dodgeDistance;
 
-        // Проверка границ после уворота
-        if (x < 1) x = 1;
-        if (x > screenWidth - width - 1) x = screenWidth - width - 1;
+        // РћРїСЂРµРґРµР»СЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ СѓРІРѕСЂРѕС‚Р° РЅР° РѕСЃРЅРѕРІРµ lastDirection
+        int direction = lastDirection; // 1 = РІРїСЂР°РІРѕ, -1 = РІР»РµРІРѕ
+
+        // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СЃС‚РµРЅР° РЅР° РїСѓС‚Рё
+        int targetX = x;
+        int step = (direction > 0) ? 1 : -1; // РќР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ
+
+        for (int i = 0; i < dodgeDistance; i++) {
+            int checkX = x + (i + 1) * step; // РџСЂРѕРІРµСЂСЏРµРј СЃР»РµРґСѓСЋС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
+
+            // РџСЂРѕРІРµСЂСЏРµРј, РІС‹С…РѕРґРёС‚ Р»Рё Р·Р° РіСЂР°РЅРёС†С‹ РјРёСЂР°
+            if (checkX < 1) {
+                targetX = 1;
+                break;
+            }
+            else if (checkX >= worldWidth - width - 1) {
+                targetX = worldWidth - width - 1;
+                break;
+            }
+
+            // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ СЃРёРјРІРѕР»РѕРј '#'
+            if (checkWallCollision(checkX, y)) {
+                // Р•СЃР»Рё РЅР°С€Р»Рё СЃС‚РµРЅСѓ, РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРјСЃСЏ РїРµСЂРµРґ РЅРµР№
+                targetX = checkX - step;
+                break;
+            }
+
+            targetX = checkX; // РџСЂРѕРґРѕР»Р¶Р°РµРј РґРІРёР¶РµРЅРёРµ
+        }
+
+        x = targetX;
+    }
+}
+
+bool Player::checkWallCollision(int checkX, int checkY) const {
+    // РџРѕР»СѓС‡Р°РµРј РґРѕСЃС‚СѓРї Рє РёРіСЂРѕРІРѕРјСѓ РјРёСЂСѓ (UI Frame)
+    const auto& uiFrame = GraphicsManager::getGraphic("UIFrame");
+
+    // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ С‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ Р·Р°РЅРёРјР°РµС‚ РёРіСЂРѕРє
+    for (int py = 0; py < height; py++) {
+        int worldY = checkY + py;
+        if (worldY >= 0 && worldY < uiFrame.size()) {
+            for (int px = 0; px < width; px++) {
+                int worldX = checkX + px;
+                if (worldX >= 0 && worldX < uiFrame[worldY].length()) {
+                    // РџСЂРѕРІРµСЂСЏРµРј СЃРёРјРІРѕР» СЃС‚РµРЅС‹ '#'
+                    if (uiFrame[worldY][worldX] == '#') {
+                        return true; // РќР°Р№РґРµРЅРѕ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ
+                    }
+                }
+            }
+        }
+    }
+
+    return false; // РЎС‚РѕР»РєРЅРѕРІРµРЅРёР№ РЅРµС‚
+}
+
+void Player::renderAt(int screenX, int screenY) const {
+    static const auto& playerSprite = GraphicsManager::getGraphic("player");
+    static const auto& playerDodgeSprite = GraphicsManager::getGraphic("player_dodge");
+
+    if (isDodging) {
+        GraphicsManager::renderAt(screenX, screenY, playerDodgeSprite);
+    }
+    else {
+        GraphicsManager::renderAt(screenX, screenY, playerSprite, 14);
+    }
+}
+
+bool Player::isCollidingWithSidePlatform(const SidePlatform& platform, bool& fromLeft) {
+    int playerX = getX();
+    int playerY = getY();
+    int playerWidth = getWidth();
+    int playerHeight = getHeight();
+
+    int platformX = platform.getX();
+    int platformY = platform.getY();
+    int platformWidth = platform.getWidth();
+    int platformHeight = platform.getHeight();
+
+    bool yOverlap = (playerY < platformY + platformHeight) &&
+        (playerY + playerHeight > platformY);
+
+    if (!yOverlap) return false;
+
+    bool xOverlap = (playerX < platformX + platformWidth) &&
+        (playerX + playerWidth > platformX);
+
+    if (!xOverlap) return false;
+
+
+    if (velocityX > 0.1f) {
+        fromLeft = true;
+        return true;
+    }
+    else if (velocityX < -0.1f) {
+        fromLeft = false;
+        return true;
+    }
+    else {
+        int playerRight = playerX + playerWidth;
+        int playerLeft = playerX;
+        int platformRight = platformX + platformWidth;
+        int platformLeft = platformX;
+
+        int overlapLeft = playerRight - platformLeft;
+        int overlapRight = platformRight - playerLeft;
+
+        fromLeft = (overlapLeft < overlapRight);
+        return true;
     }
 }

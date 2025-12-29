@@ -4,6 +4,7 @@
 #include <memory> 
 
 class Platform;
+class SidePlatform;
 
 class Player : public Entity {
 private:
@@ -15,18 +16,24 @@ private:
     int screenWidth, screenHeight;
     int parryDuration, dodgeDuration, dodgeDistance;
 
-    // Атака
+    // РђС‚Р°РєР°
     int fireTimer;
-    int lastDirection;  // 1 = вправо, -1 = влево
+    int lastDirection;  // 1 = РІРїСЂР°РІРѕ, -1 = РІР»РµРІРѕ
     bool isAttacking;
 
-    // Настройки атаки из конфига
+
+    // РќР°СЃС‚СЂРѕР№РєРё Р°С‚Р°РєРё РёР· РєРѕРЅС„РёРіР°
     int playerBulletSpeed;
     int playerFireRate;
     int playerBulletColor;
 
+    int worldWidth;
+    int worldHeight;
+
+    bool checkWallCollision(int checkX, int checkY) const;
+
 public:
-    Player(int x, int y);
+    Player(int x, int y, int worldWidth, int worldHeight);
 
     void update() override;
     void render() override;
@@ -48,11 +55,17 @@ public:
 
     void startAttack();
     void stopAttack();
-    std::unique_ptr<Projectile> tryFire();
+    std::shared_ptr<Projectile> tryFire();
 
     bool getIsParrying() const { return isParrying; }
     bool getIsDodging() const { return isDodging; }
     bool isAlive() const { return health > 0; }
     bool getIsAttacking() const { return isAttacking; }
     int getLastDirection() const { return lastDirection; }
+    void renderAt(int screenX, int screenY) const override;
+
+    bool isCollidingWithSidePlatform(const SidePlatform& platform, bool& fromLeft);
+
+    void setVelocityX(float velX) { velocityX = velX; }
+    float getVelocityX() const { return velocityX; }
 };

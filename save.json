@@ -1,0 +1,12 @@
+{
+    "availableDialogIDs": [],
+    "currNodeId": "",
+    "currTreeId": "",
+    "flags": {
+        "fixedFeatureWithDialog": false
+    },
+    "ints": {
+        "feature_fix": 0,
+        "points": 0
+    }
+}

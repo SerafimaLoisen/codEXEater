@@ -1,34 +1,32 @@
-#pragma once
+п»ї#pragma once
 #include "BossAttack.h"
+#include "GrowDirection.h"
 #include <vector>
-#include <memory>
+#include "Camera.h"
 
-class BossRoot;
-class GameEngine;
+class BossManager;
+class Boss;
 
-// Структура для ожидающих корней
-struct PendingRoot {
+struct RootSpawnInstance {
     int x, y;
-    bool fromTop;  // true = сверху вниз, false = снизу вверх
-    int timer;
-    bool isGrowing;
+    GrowDirection dir;
+    int warningTimer;
+    bool active;
 };
 
 class BossRootAttack : public BossAttack {
+public:
+    BossRootAttack(int cooldown, int warningDuration, int maxLength, int damage, int color);
+
+    void execute(BossManager& manager, Boss& boss) override;
+    void updateInstances(BossManager& manager);
+    void renderWarnings(BossManager& manager, Camera& camera);
+
 private:
     int warningDuration;
-    int growDuration;
-    int rootDamage;
-    int rootColor;
+    int maxLength;
+    int damage;
+    int color;
 
-    std::vector<PendingRoot> pendingRoots;
-
-public:
-    BossRootAttack(Boss* boss, int cooldown, int warningDur, int growDur, int damage, int color);
-
-    void update(GameEngine& engine) override;  // Добавляем параметр!
-    void execute(GameEngine& engine) override;
-
-    void spawnRandomRoot(GameEngine& engine);
-    void spawnRoot(const PendingRoot& pending, GameEngine& engine);  // Добавляем GameEngine
+    std::vector<RootSpawnInstance> instances;
 };

@@ -1,6 +1,15 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <utility>
+#include "GrowDirection.h"
+
+struct RootSpawn {
+    int x;
+    int y;
+    GrowDirection dir;
+};
 
 class ConfigManager {
 private:
@@ -10,6 +19,7 @@ private:
     std::unordered_map<std::string, float> floatCache;
 
     void loadConfigInternal();
+    char getChar(const std::string& key, char defaultValue = '+');
 
 public:
     static ConfigManager& getInstance();
@@ -20,23 +30,30 @@ public:
     std::string getString(const std::string& key);
     static void reload();
 
-    // ������������ �������
+    // Кэшированные геттеры
     int getScreenWidth();
     int getScreenHeight();
+
     int getPlayerStartX();
     int getPlayerStartY();
     int getPlayerWidth();
     int getPlayerHeight();
     int getPlayerHealth();
+    int getPlayerColor();
+    int getPlayerBulletSpeed();
+    int getPlayerFireRate();
+    //int getPlayerCooldown();
+
     int getBulletSpeed();
     int getParryBulletSpeed();
     int getParryDuration();
+
     int getDodgeDuration();
     int getDodgeDistance();
+
     int getParryRange();
-    int getPlayerBulletSpeed();
-    int getPlayerFireRate();
     int getPlayerBulletColor();
+
     int getBossStartX();
     int getBossStartY();
     int getBossWidth();
@@ -44,18 +61,44 @@ public:
     int getBossHealth();
     int getBossPhase2HP();
     int getBossPhase3HP();
-    int getBossBulletSpeed();
-    int getBossBulletColor();
-    int getBossBulletCooldown();
+
+    int getFollowBulletDamage();
+    int getFollowBulletSpeed();
+    int getFollowBulletColor();
+    int getFollowBulletCooldown();
+
     int getBossRootWarningDuration();
+    int getFollowBulletFollowDuration();
+
     int getBossRootGrowDuration();
+    int getBossRootMaxLength();
     int getBossRootDamage();
     int getBossRootCooldown();
     int getBossRootColor();
+    int getBossRootHealth(); // Здоровье корня (по умолчанию 10)
+    int getBossRootCollisionCooldown();
 
-    // ����� ������ ��� �������
+    std::vector<RootSpawn> getBossRootPositions();
+
+    int getViewportWidth();
+    int getViewportHeight();
+    int getCameraFollowSpeed();
+
+    int getWorldWidth(const std::string& levelName = "tutorial");
+    int getWorldHeight(const std::string& levelName = "tutorial");
+
+	
     int getLevelCount();
+    int getBulletColor();       // цвет обычной пули
+    int getBulletDamage();      // урон обычной пули
+    int getParryBulletColor();  // цвет паррируемой пули
+    int getParryBulletDamage(); // урон паррируемой пули
     std::string getLevelName(int index);
     std::string getLevelFile(int index);
     std::string getLevelDescription(int index);
+
+    char getCheckpointSymbol();          // Символ чекпоинта в файле уровня
+    int getCheckpointActivationRange();  // Радиус активации чекпоинта
+    int getCheckpointActiveColor();      // Цвет активного чекпоинта
+    int getCheckpointInactiveColor();    // Цвет неактивного чекпоинта
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <string>
 
 class GameObject {
@@ -13,9 +14,9 @@ public:
     virtual ~GameObject() = default;
 
     virtual void update() = 0;
-    virtual void render() = 0;
+    virtual void render();
 
-    // Базовые геттеры
+    // Р‘Р°Р·РѕРІС‹Рµ РіРµС‚С‚РµСЂС‹
     int getX() const { return x; }
     int getY() const { return y; }
     int getWidth() const { return width; }
@@ -24,12 +25,14 @@ public:
 
     bool isActive() const { return active; }
 
-    // Базовые сеттеры
+    // Р‘Р°Р·РѕРІС‹Рµ СЃРµС‚С‚РµСЂС‹
     void setX(int newX) { x = newX; }
     void setY(int newY) { y = newY; }
     void setActive(bool isActive) { active = isActive; }
     void setColor(int newColor) { color = newColor; }
 
-    // Проверка столкновений
+    // РџСЂРѕРІРµСЂРєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№
     bool checkCollision(const GameObject& other) const;
+
+    virtual void renderAt(int screenX, int screenY) const = 0;
 };

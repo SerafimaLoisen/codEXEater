@@ -1,0 +1,83 @@
+﻿{
+  "tree_id": "Wiz_Grend_First",
+  "opt_list_text": "Поговорить с волшебником Гренделем",
+  "character_name": "Волшебник Грендель",
+  "dialog_nodes": [
+    {
+      "id": "start",
+      "npc_text": [
+		{"Приветствую юный маг. Чем могу помочь?", [ { "default", [] } ] },
+		{"Ты выглядишь слабым, но богатым! Кажется ты не знаешь про магию, хочешь научу?",
+			[
+				{ "int_is" , [
+						{"mana",">","1"},
+						{"hp","=","1"},
+						{"str","<","6"},
+						{"gold",">=","5"},
+						{"something","equals","0"}
+					]
+				},
+				{ "bool_is" , [
+						{"canSpellFireball","false"},
+						{"canSpellIcewall","false"}
+					]
+				}
+			]
+		},
+		{"Не забывай тому что ты здесь узнал!",
+			[{ "bool_is" ,[ {"knowsMagicFromGrendel","true"} ]} ]},
+		],
+      "options": [
+        {
+          "text": "Мне нужен опыт колдовства",
+          "next_node": "exp_gain",
+		  "option_condition": [
+				{ "bool_is" , [ {"knowsMagicFromGrendel","false"} ] } 
+			]
+        },
+        {
+          "text": "Уйти",
+          "next_node": "leave"
+        }
+      ]
+    },
+    {
+      "id": "exp_gain",
+      "npc_text": "Тренировка значит? Конечно, давай потренируемся",
+      "options": [
+        {
+          "text": "Оскорбить",
+          "next_node": "start",
+          "scripts": [
+			{ "switch_dialogue_to" , [ {"Merch_Ingr_First","start"}	] },
+			{ "set_dialog_available" ,[ {"Wiz_Grend_First","false"}	] }
+		  ]
+        },
+        {
+          "text": "Тренироваться",
+          "next_node": "start",
+          "scripts": [
+			{ "save_progress" , []},
+			{ "change_int" , [
+					{"mana","1"},
+					{"hp","1"},
+					{"gold","-5"}
+				]
+			},
+			{ "set_bool" , [
+					{"canSpellFireball","true"},
+					{"canSpellIcewall","true"},
+					{"knowsMagicFromGrendel","true"}
+				]
+			}
+		  ]
+        }
+      ]
+    }
+    {
+      "id": "leave",
+      "npc_text": "Помни об ответственности перед магическими силами!",
+      "options": []
+    }
+  ]
+}

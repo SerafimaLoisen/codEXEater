@@ -1,0 +1,90 @@
+﻿{
+  "tree_id": "third_level_choice",
+  "opt_list_text": "Погрузиться глубже",
+  "character_name": "Система",
+  "dialog_nodes": [
+	{
+      "id": "start",
+      "npc_text": "Достигнут третий уровень глубины кода. 
+      \n Доступно несколько путей углубления :
+      \n [1] - обнаружено изменение базы данных
+      \n [2] - обнаружена утечка памяти
+      \n [3] - обнаружен кофликт кодировок
+      \n
+      \n Какой путь использовать для погружения?",
+      "options": [
+        {
+          "text": "[1]",
+          "next_node": "dive-1"
+        },
+        {
+          "text": "[2]",
+          "next_node": "dive-2"
+        },
+        {
+          "text": "[3]",
+          "next_node": "dive-3"
+        }
+      ]
+    },
+	{
+      "id": "dive-1",
+      "npc_text": "Выбран путь с зафиксированным изменением базы данных. Подтвердите продолжение погружения:",
+      "options": [
+        {
+          "text": "[Продолжить]",
+          "next_node": "end"
+          "scripts": [
+			{ "set_next_level" , [ { "level3-1","" } ] },
+			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
+		  ]
+        },
+        {
+          "text": "[Возврат]",
+          "next_node": "start"
+        }
+      ]
+    },
+	{
+      "id": "dive-2",
+      "npc_text": "Выбран путь с обнаруженной утечкой памяти. Подтвердите продолжение погружения:",
+      "options": [
+        {
+          "text": "[Продолжить]",
+          "next_node": "end"
+          "scripts": [
+			{ "set_next_level" , [ { "level3-2","" } ] },
+			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
+		  ]
+        },
+        {
+          "text": "[Возврат]",
+          "next_node": "start"
+        }
+      ]
+    },
+	{
+      "id": "dive-3",
+      "npc_text": "Выбран путь с зафиксированным конфликтом кодировок. Подтвердите продолжение погружения:",
+      "options": [
+        {
+          "text": "[Продолжить]",
+          "next_node": "end"
+          "scripts": [
+			{ "set_next_level" , [ { "level3-3","" } ] },
+			{ "set_next_dialog" , [ { "final_dive_dialog","" } ] }
+		  ]
+        },
+        {
+          "text": "[Возврат]",
+          "next_node": "start"
+        }
+      ]
+    },
+	{
+      "id": "end",
+      "npc_text": "Погружение...",
+      "options": []
+    },
+  ]
+}
