@@ -24,7 +24,7 @@ BossManager::BossManager(GameEngine* engine)
     );
 
     bulletAttacks.push_back(
-        std::make_unique<BossBulletAttack>(cfg.getFollowBulletCooldown(), &engine->getPlayer())
+        std::make_unique<BossBulletAttack>(cfg.getFollowBulletCooldown(), &engine->getPlayer(), engine->getProjectiles())
     );
 
     rootAttacks.push_back(
@@ -45,6 +45,11 @@ void BossManager::update() {
     boss->update();
     int phase = boss->getPhase();
 
+    if (boss->getHealth() <= 0) {
+        engine->finishBossFight();
+        return;
+    }
+
     if (phase == 1 || phase == 3)
         for (auto& attack : bulletAttacks)
             attack->update(*this, *boss);
@@ -63,17 +68,36 @@ void BossManager::update() {
     }
 }
 
-void BossManager::render() {
+void BossManager::render(Camera& camera) {
     if (!boss) return;
-    boss->render();
-    for (auto& root : roots) root->render();
+    if (camera.isInViewport(boss->getX(), boss->getY(), boss->getWidth(), boss->getHeight())) {
+        int screenX = camera.worldToScreenX(boss->getX());
+        int screenY = camera.worldToScreenY(boss->getY());
+        boss->renderAt(screenX, screenY);
+    };
+    for (auto& root : roots) {
+       if (camera.isInViewport(root->getX(), root->getY(), root->getWidth(), root->getHeight())) {
+           int screenX = camera.worldToScreenX(root->getX());
+           int screenY = camera.worldToScreenY(root->getY());
+           root->renderAt(screenX, screenY);
+       };
+    }
     for (auto& attack : rootAttacks)
+    {
         if (auto r = dynamic_cast<BossRootAttack*>(attack.get()))
-            r->renderWarnings(*this);
+        {
+            r->renderWarnings(*this, camera);
+        }
+    }
 }
 
 void BossManager::renderWarning(int x, int y, int color) {
     GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("warning"), color);
+}
+
+void BossManager::restartFight()
+{
+    boss->restart();
 }
 
 void BossManager::spawnRoot(int x, int y, GrowDirection dir, int maxLength, int damage, int color) {
@@ -84,9 +108,9 @@ void BossManager::spawnRoot(int x, int y, GrowDirection dir, int maxLength, int 
     roots.push_back(std::move(root));
 }
 
-void BossManager::spawnBossBullet(std::unique_ptr<Projectile> bullet) {
-    if (engine && bullet) engine->addEnemyBullet(std::move(bullet));
-}
+//void BossManager::spawnBossBullet(std::unique_ptr<Projectile> bullet) {
+//    if (engine && bullet) engine->addEnemyBullet(std::move(bullet));
+//}
 
 void BossManager::checkPlayerCollisions(Player& player) {
     for (auto& root : roots) {
@@ -101,23 +125,21 @@ void BossManager::checkPlayerCollisions(Player& player) {
     }
 }
 
-void BossManager::checkPlayerBulletCollisions(std::vector<std::unique_ptr<Projectile>>& bullets) {
+void BossManager::checkPlayerBulletCollisions(std::shared_ptr<Projectile>& bullet) {
+    if (bullet->isEnemy()) { return; }
     for (int i = (int)roots.size() - 1; i >= 0; --i) {
         auto& root = roots[i];
-        for (int j = (int)bullets.size() - 1; j >= 0; --j) {
-            auto& bullet = bullets[j];
-            if (bullet->isEnemy()) continue;
 
             if (checkAABB(bullet->getX(), bullet->getY(), bullet->getWidth(), bullet->getHeight(),
                 root->getX(), root->getY(), root->getWidth(), root->getHeight())) {
-                root->takeDamage(bullet->getDamage());
-                bullets.erase(bullets.begin() + j);
+                //root->takeDamage(bullet->getDamage());
+                root->takeDamage(2);
+                bullet->setActive(false);
                 if (root->getHealth() <= 0) {
                     roots.erase(roots.begin() + i);
                     break;
                 }
             }
-        }
     }
 }
 

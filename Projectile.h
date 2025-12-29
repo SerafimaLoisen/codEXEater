@@ -1,9 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include <vector>
 
 class Projectile : public GameObject {
-// !!! From general
 protected:
     int speed;
     int direction; // 1 = Ð²Ð¿Ñ€Ð°Ð²Ð¾, -1 = Ð²Ð»ÐµÐ²Ð¾
@@ -14,10 +13,15 @@ protected:
     bool useFloatCoord = false;
     float maxTravelDistance = 1000;
 
+    bool enemy;
+    int damage;
+
 public:
-    Projectile(int x, int y, int width, int height, int speed, int direction, int color, 
-        bool _useFloatCoord = false, std::vector<float> _coord = { 0, 0 }, 
-        std::vector<float> _velocity = { 0,0 });
+    Projectile(int x, int y, int width, int height, int speed, int direction, int color,
+        bool _useFloatCoord = false, std::vector<float> _coord = { 0, 0 },
+        std::vector<float> _velocity = { 0,0 },
+        bool enemy = true,
+        int damage = 1);
 
     void update() override;
     virtual void renderAt(int screenX, int screenY) const;
@@ -29,37 +33,52 @@ public:
     void setDirection(int newDirection) { direction = newDirection; }
     int getDirection() const { return direction; }
     int getSpeed() const { return speed; }
-	
-// !!! From sima
-//protected:
-//    // --- ÏËÀÂÍÀß ïîçèöèÿ ---
-//    float posX;
-//    float posY;
-//
-//    // --- ñêîðîñòü ---
-//    float velocityX = 0.f;
-//    float velocityY = 0.f;
-//
-//    bool enemy;
-//    int damage;
-//
-//public:
-//    Projectile(
-//        int x,
-//        int y,
-//        int width,
-//        int height,
-//        int color,
-//        bool enemy,
-//        int damage
-//    );
-//
-//    virtual ~Projectile() = default;
-//
-//    virtual void update();
+
+    virtual void render() override = 0;
+
+
+    void setIsEnemy(bool val) { enemy = val; }
+
+    bool isEnemy() const { return enemy; }
+    int getDamage() const { return damage; }
+    void setDamage(int val) { damage = val; }
+};
+
+/*
+#pragma once
+#include "GameObject.h"
+
+class Projectile : public GameObject {
+protected:
+    // --- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
+    float posX;
+    float posY;
+
+    // --- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
+    float velocityX = 0.f;
+    float velocityY = 0.f;
+
+    bool enemy;
+    int damage;
+
+public:
+    Projectile(
+        int x,
+        int y,
+        int width,
+        int height,
+        int color,
+        bool enemy,
+        int damage
+    );
+
+    virtual ~Projectile() = default;
+
+    virtual void update();
 
     bool isEnemy() const { return enemy; }
     int getDamage() const { return damage; }
 
     void setVelocity(float vx, float vy);
 };
+*/

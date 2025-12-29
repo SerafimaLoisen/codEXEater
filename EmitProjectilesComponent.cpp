@@ -6,10 +6,10 @@
 #include "ComponentsBasedEntity.h"
 
 EmitProjectilesComponent::EmitProjectilesComponent(ComponentsBasedEntity* _target,
-    EmitProjectilesComponentConfig _config, 
+    EmitProjectilesComponentConfig _config,
     std::vector<std::shared_ptr<Projectile>>& _projectilesArray,
     GameObject* _projectilesTarget) :
-    EntityComponent(_target), 
+    EntityComponent(_target),
     config(_config), projectilesArray(_projectilesArray),
     projectilesTarget(_projectilesTarget)
 {
@@ -37,20 +37,20 @@ void EmitProjectilesComponent::Process()
             if (emitTowardsTarget && projectilesTarget)
             {
                 std::vector<float> dir = { static_cast<float>((projectilesTarget->getX() + projectilesTarget->getWidth() / 2) - target->getX()), static_cast<float>((projectilesTarget->getY() + projectilesTarget->getHeight() / 2) - target->getY()) };
-                
+
                 float length = sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
 
                 dir[0] /= length;
                 dir[1] /= length;
 
                 velocity = { dir[0] * projectileSpeed, dir[1] * projectileSpeed };
-                
+
                 if (limitDirectionToOneAxis) {
                     if (abs(dir[0]) > abs(dir[1])) {
                         velocity = { (dir[0] > 0 ? static_cast<float>(projectileSpeed) : -projectileSpeed), 0 };
                     }
                     else velocity = { 0, (dir[1] > 0 ? static_cast<float>(projectileSpeed) : -projectileSpeed) };
-                }                
+                }
             }
             else velocity = { static_cast<float>(direction[0]) * projectileSpeed, static_cast<float>(direction[1]) * projectileSpeed };
 
@@ -75,12 +75,12 @@ void EmitProjectilesComponent::Emit(std::vector<float>& velocity) {
     bool regularType = rnd >= projectileTypeFactor;
 
     std::shared_ptr<Projectile> projectile;
-    
-    std::vector<int> coord = { target->getX()+target->getWidth()/2, target->getY()+target->getHeight()/2};
+
+    std::vector<int> coord = { target->getX() + target->getWidth() / 2, target->getY() + target->getHeight() / 2 };
 
     if (regularType) projectile = std::make_shared<Bullet>(coord[0], coord[1], -1);
     else projectile = std::make_shared<ParryBullet>(coord[0], coord[1], -1);
-    
+
     projectile->setUseFloatCoord(true);
     projectile->setVelocity(velocity);
     projectile->setMaxTravelDistance(projectileMaxTravelDistance);
@@ -95,12 +95,12 @@ EmitProjectilesComponent* EmitProjectilesComponent::clone(ComponentsBasedEntity&
     return clone;
 }
 
-EmitProjectilesComponentConfig::EmitProjectilesComponentConfig (
-    std::vector<int> _direction, 
+EmitProjectilesComponentConfig::EmitProjectilesComponentConfig(
+    std::vector<int> _direction,
     float _projectileSpeed,
     float _projectileMaxTravelDistance,
     int _numberOfEmissionsInOneSequence,
-    int _timeBetweenEmissionsInOneSequence, 
+    int _timeBetweenEmissionsInOneSequence,
     int _timeBetweenSequences,
     int _startDelay,
     bool _emitTowardsTarget, bool _limitDirectionToOneAxis, float _projectileTypeFactor) :

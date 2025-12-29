@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include "GrowDirection.h"
+#include "Camera.h"
 
 class GameEngine;
 class Boss;
@@ -16,20 +17,21 @@ public:
     ~BossManager();
 
     void update();
-    void render();
+    void render(Camera& camera);
 
     // ===== корни =====
     void spawnRoot(int x, int y, GrowDirection dir, int maxLength, int damage, int color);
 
     // ===== пули =====
-    void spawnBossBullet(std::unique_ptr<Projectile> bullet);
+    //void spawnBossBullet(std::unique_ptr<Projectile> bullet);
 
     // ===== столкновения =====
     void checkPlayerCollisions(Player& player);
-    void checkPlayerBulletCollisions(std::vector<std::unique_ptr<Projectile>>& bullets);
+    void checkPlayerBulletCollisions(std::shared_ptr<Projectile>& bullet);
 
     // ===== утилиты =====
     void renderWarning(int x, int y, int color);
+    void restartFight();
 
     Boss& getBoss();
     GameEngine* getEngine();

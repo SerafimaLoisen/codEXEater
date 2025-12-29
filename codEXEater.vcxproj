@@ -137,30 +137,27 @@
     <ClCompile Include="codEXEater.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="DealDamageOnOverlapComponent.cpp" />
-    <ClCompile Include="dialog\DialogNode.cpp" />
-    <ClCompile Include="dialog\DialogSystem.cpp" />
-    <ClCompile Include="dialog\DialogTree.cpp" />
-    <ClCompile Include="dialog\EncodingUtils.cpp" />
-    <ClCompile Include="dialog\QuestController.cpp" />
-    <ClCompile Include="dialog\ScriptEngine.cpp" />
+    <ClCompile Include="DialogNode.cpp" />
+    <ClCompile Include="DialogSystem.cpp" />
+    <ClCompile Include="DialogTree.cpp" />
     <ClCompile Include="EmitProjectilesComponent.cpp" />
+    <ClCompile Include="EncodingUtils.cpp" />
     <ClCompile Include="Entity.cpp" />
-	
     <ClCompile Include="EntityComponent.cpp" />
     <ClCompile Include="IClonableComponent.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="ParryBullet.cpp" />
+    <ClCompile Include="QuestController.cpp" />
+    <ClCompile Include="ScriptEngine.cpp" />
     <ClCompile Include="SidePlatform.cpp" />
     <ClCompile Include="TakeDamageOnOverlapComponent.cpp" />
     <ClCompile Include="FollowLineTrajectoryComponent.cpp" />
-	
     <ClCompile Include="FollowBullet.cpp" />
-	
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="ComponentConfig.cpp" />
     <ClCompile Include="IClonable.cpp" />
-    <ClCompile Include="ParryBullet.cpp" />
     <ClCompile Include="ComponentsBasedEntity.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -178,18 +175,17 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="DealDamageOnOverlapComponent.h" />
-    <ClInclude Include="dialog\DialogNode.h" />
-    <ClInclude Include="dialog\DialogSystem.h" />
-    <ClInclude Include="dialog\DialogTree.h" />
-    <ClInclude Include="dialog\json.hpp" />
-    <ClInclude Include="dialog\QuestController.h" />
-    <ClInclude Include="dialog\ScriptEngine.h" />
+    <ClInclude Include="DialogNode.h" />
+    <ClInclude Include="DialogSystem.h" />
+    <ClInclude Include="DialogTree.h" />
     <ClInclude Include="EmitProjectilesComponent.h" />
     <ClInclude Include="Entity.h" />
-	
     <ClInclude Include="EntityComponent.h" />
     <ClInclude Include="IClonableComponent.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="ParryBullet.h" />
+    <ClInclude Include="QuestController.h" />
+    <ClInclude Include="ScriptEngine.h" />
     <ClInclude Include="SidePlatform.h" />
     <ClInclude Include="TakeDamageOnOverlapComponent.h" />
     <ClInclude Include="FollowLineTrajectoryComponent.h" />
@@ -198,11 +194,8 @@
     <ClInclude Include="GraphicsManager.h" />
     <ClInclude Include="ComponentConfig.h" />
     <ClInclude Include="IClonable.h" />
-	
     <ClInclude Include="FollowBullet.h" />
     <ClInclude Include="GrowDirection.h" />
-	
-    <ClInclude Include="ParryBullet.h" />
     <ClInclude Include="ComponentsBasedEntity.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
@@ -219,6 +212,7 @@
     <Text Include="dialog_trees\second_level_choice_dialog.txt" />
     <Text Include="dialog_trees\talk_with_feature_dialog.txt" />
     <Text Include="dialog_trees\third_level_choice_dialog.txt" />
+    <Text Include="graphics\boss\boss_frame.txt" />
     <Text Include="graphics\bullet.txt" />
     <Text Include="graphics\levels\level1.txt" />
     <Text Include="graphics\levels\level2-1.txt" />

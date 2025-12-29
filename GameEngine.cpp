@@ -3,7 +3,6 @@
 #include "GraphicsManager.h"
 #include "UIManager.h"
 #include "Bullet.h"
-#include "ParryBullet.h"
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
@@ -19,6 +18,8 @@
 #include "DealDamageOnOverlapComponent.h"
 #include "TakeDamageOnOverlapComponent.h"
 #include "EmitProjectilesComponent.h"
+#include "BossManager.h"
+#include "ParryBullet.h"
 #pragma endregion
 
 
@@ -39,6 +40,7 @@ GameEngine::GameEngine()
 
 void GameEngine::initialize(const std::string& levelName) {
     setGameRunning(true);
+    endGame = false;
 
     ConfigManager::initialize();
     UIManager::initialize();
@@ -88,6 +90,8 @@ void GameEngine::loadLevel(const std::string& levelName) {
     sidePlatforms.clear();
     hostileEntitiesToProcess.clear();
     checkpoints.clear();
+    bossManager.reset();
+
 
     createPlatformsFromUIFrame();
     createCheckpointsFromUIFrame();
@@ -131,6 +135,10 @@ void GameEngine::loadLevel(const std::string& levelName) {
 
     player = std::make_shared<Player>(spawnX, spawnY, worldWidth, worldHeight);
 
+    if (bossMode) {
+        bossManager = std::make_unique<BossManager>(this);
+    }
+
     Logger::Log("Player created at world coords: (" +
         std::to_string(spawnX) + ", " + std::to_string(spawnY) + ")");
 
@@ -164,6 +172,10 @@ void GameEngine::loadGraphicsForLevel() {
     // Графика для конкретного уровня
     if (currentLevel == "boss") {
         GraphicsManager::loadGraphics("graphics/boss/boss_frame.txt", "UIFrame");
+        GraphicsManager::loadGraphics("graphics/boss/boss.txt", "boss");
+        GraphicsManager::loadGraphics("graphics/boss/warning.txt", "warning");
+        GraphicsManager::loadGraphics("graphics/boss/root.txt", "root");
+        GraphicsManager::loadGraphics("graphics/boss/root_h.txt", "root_h");
     }
     else {
         GraphicsManager::loadGraphics("graphics/levels/" + currentLevel + ".txt", "UIFrame");
@@ -799,29 +811,6 @@ void GameEngine::removePlatformsFromUIFrame() {
     }
 }
 
-//void GameEngine::spawnBoss() {
-//    if (!bossMode) return;
-//
-//    auto& config = ConfigManager::getInstance();
-//    boss = std::make_unique<Boss>(
-//        config.getScreenWidth() - config.getBossWidth() - 5,
-//        config.getScreenHeight() / 2 - config.getBossHeight() / 2,
-//        config.getBossWidth(),
-//        config.getBossHeight(),
-//        config.getBossHealth(),
-//        config.getBossPhase2HP(),
-//        config.getBossPhase3HP(),
-//        config.getBossBulletSpeed(),
-//        config.getBossBulletColor(),
-//        config.getBossBulletCooldown(),
-//        config.getBossRootWarningDuration(),
-//        config.getBossRootGrowDuration(),
-//        config.getBossRootDamage(),
-//        config.getBossRootCooldown(),
-//        config.getBossRootColor()
-//    );
-//}
-
 
 void GameEngine::update() {
     if (!player) return;
@@ -884,25 +873,10 @@ void GameEngine::update() {
         }
     }
 
-    // Спавн новых пуль
-    /*bulletSpawnTimer++;
-    int randomSpawnRate;*/
-
-    //if (bossMode) {
-    //    // Босс режим - чаще и сложнее
-    //    /*updateBoss();
-    //    checkBossCollisions();
-    //    randomSpawnRate = 10 + (std::rand() % 15);*/
-    //}
-    //else {
-    //    // Туториал - реже и проще
-    //    randomSpawnRate = 20 + (std::rand() % 25);
-    //}
-
-    //if (bulletSpawnTimer >= randomSpawnRate) {
-    //    spawnBullet();
-    //    bulletSpawnTimer = 0;
-    //}
+    // --- босс ---
+    if (bossManager) {
+        bossManager->update();
+    }
 
     // Проверяем столкновения пуль с игроком
     checkCollisions();
@@ -977,45 +951,6 @@ void GameEngine::update() {
 
     }  
 #pragma endregion
-}
-
-//void GameEngine::updateBoss() {
-//    boss->update(*this);
-//
-//    // РћР±РЅРѕРІР»СЏРµРј РєРѕСЂРЅРё
-//    for (int i = bossRoots.size() - 1; i >= 0; --i) {
-//        bossRoots[i]->update();
-//        if (bossRoots[i]->getHealth() <= 0) {  // РР»Рё РґСЂСѓРіРѕР№ РєСЂРёС‚РµСЂРёР№ СѓРґР°Р»РµРЅРёСЏ
-//            bossRoots.erase(bossRoots.begin() + i);
-//        }
-//    }
-//}
-
-void GameEngine::spawnBullet() {
-    bool isParryBullet = (std::rand() % 2 == 0);
-
-    auto& config = ConfigManager::getInstance();
-    int worldWidth = config.getWorldWidth(currentLevel);
-    int worldHeight = config.getWorldHeight(currentLevel);
-
-    int spawnX = worldWidth;
-    int spawnY;
-
-    if (bossMode) {
-        spawnY = 5 + (std::rand() % (worldHeight - 10));
-    }
-    else {
-        spawnY = 8 + (std::rand() % 5);
-    }
-
-    int direction = -1;
-
-    if (isParryBullet) {
-        projectiles.push_back(std::make_unique<ParryBullet>(spawnX, spawnY, direction));
-    }
-    else {
-        projectiles.push_back(std::make_unique<Bullet>(spawnX, spawnY, direction));
-    }
 }
 
 void GameEngine::handlePlayerCollisions() {
@@ -1129,11 +1064,33 @@ void GameEngine::handlePlayerAttack() {
 }
 
 void GameEngine::checkCollisions() {
+    // --- босс ---
+    if (bossManager) {
+        bossManager->checkPlayerCollisions(*player);
+    }
+
     for (auto& bullet : projectiles) {
         if (!bullet->isActive()) continue;
 
-        bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
-        if (isPlayerBullet) continue;
+        //bool isPlayerBullet = (bullet->getColor() == ConfigManager::getInstance().getPlayerBulletColor());
+        bool isPlayerBullet = (!bullet->isEnemy());
+        if (isPlayerBullet) {
+
+            if (!bossManager) { continue; };
+
+            // --- босс ---
+            bossManager->checkPlayerBulletCollisions(bullet);
+
+            if (bossManager && !bullet->isEnemy()) {
+                Boss& boss = bossManager->getBoss();
+                if (bullet->checkCollision(boss)) {
+                    boss.takeDamage(bullet->getDamage());
+                    bullet->setActive(false);
+                }
+            }
+
+            continue;
+        }
 
         if (player->checkCollision(*bullet)) {
             if (player->getIsDodging()) {
@@ -1160,48 +1117,25 @@ void GameEngine::checkCollisions() {
     }
 }
 
-//void GameEngine::checkBossCollisions() {
-//    if (!boss || !player) return;
-//
-//    // РџСЂРѕРІРµСЂСЏРµРј РїРѕРїР°РґР°РЅРёРµ РїСѓР»СЊ РёРіСЂРѕРєР° РІ Р±РѕСЃСЃР°
-//    for (int i = projectiles.size() - 1; i >= 0; --i) {
-//        if (!projectiles[i]->isActive()) continue;
-//
-//        bool isPlayerBullet = (projectiles[i]->getColor() ==
-//            ConfigManager::getInstance().getPlayerBulletColor());
-//
-//        if (isPlayerBullet && boss->checkCollision(*projectiles[i])) {
-//            boss->takeDamage(1);  // РљР°Р¶РґР°СЏ РїСѓР»СЏ РЅР°РЅРѕСЃРёС‚ 1 СѓСЂРѕРЅ
-//            projectiles[i]->setActive(false);
-//        }
-//    }
-//
-//    // РџСЂРѕРІРµСЂСЏРµРј СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ РёРіСЂРѕРєР° СЃ РєРѕСЂРЅСЏРјРё Р±РѕСЃСЃР°
-//    for (auto& root : bossRoots) {
-//        if (player->checkCollision(*root)) {
-//            player->takeDamage(root->getDamage());
-//            // РњРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РєРѕСЂРµРЅСЊ РїРѕСЃР»Рµ РЅР°РЅРµСЃРµРЅРёСЏ СѓСЂРѕРЅР°
-//            root->takeDamage(root->getHealth());  // РЈРЅРёС‡С‚РѕР¶Р°РµРј РєРѕСЂРµРЅСЊ
-//        }
-//    }
-//}
-
 void GameEngine::handleParry() {
     if (player->getIsParrying()) {
         for (auto& bullet : projectiles) {
-            if (!bullet->isActive()) continue;
+            if (!bullet->isActive() || !bullet->isEnemy()) continue;
 
             if (isInParryRange(*bullet)) {
                 ParryBullet* parryBullet = dynamic_cast<ParryBullet*>(bullet.get());
                 if (parryBullet) {
                     bullet->setDirection(-bullet->getDirection());
                     bullet->setSpeed(parryBulletSpeed * 2);
+                    bullet->setIsEnemy(false);
+                    bullet->setDamage(bullet->getDamage()*2);
                     score += 10;
                 }
             }
         }
     }
 }
+
 
 bool GameEngine::isInParryRange(const GameObject& bullet) const {
     int playerRight = player->getX() + player->getWidth();
@@ -1291,6 +1225,14 @@ void GameEngine::render() {
     //UIManager::renderControls();
 
 
+    if (bossManager) {
+        bossManager->render(*camera);
+        if (currentLevel == "boss") {
+            UIManager::renderBossPhase(bossManager->getBoss().getPhase());
+            UIManager::renderBossHealth(bossManager->getBoss());
+        }
+    }
+
     // Отрисовываем UI поверх всего
     UIManager::renderGameUI(*player, score);
 }
@@ -1376,16 +1318,6 @@ void GameEngine::renderUIFrameWithCamera() {
     SetConsoleTextAttribute(hConsole, 7);
 }
 
-//void GameEngine::renderBoss() {
-//    if (bossMode && boss) {
-//        boss->render();
-//
-//        // Рендерим корни
-//        for (auto& root : bossRoots) {
-//            root->render();
-//        }
-//    }
-//}
 
 std::string GameEngine::getVisibleSubstring(const std::string& str, int startVisualPos, int maxVisualWidth) const {
     if (startVisualPos < 0 || str.empty()) {
@@ -1409,29 +1341,12 @@ std::string GameEngine::getVisibleSubstring(const std::string& str, int startVis
 }
 
 
-
-//void GameEngine::renderBoss() {
-//    if (bossMode && boss) {
-//        boss->render();
-//
-//        // Р РµРЅРґРµСЂРёРј РєРѕСЂРЅРё
-//        for (auto& root : bossRoots) {
-//            root->render();
-//        }
+//void GameEngine::addEnemyBullet(std::unique_ptr<Bullet> bullet) {
+//    if (bullet) {
+//        projectiles.push_back(std::move(bullet));
 //    }
 //}
 
-void GameEngine::addEnemyBullet(std::unique_ptr<Bullet> bullet) {
-    if (bullet) {
-        projectiles.push_back(std::move(bullet));
-    }
-}
-
-//void GameEngine::addBossRoot(std::unique_ptr<BossRoot> root) {
-//    if (root) {
-//        bossRoots.push_back(std::move(root));
-//    }
-//}
 
 Player& GameEngine::getPlayer() {
     return *player;
@@ -1720,6 +1635,10 @@ void GameEngine::respawnAtLevelStart() {
         Logger::Log("Player respawned at level start: (" +
             std::to_string(levelStartX) + ", " +
             std::to_string(levelStartY) + ")");
+
+        if (bossManager) {
+            bossManager->restartFight();
+        }
     }
 }
 
@@ -1746,6 +1665,10 @@ void GameEngine::checkWinCondition() {
             }
         }
     }
+}
+
+void GameEngine::finishBossFight() {
+    setGameRunning(false);
 }
 
 void GameEngine::removeWinSymbolsFromUIFrame() {

@@ -15,7 +15,7 @@ public:
     );
 
     void update();   // рост и обновление кулдауна
-    void render();   // отрисовка
+    void renderAt(int screenX, int screenY);   // отрисовка
 
     // ===== Геттеры для коллизий =====
     int getX() const;

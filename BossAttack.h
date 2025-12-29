@@ -11,6 +11,7 @@ protected:
 public:
     explicit BossAttack(int cooldown)
         : cooldown(cooldown), timer(0) {
+        //timer = cooldown;
     }
 
     virtual ~BossAttack() = default;

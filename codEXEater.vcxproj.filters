@@ -36,9 +36,6 @@
     <ClCompile Include="GraphicsManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ParryBullet.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -63,7 +60,6 @@
     <ClCompile Include="BossRoot.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-	
     <ClCompile Include="ComponentsBasedEntity.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -88,24 +84,6 @@
     <ClCompile Include="EmitProjectilesComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="dialog\DialogNode.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\DialogSystem.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\DialogTree.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\EncodingUtils.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\QuestController.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\ScriptEngine.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -118,14 +96,33 @@
     <ClCompile Include="IClonableComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-	
     <ClCompile Include="BossManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="FollowBullet.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-	
+    <ClCompile Include="ParryBullet.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogNode.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogSystem.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogTree.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EncodingUtils.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestController.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptEngine.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h">
@@ -144,9 +141,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParryBullet.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -176,7 +170,6 @@
     <ClInclude Include="Boss.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-	
     <ClInclude Include="ComponentsBasedEntity.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -201,24 +194,6 @@
     <ClInclude Include="EmitProjectilesComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="dialog\DialogNode.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog\DialogSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog\DialogTree.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog\json.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog\QuestController.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog\ScriptEngine.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -231,7 +206,6 @@
     <ClInclude Include="IClonableComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-	
     <ClInclude Include="BossManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -241,7 +215,24 @@
     <ClInclude Include="GrowDirection.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-	
+    <ClInclude Include="ParryBullet.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogNode.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogSystem.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogTree.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestController.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptEngine.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">
@@ -280,5 +271,6 @@
     <Text Include="dialog_trees\second_level_choice_dialog.txt" />
     <Text Include="dialog_trees\talk_with_feature_dialog.txt" />
     <Text Include="dialog_trees\third_level_choice_dialog.txt" />
+    <Text Include="graphics\boss\boss_frame.txt" />
   </ItemGroup>
 </Project>

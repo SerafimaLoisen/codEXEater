@@ -16,11 +16,16 @@ public:
 
     void update();
     void render();
+    void renderAt(int screenX, int screenY) const override;
 
     int getPhase() const;
+
+    void restart();
 
 private:
     int phase2HP;
     int phase3HP;
     int currentPhase;
+
+    int maxHP;
 };

@@ -33,7 +33,7 @@ void BossRoot::update() {
     }
 }
 
-void BossRoot::render() {
+void BossRoot::renderAt(int screenX, int screenY) {
     //for (int i = 0; i < length; ++i) {
     //    int drawX = startX;
     //    int drawY = startY;
@@ -48,11 +48,14 @@ void BossRoot::render() {
     //        color);
     //}
 
-    int drawX = startX;
-    int drawY = startY;
+    //int drawX = startX;
+    //int drawY = startY;
+
+    int drawX = screenX;
+    int drawY = screenY;
 
     switch (direction) {
-    case GrowDirection::Up:    drawY = (startY - length); break;
+    case GrowDirection::Up:    drawY = (screenY); break;
     //case GrowDirection::Down:  drawY = (startY + length); break;
     //case GrowDirection::Left:  drawX = (startX - length); break;
     //case GrowDirection::Right: drawX = (startX + length); break;

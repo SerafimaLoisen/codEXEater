@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <string>
 
-#include "dialog/DialogSystem.h"
-#include "dialog/EncodingUtils.cpp"
+#include "DialogSystem.h"
+#include "EncodingUtils.cpp"
 
 void setConsoleSize(int width, int height) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -238,10 +238,12 @@ int main() {
 
     QuestController::setNextDialog("game_start");
     //QuestController::setNextDialog("talk_with_feature");
+    //QuestController::setNextDialog("game_finish");
 
     //EncodingUtils::setupConsoleEncodingGame();
 
     GameEngine game;
+    ScriptEngine::engine = GameEngine::getInstance();
     while (true) {
 
 
@@ -255,8 +257,12 @@ int main() {
             int dialogChoice;
             cin >> dialogChoice;
             clearInputBuffer();
-        
+
             DialogSystem::processInput(dialogChoice);
+        }
+
+        if (game.endGame) {
+            break;
         }
 
 

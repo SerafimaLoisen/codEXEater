@@ -1,9 +1,12 @@
-#include "Projectile.h"
+п»ї#include "Projectile.h"
 #include "GraphicsManager.h"
 
-// !!! From general
-Projectile::Projectile(int x, int y, int width, int height, int speed, int direction, int color, bool _useFloatCoord, std::vector<float> _coord, std::vector<float> _velocity)
-    : GameObject(x, y, width, height, color), speed(speed), direction(direction), useFloatCoord(_useFloatCoord), coord(_coord), velocity(_velocity) {
+Projectile::Projectile(int x, int y, int width, int height, int speed, int direction, int color, bool _useFloatCoord, std::vector<float> _coord, std::vector<float> _velocity,
+    bool enemy,
+    int damage)
+    : GameObject(x, y, width, height, color), speed(speed), direction(direction), useFloatCoord(_useFloatCoord), coord(_coord), velocity(_velocity),
+    enemy(enemy),
+    damage(damage) {
     this->color = color;
     this->active = true;
     coord[0] = x;
@@ -12,14 +15,14 @@ Projectile::Projectile(int x, int y, int width, int height, int speed, int direc
 }
 
 void Projectile::update() {
-    
+
     if (!useFloatCoord) {
         x += speed * direction;
     }
     else {
 
-        coord[0] += velocity[0];
-        coord[1] += velocity[1];
+        coord[0] -= velocity[0] * direction;
+        coord[1] -= velocity[1] * direction;
 
         x = coord[0];
         y = coord[1];
@@ -35,35 +38,40 @@ void Projectile::renderAt(int screenX, int screenY) const {
     GraphicsManager::renderAt(screenX, screenY, { "*" }, color);
 }
 
-// !!! From sima
-//Projectile::Projectile(
-//    int x,
-//    int y,
-//    int width,
-//    int height,
-//    int color,
-//    bool enemy,
-//    int damage
-//)
-//    : GameObject(x, y, width, height, color),
-//    posX(static_cast<float>(x)),
-//    posY(static_cast<float>(y)),
-//    enemy(enemy),
-//    damage(damage)
-//{
-//}
-//
-//void Projectile::update() {
-//    // --- двигаем float-позицию ---
-//    posX += velocityX;
-//    posY += velocityY;
-//
-//    // --- синхронизируем int-координаты ---
-//    x = static_cast<int>(posX);
-//    y = static_cast<int>(posY);
-//}
-//
-//void Projectile::setVelocity(float vx, float vy) {
-//    velocityX = vx;
-//    velocityY = vy;
-//}
+/*
+
+#include "Projectile.h"
+
+Projectile::Projectile(
+    int x,
+    int y,
+    int width,
+    int height,
+    int color,
+    bool enemy,
+    int damage
+)
+    : GameObject(x, y, width, height, color),
+    posX(static_cast<float>(x)),
+    posY(static_cast<float>(y)),
+    enemy(enemy),
+    damage(damage)
+{
+}
+
+void Projectile::update() {
+    // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅ float-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
+    posX += velocityX;
+    posY += velocityY;
+
+    // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ int-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
+    x = static_cast<int>(posX);
+    y = static_cast<int>(posY);
+}
+
+void Projectile::setVelocity(float vx, float vy) {
+    velocityX = vx;
+    velocityY = vy;
+}
+
+*/

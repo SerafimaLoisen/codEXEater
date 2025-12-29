@@ -41,10 +41,14 @@ void BossRootAttack::updateInstances(BossManager& manager) {
     }
 }
 
-void BossRootAttack::renderWarnings(BossManager& manager) {
+void BossRootAttack::renderWarnings(BossManager& manager, Camera& camera) {
     for (auto& inst : instances) {
         if (!inst.active && inst.warningTimer > 0) {
-            manager.renderWarning(inst.x, inst.y, color);
+            if (camera.isInViewport(inst.x, inst.y, 2, 2)) {
+                int screenX = camera.worldToScreenX(inst.x);
+                int screenY = camera.worldToScreenY(inst.y);
+                manager.renderWarning(screenX, screenY, color);
+            };
         }
     }
 }

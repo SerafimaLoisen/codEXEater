@@ -41,9 +41,9 @@ private:
 public:
 
 	ComponentsBasedEntity(
-		int x, int y, int w, int h, int health, bool _isGravityEnabled = false, 
-		bool _useAltSprite = false, 
-		std::vector<std::string> _altSprite = {"?"},
+		int x, int y, int w, int h, int health, bool _isGravityEnabled = false,
+		bool _useAltSprite = false,
+		std::vector<std::string> _altSprite = { "?" },
 		int color = 4,
 		std::string _spriteName = "enemy_default");
 
@@ -55,7 +55,7 @@ public:
 
 	ComponentsBasedEntity* clone(int _x, int _y) override;
 
-	#pragma region SETTERS
+#pragma region SETTERS
 	void SetSpriteName(std::string _spriteName);
 	void SetWidth(int _width);
 	void SetHeight(int _height);
@@ -64,16 +64,15 @@ public:
 	void SetVerticalVelocity(float _verticalVelocity);
 	void SetHorizontalVelocity(float _horizontalVelocity);
 	void AddComponent(EntityComponent& component);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region GETTERS
+#pragma region GETTERS
 	bool GetIsGravityEnabled();
 	float GetHorizontalVelocity();
 	std::vector<std::string> GetSprite();
-	#pragma endregion
+#pragma endregion
 
 
 	void renderAt(int screenX, int screenY) const override;
 	void renderFitViewport(int cameraX, int cameraY, int viewportWidth, int viewportHeight);
 };
-

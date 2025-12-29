@@ -151,8 +151,13 @@ int ConfigManager::getPlayerColor() {
 
 // ========== АТАКА ИГРОКА ==========
 
-int ConfigManager::getPlayerCooldown() {
-    static int cached = getInt("PLAYER_COOLDOWN");
+int ConfigManager::getPlayerBulletSpeed() {
+    static int cached = getInt("PLAYER_BULLET_SPEED");
+    return cached;
+}
+
+int ConfigManager::getPlayerFireRate() {
+    static int cached = getInt("PLAYER_FIRE_RATE");
     return cached;
 }
 
@@ -204,8 +209,9 @@ int ConfigManager::getBulletDamage() {
 
 // ========== АТАКА ИГРОКА (уже были упомянуты) ==========
 //WAS getParryBulletSpeed CAN LEAD TO POTENTIAL PROBLEMS
-int ConfigManager::getPlayerBulletSpeed() {
-    static int cached = getInt("PLAYER_BULLET_SPEED");
+//int ConfigManager::getPlayerBulletSpeed() {
+int ConfigManager::getParryBulletSpeed() {
+    static int cached = getInt("PARRY_BULLET_SPEED");
     return cached;
 }
 

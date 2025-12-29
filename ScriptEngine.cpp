@@ -1,17 +1,20 @@
 
 #include "ScriptEngine.h"
 #include "DialogSystem.h"
+#include <cstdlib>
 
 using namespace std;
 
 map<string, function<void(map<string, string>&)>> ScriptEngine::scripts;
 map<string, bool>* ScriptEngine::ptr_flags;
 map<string, int>* ScriptEngine::ptr_ints;
+GameEngine* ScriptEngine::engine;
 
 void ScriptEngine::initialize()
 {
     ptr_flags = QuestController::getFlags();
     ptr_ints = QuestController::getInts();
+    engine = GameEngine::getInstance();
 
     // set bool flag to something
     registerScript("set_bool", [](const map<string, string>& args) {
@@ -108,12 +111,9 @@ void ScriptEngine::initialize()
 
     // script to end game
     registerScript("end_game", [](const map<string, string>& args) {
-        for (const auto& arg : args) {
-
-            // no args should be provided
-
-            exit(0);
-        }
+        // no args should be provided
+        engine->endGame = true;
+        //exit(0);
         });
 
 }

@@ -14,6 +14,8 @@ Boss::Boss(
     phase2HP(phase2HP),
     phase3HP(phase3HP),
     currentPhase(1) {
+    //health = 1;
+    maxHP = hp;
 }
 
 void Boss::update() {
@@ -26,6 +28,17 @@ void Boss::render() {
     GraphicsManager::renderAt(x, y, GraphicsManager::getGraphic("boss"), 12);
 }
 
+void Boss::renderAt(int screenX, int screenY) const
+{
+    GraphicsManager::renderAt(screenX, screenY, GraphicsManager::getGraphic("boss"), 12);
+}
+
 int Boss::getPhase() const {
     return currentPhase;
+}
+
+void Boss::restart()
+{
+    currentPhase = 1;
+    health = maxHP;
 }

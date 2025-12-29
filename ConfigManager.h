@@ -33,20 +33,27 @@ public:
     // Кэшированные геттеры
     int getScreenWidth();
     int getScreenHeight();
+
     int getPlayerStartX();
     int getPlayerStartY();
     int getPlayerWidth();
     int getPlayerHeight();
     int getPlayerHealth();
     int getPlayerColor();
-    int getPlayerCooldown();
+    int getPlayerBulletSpeed();
+    int getPlayerFireRate();
+    //int getPlayerCooldown();
+
     int getBulletSpeed();
     int getParryBulletSpeed();
     int getParryDuration();
+
     int getDodgeDuration();
     int getDodgeDistance();
+
     int getParryRange();
     int getPlayerBulletColor();
+
     int getBossStartX();
     int getBossStartY();
     int getBossWidth();
@@ -54,12 +61,15 @@ public:
     int getBossHealth();
     int getBossPhase2HP();
     int getBossPhase3HP();
+
     int getFollowBulletDamage();
     int getFollowBulletSpeed();
     int getFollowBulletColor();
     int getFollowBulletCooldown();
+
     int getBossRootWarningDuration();
     int getFollowBulletFollowDuration();
+
     int getBossRootGrowDuration();
     int getBossRootMaxLength();
     int getBossRootDamage();
@@ -67,6 +77,7 @@ public:
     int getBossRootColor();
     int getBossRootHealth(); // Здоровье корня (по умолчанию 10)
     int getBossRootCollisionCooldown();
+
     std::vector<RootSpawn> getBossRootPositions();
 
     int getViewportWidth();

@@ -1,4 +1,4 @@
-#include "GraphicsManager.h"
+п»ї#include "GraphicsManager.h"
 #include "GameEngine.h"
 #include "ComponentsBasedEntity.h"
 #include <iostream>
@@ -25,7 +25,7 @@ ComponentsBasedEntity::ComponentsBasedEntity(
 
 ComponentsBasedEntity::~ComponentsBasedEntity()
 {
-	for (int i = components.size()-1; i >= 0; i--)
+	for (int i = components.size() - 1; i >= 0; i--)
 		delete components[i];
 }
 
@@ -50,15 +50,15 @@ void ComponentsBasedEntity::renderFitViewport(int cameraX, int cameraY, int view
 }
 
 void ComponentsBasedEntity::update() {
-	
+
 	if (!isAlive()) return;
-	
+
 	// GRAVITY
 	if (isGravityEnabled) {
 		verticalVelocity += gravityForce;
 		y += verticalVelocity;
 	}
-	
+
 	for (auto* component : components)
 		component->Process();
 }
@@ -72,32 +72,32 @@ void ComponentsBasedEntity::takeDamage(int damage)
 }
 
 void ComponentsBasedEntity::onDeath() {
-	
+
 }
 
 ComponentsBasedEntity* ComponentsBasedEntity::clone(int _x, int _y) {
 	ComponentsBasedEntity* clone = new ComponentsBasedEntity(_x, _y, width, height, health, isGravityEnabled, useAltSprite, altSprite);
-	
+
 	for (auto* component : components) {
 		EntityComponent* clonedComp = component->clone(*clone);
 		clone->AddComponent(*clonedComp);
 	}
-	
+
 	return clone;
 }
 
 bool ComponentsBasedEntity::isCollidingWithPlatform(const Platform& platform) {
-	
-	// Проверяем пересечение по X
+
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
 	bool xCollision = (x < platform.getX() + platform.getWidth()) &&
 		(x + width > platform.getX());
 
 	if (!xCollision) return false;
 
-	// Проверяем столкновение сверху (падаем на платформу)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	if (verticalVelocity >= 0 &&
 		y + height <= platform.getY() &&
-		y + height + verticalVelocity >= platform.getY()) 
+		y + height + verticalVelocity >= platform.getY())
 	{
 		return true;
 	}
@@ -106,7 +106,7 @@ bool ComponentsBasedEntity::isCollidingWithPlatform(const Platform& platform) {
 }
 
 bool ComponentsBasedEntity::isCollidingWithSidePlatform(const SidePlatform& platform, bool& fromLeft) {
-	
+
 	int playerX = getX();
 	int playerY = getY();
 	int playerWidth = getWidth();

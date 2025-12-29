@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include "QuestController.h"
+#include "GameEngine.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ private:
     static map<string, int>* ptr_ints;
 
 public:
+    static GameEngine* engine;
     static void initialize();
 
     // Работа со скриптами

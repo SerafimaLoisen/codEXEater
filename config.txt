@@ -11,6 +11,8 @@ PLAYER_HEIGHT=3
 PLAYER_COLOR=14
 PLAYER_COOLDOWN=6
 PLAYER_BULLET_COLOR=10
+PLAYER_BULLET_SPEED=3
+PLAYER_FIRE_RATE=5
 
 # РўР°Р№РјРёРЅРіРё
 PARRY_DURATION=10
@@ -22,13 +24,13 @@ DODGE_DISTANCE=10
 BULLET_SPEED=2
 BULLET_DAMAGE=2
 BULLET_COLOR=7
-PARRY_BULLET_SPEED=2
+PARRY_BULLET_SPEED=4
 PARRY_BULLET_DAMAGE=1
 PARRY_BULLET_COLOR=13
 
 
-VIEWPORT_WIDTH=80      # Можно сделать меньше, чем WORLD_WIDTH
-VIEWPORT_HEIGHT=20     # Можно сделать меньше, чем WORLD_HEIGHT
+VIEWPORT_WIDTH=80      # пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ WORLD_WIDTH
+VIEWPORT_HEIGHT=20     # пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ WORLD_HEIGHT
 CAMERA_FOLLOW_SPEED=3
 
 # ============ Р‘РћРЎРЎ
@@ -51,7 +53,7 @@ FOLLOW_BULLET_COOLDOWN=15    # РљР°РґСЂС‹ РјРµР¶РґСѓ РІС‹СЃС‚СЂРµР»Р°РјРё
 FOLLOW_BULLET_HOMING=1     # 1 - РІРєР»СЋС‡РµРЅРѕ РїСЂРµСЃР»РµРґРѕРІР°РЅРёРµ
 FOLLOW_BULLET_FOLLOW_DURATION=120  
 
-# Размеры уровней
+# пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 WORLD_WIDTH_LEVEL1=554
 WORLD_HEIGHT_LEVEL1=35
@@ -74,11 +76,11 @@ WORLD_HEIGHT_LEVEL3-3=700
 #WORLD_WIDTH_BOSS=300
 #WORLD_HEIGHT_BOSS=60
 
-# ========== ЧЕКПОИНТЫ ==========
-CHECKPOINT_SYMBOL=+                    # Символ чекпоинта в файле уровня
-CHECKPOINT_ACTIVATION_RANGE=2          # Радиус активации (в клетках)
-CHECKPOINT_ACTIVE_COLOR=10             # Цвет активного чекпоинта (ярко-зеленый)
-CHECKPOINT_INACTIVE_COLOR=2            # Цвет неактивного чекпоинта (темно-зеленый)
+# ========== пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ==========
+CHECKPOINT_SYMBOL=+                    # пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+CHECKPOINT_ACTIVATION_RANGE=2          # пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+CHECKPOINT_ACTIVE_COLOR=10             # пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+CHECKPOINT_INACTIVE_COLOR=2            # пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 
 
 # РђС‚Р°РєР° РєРѕСЂРЅСЏРјРё

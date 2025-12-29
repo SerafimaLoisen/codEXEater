@@ -2,6 +2,7 @@
 #include "BossAttack.h"
 #include "GrowDirection.h"
 #include <vector>
+#include "Camera.h"
 
 class BossManager;
 class Boss;
@@ -19,7 +20,7 @@ public:
 
     void execute(BossManager& manager, Boss& boss) override;
     void updateInstances(BossManager& manager);
-    void renderWarnings(BossManager& manager);
+    void renderWarnings(BossManager& manager, Camera& camera);
 
 private:
     int warningDuration;

@@ -23,8 +23,8 @@ Player::Player(int x, int y, int worldWidth, int worldHeight)
     lastDirection(1),  // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРјРѕС‚СЂРёРј РІРїСЂР°РІРѕ
 	
     isAttacking(false),
-    bulletSpeed(ConfigManager::getInstance().getBulletSpeed()),
-    playerCooldown(ConfigManager::getInstance().getPlayerCooldown()),
+    playerBulletSpeed(ConfigManager::getInstance().getPlayerBulletSpeed()),
+    playerFireRate(ConfigManager::getInstance().getPlayerFireRate()),
     playerBulletColor(ConfigManager::getInstance().getPlayerBulletColor()) {
 }
 
@@ -207,14 +207,15 @@ std::shared_ptr<Projectile> Player::tryFire() {
 
         bulletY = y + height / 2;
 
-        // Создаем пулю (используем существующий класс Bullet)
-        auto bullet = std::make_shared<Bullet>(  // Но создаем Bullet
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Bullet)
+        auto bullet = std::make_shared<Bullet>(  // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Bullet
             bulletX, bulletY,
             lastDirection
         );
 
         bullet->setSpeed(playerBulletSpeed);
         bullet->setColor(playerBulletColor);
+        bullet->setIsEnemy(false);
 
         fireTimer = playerFireRate;
 
